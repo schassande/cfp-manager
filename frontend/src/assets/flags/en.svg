@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="36" height="24" viewBox="0 0 36 24" role="img" aria-label="English flag">
+  <rect width="36" height="24" fill="#012169"/>
+  <path d="M0,0 L36,24 M36,0 L0,24" stroke="#fff" stroke-width="6"/>
+  <path d="M0,0 L36,24 M36,0 L0,24" stroke="#C8102E" stroke-width="3"/>
+  <rect x="14" width="8" height="24" fill="#fff"/>
+  <rect y="8" width="36" height="8" fill="#fff"/>
+  <rect x="15" width="6" height="24" fill="#C8102E"/>
+  <rect y="9" width="36" height="6" fill="#C8102E"/>
+</svg>

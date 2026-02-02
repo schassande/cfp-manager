@@ -26,4 +26,6 @@ export interface Person extends PersistentData {
   socialLinks: SocialLink[];
   /** Whether the person has an account in the system */
   hasAccount: boolean;
+  /** Preferred language for communication and interface */
+  preferredLanguage: string;
 }

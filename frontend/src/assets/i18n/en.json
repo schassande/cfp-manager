@@ -1,7 +1,33 @@
+
+
 {
   "HOME": {
     "TITLE": "Upcoming Conferences",
     "LOADING": "Loading conferences...",
     "NO_CONFS": "No upcoming conferences found."
+  },
+  "MENU": {
+    "SIGNUP": "Sign up",
+    "LOGIN": "Login",
+    "LOGOUT": "Logout",
+    "PROFILE": "Profile",
+    "LANGUAGE": "Change language"
+  },
+  "LANGUAGE": {
+    "EN": "English",
+    "FR": "Français"
+  },
+  "PREFERENCE": {
+    "TITLE": "Preferences",
+    "DESCRIPTION": "Manage your user preferences here."
+  },
+  "SIGNUP": {
+    "TITLE": "Create an account",
+    "GOOGLE": "Sign up with Google",
+    "OR": "or",
+    "EMAIL": "Email address",
+    "PASSWORD": "Password",
+    "CONFIRM": "Confirm password",
+    "SUBMIT": "Sign up"
   }
 }

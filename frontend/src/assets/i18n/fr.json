@@ -3,5 +3,29 @@
     "TITLE": "Conférences à venir",
     "LOADING": "Chargement des conférences...",
     "NO_CONFS": "Aucune conférence à venir trouvée."
+  },
+  "MENU": {
+    "SIGNUP": "Créer un compte",
+    "LOGIN": "Se connecter",
+    "LOGOUT": "Se déconnecter",
+    "PROFILE": "Préférences",
+    "LANGUAGE": "Changer la langue"
+  },
+  "LANGUAGE": {
+    "EN": "English",
+    "FR": "Français"
+  },
+  "PREFERENCE": {
+    "TITLE": "Préférences",
+    "DESCRIPTION": "Gérez vos préférences utilisateur ici."
+  },
+  "SIGNUP": {
+    "TITLE": "Créer un compte",
+    "GOOGLE": "S'inscrire avec Google",
+    "OR": "ou",
+    "EMAIL": "Adresse e-mail",
+    "PASSWORD": "Mot de passe",
+    "CONFIRM": "Confirmez le mot de passe",
+    "SUBMIT": "Créer le compte"
   }
 }
