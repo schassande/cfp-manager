@@ -1,5 +1,5 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
-import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, User } from '@angular/fire/auth';
+import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, User, sendPasswordResetEmail } from '@angular/fire/auth';
 import { PersonService } from './person.service';
 import { Person } from '../model/person.model';
 import { firstValueFrom } from 'rxjs';
@@ -7,7 +7,7 @@ import { HttpClient } from '@angular/common/http';
 import { functionBaseUrl } from './constantes';
 
 @Injectable({ providedIn: 'root' })
-export class SignupService {
+export class UserSignService {
   private readonly auth = inject(Auth);
   private readonly personService = inject(PersonService);
   private readonly http = inject(HttpClient);
@@ -143,5 +143,13 @@ export class SignupService {
     this._user.set(null);
     this._person.set(null);
     return await signOut(this.auth);
+  }
+
+  /**
+   * Send password reset email using Firebase Auth
+   * @param email
+   */
+  async sendPasswordReset(email: string): Promise<void> {
+    return await sendPasswordResetEmail(this.auth, email);
   }
 }

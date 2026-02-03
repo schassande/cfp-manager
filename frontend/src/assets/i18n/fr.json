@@ -39,5 +39,8 @@
     "SUBMIT": "Se connecter",
     "NO_ACCOUNT": "Vous n'avez pas de compte?",
     "SIGNUP_LINK": "Créez-en un ici"
+  ,
+  "FORGOT": "Mot de passe oublié ?",
+  "RESET_SENT": "E-mail de réinitialisation envoyé. Vérifiez votre boîte de réception."
   }
 }

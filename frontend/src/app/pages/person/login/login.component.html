@@ -4,6 +4,9 @@
   @if (error()) {
     <div class="error-message">{{ error() }}</div>
   }
+  @if (success()) {
+    <div class="success-message">{{ success() }}</div>
+  }
   
   <div class="login-options">
     <button pButton type="button" class="google-btn" (click)="onGoogleLogin()" [loading]="loading()" [disabled]="loading()">
@@ -21,6 +24,10 @@
 
     <button pButton type="submit" [disabled]="form.invalid || loading()" [loading]="loading()" [raised]="true">{{ 'LOGIN.SUBMIT' | translate }}</button>
   </form>
+
+  <div class="forgot-link">
+    <a (click)="onResetPassword()">{{ 'LOGIN.FORGOT' | translate }}</a>
+  </div>
 
   <div class="signup-link">
     <p>{{ 'LOGIN.NO_ACCOUNT' | translate }} <a (click)="navigateToSignup()">{{ 'LOGIN.SIGNUP_LINK' | translate }}</a></p>

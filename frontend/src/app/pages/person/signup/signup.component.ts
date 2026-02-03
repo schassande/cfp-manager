@@ -6,7 +6,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { ButtonModule } from 'primeng/button';
-import { SignupService } from '../../../services/signup.service';
+import { UserSignService } from '../../../services/usersign.service';
 import { Person } from '../../../model/person.model';
 
 @Component({
@@ -23,7 +23,7 @@ export class SignupComponent {
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
-  private readonly signupService = inject(SignupService);
+  private readonly signupService = inject(UserSignService);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
 

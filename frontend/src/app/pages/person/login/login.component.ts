@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { ButtonModule } from 'primeng/button';
-import { SignupService } from '../../../services/signup.service';
+import { UserSignService } from '../../../services/usersign.service';
 
 @Component({
   selector: 'app-login',
@@ -19,8 +19,9 @@ export class LoginComponent {
   readonly submitted = signal(false);
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
+  readonly success = signal<string | null>(null);
 
-  private readonly signupService = inject(SignupService);
+  private readonly usersignService = inject(UserSignService);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
 
@@ -34,6 +35,7 @@ export class LoginComponent {
   async onSubmit() {
     this.submitted.set(true);
     this.error.set(null);
+    this.success.set(null);
     
     if (this.form.valid) {
       this.loading.set(true);
@@ -41,7 +43,7 @@ export class LoginComponent {
         const formValue = this.form.value;
         
         // Call signup service login method
-        const result = await this.signupService.loginWithEmail(formValue.email, formValue.password);
+          const result = await this.usersignService.loginWithEmail(formValue.email, formValue.password);
         
         if (result) {
           // Navigate to home
@@ -61,8 +63,9 @@ export class LoginComponent {
   async onGoogleLogin() {
     this.loading.set(true);
     this.error.set(null);
+    this.success.set(null);
     try {
-      const result = await this.signupService.loginWithGoogle();
+      const result = await this.usersignService.loginWithGoogle();
       if (result) {
         // Navigate to home page
         await this.router.navigate(['/']);
@@ -79,5 +82,22 @@ export class LoginComponent {
 
   navigateToSignup() {
     this.router.navigate(['/signup']);
+  }
+
+  async onResetPassword() {
+    this.error.set(null);
+    this.success.set(null);
+    const email = this.form.get('email')?.value;
+    if (!email) {
+      this.error.set('Please enter your email to reset password');
+      return;
+    }
+    try {
+      await this.usersignService.sendPasswordReset(email);
+      this.success.set('Password reset email sent. Check your inbox.');
+    } catch (err: any) {
+      this.error.set(err?.message || 'Failed to send password reset email');
+      console.error(err);
+    }
   }
 }

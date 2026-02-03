@@ -39,5 +39,8 @@
     "SUBMIT": "Login",
     "NO_ACCOUNT": "Don't have an account?",
     "SIGNUP_LINK": "Sign up here"
+  ,
+  "FORGOT": "Forgot password?",
+  "RESET_SENT": "Password reset email sent. Check your inbox."
   }
 }
