@@ -46,6 +46,11 @@ export class UserSignService {
     const cred = await createUserWithEmailAndPassword(this.auth, person.email, password);
     person.id = cred.user.uid;
     
+    // Ensure platform admin flag defaults to false if not provided
+    if (person.isPlatformAdmin === undefined) {
+      person.isPlatformAdmin = false;
+    }
+
     // Create person via Cloud Function (guarantees email uniqueness)
     let databasePerson: Person|undefined = await this.createPersonViaFunction(person);
 
@@ -71,7 +76,7 @@ export class UserSignService {
     const cred = await signInWithPopup(this.auth, new GoogleAuthProvider());
     const user = cred.user;
     if (!user.email) return undefined;
-    
+
     // Create a person object from user info of the google account
     let person: Person|undefined = {
         id: user.uid,
@@ -80,7 +85,8 @@ export class UserSignService {
         lastName: user.displayName?.split(' ').slice(1).join(' ') ?? '',
         email: user.email,
         hasAccount: true,
-        preferredLanguage: 'en'
+        preferredLanguage: 'en',
+        isPlatformAdmin: false
       };
     // Try to create via Cloud Function first
     person = await this.createPersonViaFunction(person);

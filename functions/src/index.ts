@@ -71,6 +71,11 @@ export const createPerson = onRequest(async (req, res) => {
 			person.id = newPersonRef.id;
 			person.lastUpdated = Date.now().toString();
 
+			// Ensure isPlatformAdmin defaults to false when not provided
+			if (person.isPlatformAdmin === undefined) {
+				person.isPlatformAdmin = false;
+			}
+
 			tx.set(newPersonRef, person);
 			tx.set(emailRef, {
 				personId: newPersonRef.id,

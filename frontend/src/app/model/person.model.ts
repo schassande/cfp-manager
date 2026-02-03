@@ -16,6 +16,8 @@ export interface Person extends PersistentData {
   email: string;
   /** Whether the person has an account in the system */
   hasAccount: boolean;
+  /** Whether the person is a platform administrator (default false on creation) */
+  isPlatformAdmin?: boolean;
   /** Preferred language for communication and interface */
   preferredLanguage: string;
   speaker?: {

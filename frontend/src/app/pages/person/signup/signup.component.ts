@@ -61,7 +61,8 @@ export class SignupComponent {
           lastName: formValue.lastName,
           email: formValue.email,
           hasAccount: true,
-          preferredLanguage: 'en'
+          preferredLanguage: 'en',
+          isPlatformAdmin: false
         };
 
         // Call signup service
