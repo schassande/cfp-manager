@@ -9,7 +9,9 @@
     "LOGIN": "Se connecter",
     "LOGOUT": "Se déconnecter",
     "PROFILE": "Préférences",
-    "LANGUAGE": "Changer la langue"
+    "LANGUAGE": "Changer la langue",
+    "ADMIN": "Administration",
+    "ADMIN_PERSONS": "Gérer les personnes"
   },
   "LANGUAGE": {
     "EN": "English",
@@ -38,9 +40,20 @@
     "PASSWORD": "Mot de passe",
     "SUBMIT": "Se connecter",
     "NO_ACCOUNT": "Vous n'avez pas de compte?",
-    "SIGNUP_LINK": "Créez-en un ici"
-  ,
-  "FORGOT": "Mot de passe oublié ?",
-  "RESET_SENT": "E-mail de réinitialisation envoyé. Vérifiez votre boîte de réception."
+    "SIGNUP_LINK": "Créez-en un ici",
+    "FORGOT": "Mot de passe oublié ?",
+    "RESET_SENT": "E-mail de réinitialisation envoyé. Vérifiez votre boîte de réception."
+  },
+  "PERSON": {
+    "LIST": {
+      "TITLE": "Personnes",
+      "FIRSTNAME": "Prénom",
+      "LASTNAME": "Nom",
+      "EMAIL": "E-mail",
+      "ADMIN": "Admin plateforme",
+      "YES": "Oui",
+      "NO": "Non",
+      "SEARCH_PLACEHOLDER": "Recherche (nom, prénom, email)"
+    }
   }
 }

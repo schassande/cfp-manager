@@ -1,0 +1,4 @@
+.person-list-container{max-width:900px;margin:80px auto;padding:24px;background:#fff;border-radius:8px}
+.person-table{width:100%;border-collapse:collapse;margin-bottom:12px}
+.person-table th,.person-table td{padding:8px;border-bottom:1px solid #eee;text-align:left}
+.pager{display:flex;gap:8px;align-items:center}

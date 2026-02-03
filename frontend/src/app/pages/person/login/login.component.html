@@ -21,15 +21,16 @@
 
     <label for="password">{{ 'LOGIN.PASSWORD' | translate }}</label>
     <input id="password" type="password" formControlName="password" required />
-
-    <button pButton type="submit" [disabled]="form.invalid || loading()" [loading]="loading()" [raised]="true">{{ 'LOGIN.SUBMIT' | translate }}</button>
+    <div style="text-align: center;">
+      <button pButton type="submit" [disabled]="form.invalid || loading()" [loading]="loading()" [raised]="true">{{ 'LOGIN.SUBMIT' | translate }}</button>
+    </div>
   </form>
 
-  <div class="forgot-link">
-    <a (click)="onResetPassword()">{{ 'LOGIN.FORGOT' | translate }}</a>
-  </div>
 
   <div class="signup-link">
+    <div class="forgot-link">
+      <a (click)="onResetPassword()">{{ 'LOGIN.FORGOT' | translate }}</a>
+    </div>
     <p>{{ 'LOGIN.NO_ACCOUNT' | translate }} <a (click)="navigateToSignup()">{{ 'LOGIN.SIGNUP_LINK' | translate }}</a></p>
   </div>
 </section>

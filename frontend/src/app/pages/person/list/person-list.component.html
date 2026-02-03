@@ -1,0 +1,32 @@
+<div class="person-list-container">
+  <h2>{{ 'PERSON.LIST.TITLE' | translate }}</h2>
+
+  <div class="controls">
+    <input type="text" placeholder="{{ 'PERSON.LIST.SEARCH_PLACEHOLDER' | translate }}" (input)="onSearchChange($any($event.target).value)" />
+  </div>
+
+  <p-table [value]="persons()">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>{{ 'PERSON.LIST.FIRSTNAME' | translate }}</th>
+        <th>{{ 'PERSON.LIST.LASTNAME' | translate }}</th>
+        <th>{{ 'PERSON.LIST.EMAIL' | translate }}</th>
+        <th>{{ 'PERSON.LIST.ADMIN' | translate }}</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-p>
+      <tr>
+        <td>{{ p.firstName }}</td>
+        <td>{{ p.lastName }}</td>
+        <td>{{ p.email }}</td>
+        <td>{{ p.isPlatformAdmin ? ('PERSON.LIST.YES' | translate) : ('PERSON.LIST.NO' | translate) }}</td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <div class="pager">
+    <button pButton type="button" (click)="prev()" icon="pi pi-chevron-left"></button>
+    <span>{{ currentPage() }}</span>
+    <button pButton type="button" (click)="next()" icon="pi pi-chevron-right"></button>
+  </div>
+</div>

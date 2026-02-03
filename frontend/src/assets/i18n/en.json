@@ -9,7 +9,21 @@
     "LOGIN": "Login",
     "LOGOUT": "Logout",
     "PROFILE": "Profile",
-    "LANGUAGE": "Change language"
+    "LANGUAGE": "Change language",
+    "ADMIN": "Admin",
+    "ADMIN_PERSONS": "Manage persons"
+  },
+  "PERSON": {
+    "LIST": {
+      "TITLE": "People",
+      "FIRSTNAME": "First name",
+      "LASTNAME": "Last name",
+      "EMAIL": "Email",
+      "ADMIN": "Platform admin",
+      "YES": "Yes",
+      "NO": "No",
+      "SEARCH_PLACEHOLDER": "Search name, firstname or email"
+    }
   },
   "LANGUAGE": {
     "EN": "English",
@@ -42,5 +56,17 @@
   ,
   "FORGOT": "Forgot password?",
   "RESET_SENT": "Password reset email sent. Check your inbox."
+  }
+  ,
+  "PERSON": {
+    "LIST": {
+      "TITLE": "People",
+      "FIRSTNAME": "First name",
+      "LASTNAME": "Last name",
+      "EMAIL": "Email",
+      "ADMIN": "Platform admin",
+      "YES": "Yes",
+      "NO": "No"
+    }
   }
 }

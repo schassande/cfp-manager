@@ -4,6 +4,10 @@
   </div>
   <div class="menu-right">
     @if (person()) {
+      @if (person()?.isPlatformAdmin) {
+        <p-menu #adminMenu [popup]="true" [model]="adminMenuItems()"></p-menu>
+        <button pButton type="button" class="admin-btn" label="{{ 'MENU.ADMIN' | translate }}" (click)="adminMenu.toggle($event)"></button>
+      }
       <p-menu #avatarMenu [popup]="true" [model]="avatarMenuItems()"></p-menu>
       <button pButton type="button" class="avatar-btn" [label]="''" pTooltip="{{ 'MENU.PROFILE' | translate }}" (click)="avatarMenu.toggle($event)">
         <p-avatar icon="pi pi-user" shape="circle"></p-avatar>
