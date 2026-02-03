@@ -1,0 +1,207 @@
+<p-dialog
+  [visible]="visible()"
+  [header]="'PERSON.EDIT.TITLE' | translate"
+  [modal]="true"
+  [closable]="true"
+  (onHide)="closeDialog()"
+  [style]="{ width: '90vw', maxWidth: '600px' }"
+>
+  <div *ngIf="editingPerson() as person" class="edit-form">
+    <!-- First Name -->
+    <div class="form-group">
+      <label>{{ 'PERSON.EDIT.FIRSTNAME' | translate }}</label>
+      <input
+        pInputText
+        [(ngModel)]="person.firstName"
+        class="w-full"
+      />
+    </div>
+
+    <!-- Last Name -->
+    <div class="form-group">
+      <label>{{ 'PERSON.EDIT.LASTNAME' | translate }}</label>
+      <input
+        pInputText
+        [(ngModel)]="person.lastName"
+        class="w-full"
+      />
+    </div>
+
+    <!-- Email -->
+    <div class="form-group">
+      <label>{{ 'PERSON.EDIT.EMAIL' | translate }}</label>
+      <input
+        pInputText
+        [(ngModel)]="person.email"
+        type="email"
+        class="w-full"
+        disabled
+      />
+      <small>{{ 'PERSON.EDIT.EMAIL_DISABLED' | translate }}</small>
+    </div>
+
+    <!-- Preferred Language -->
+    <div class="form-group">
+      <label>{{ 'PERSON.EDIT.LANGUAGE' | translate }}</label>
+      <p-select
+        [(ngModel)]="person.preferredLanguage"
+        [options]="languageOptions()"
+        optionLabel="label"
+        optionValue="value"
+        class="w-full"
+      >
+        <ng-template pTemplate="item" let-option>
+          <div class="language-option" *ngIf="option">
+            <img ngOptimizedImage [src]="option.icon" width="18" height="12" alt="" />
+            <span>{{ option.label }}</span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="selectedItem" let-option>
+          <div class="language-option" *ngIf="option">
+            <img ngOptimizedImage [src]="option.icon" width="18" height="12" alt="" />
+            <span>{{ option.label }}</span>
+          </div>
+        </ng-template>
+      </p-select>
+    </div>
+
+    <!-- Platform Admin -->
+    <div class="form-group checkbox-group">
+      <p-checkbox
+        [(ngModel)]="person.isPlatformAdmin"
+        [binary]="true"
+        [disabled]="!isCurrentUserAdmin()"
+      ></p-checkbox>
+      <label [attr.title]="!isCurrentUserAdmin() ? ('PERSON.EDIT.ADMIN_DISABLED' | translate) : ''">{{ 'PERSON.EDIT.IS_ADMIN' | translate }}</label>
+    </div>
+
+    <!-- Has Account -->
+    <div class="form-group checkbox-group">
+      <p-checkbox
+        [(ngModel)]="person.hasAccount"
+        [binary]="true"
+      ></p-checkbox>
+      <label>{{ 'PERSON.EDIT.HAS_ACCOUNT' | translate }}</label>
+    </div>
+
+    <!-- Speaker Section -->
+    <div class="speaker-section" *ngIf="person.speaker">
+      <h3>{{ 'PERSON.EDIT.SPEAKER_SECTION' | translate }}</h3>
+
+      <!-- Company -->
+      <div class="form-group">
+        <label>{{ 'PERSON.EDIT.COMPANY' | translate }}</label>
+        <input
+          pInputText
+          [(ngModel)]="person.speaker.company"
+          class="w-full"
+        />
+      </div>
+
+      <!-- Bio -->
+      <div class="form-group">
+        <label>{{ 'PERSON.EDIT.BIO' | translate }}</label>
+        <textarea
+          pTextarea
+          [(ngModel)]="person.speaker.bio"
+          class="w-full"
+          rows="4"
+        ></textarea>
+      </div>
+
+      <!-- Reference -->
+      <div class="form-group">
+        <label>{{ 'PERSON.EDIT.REFERENCE' | translate }}</label>
+        <input
+          pInputText
+          [(ngModel)]="person.speaker.reference"
+          class="w-full"
+        />
+      </div>
+
+      <!-- Photo URL -->
+      <div class="form-group">
+        <label>{{ 'PERSON.EDIT.PHOTO_URL' | translate }}</label>
+        <input
+          pInputText
+          [(ngModel)]="person.speaker.photoUrl"
+          type="url"
+          class="w-full"
+        />
+      </div>
+
+      <!-- Social Links -->
+      <div class="social-links-section">
+        <h4>{{ 'PERSON.EDIT.SOCIAL_LINKS' | translate }}</h4>
+        <div *ngFor="let link of person.speaker.socialLinks; let i = index" class="social-link">
+          <div class="form-group">
+            <label>{{ 'PERSON.EDIT.SOCIAL_NETWORK' | translate }}</label>
+            <input
+              pInputText
+              [(ngModel)]="link.network"
+              class="w-full"
+              placeholder="LinkedIn, Twitter, etc."
+            />
+          </div>
+          <div class="form-group">
+            <label>{{ 'PERSON.EDIT.SOCIAL_URL' | translate }}</label>
+            <input
+              pInputText
+              [(ngModel)]="link.url"
+              type="url"
+              class="w-full"
+            />
+          </div>
+          <button
+            pButton
+            type="button"
+            icon="pi pi-trash"
+            class="p-button-danger p-button-sm"
+            (click)="removeSocialLink(i)"
+          ></button>
+        </div>
+        <button
+          pButton
+          type="button"
+          icon="pi pi-plus"
+          label="{{ 'PERSON.EDIT.ADD_SOCIAL_LINK' | translate }}"
+          (click)="addSocialLink()"
+          class="p-button-secondary p-button-sm"
+        ></button>
+      </div>
+    </div>
+
+    <!-- Enable Speaker Section -->
+    <div class="no-speaker-section" *ngIf="!person.speaker">
+      <p>{{ 'PERSON.EDIT.NO_SPEAKER' | translate }}</p>
+      <button
+        pButton
+        type="button"
+        icon="pi pi-plus"
+        label="{{ 'PERSON.EDIT.ENABLE_SPEAKER' | translate }}"
+        (click)="enableSpeaker()"
+        class="p-button-secondary"
+      ></button>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="button-group">
+      <button
+        pButton
+        type="button"
+        label="{{ 'COMMON.CANCEL' | translate }}"
+        icon="pi pi-times"
+        (click)="closeDialog()"
+        class="p-button-secondary"
+      ></button>
+      <button
+        pButton
+        type="button"
+        label="{{ 'COMMON.SAVE' | translate }}"
+        icon="pi pi-check"
+        (click)="savePerson()"
+        [loading]="loading()"
+      ></button>
+    </div>
+  </div>
+</p-dialog>

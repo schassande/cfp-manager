@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect, signal, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, signal, inject, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Person } from '../../../model/person.model';
 import { PersonService } from '../../../services/person.service';
@@ -7,11 +7,12 @@ import { Router, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
+import { PersonEditComponent } from '../edit/person-edit.component';
 
 @Component({
   selector: 'app-person-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, TranslateModule, ButtonModule, TableModule],
+  imports: [CommonModule, RouterModule, TranslateModule, ButtonModule, TableModule, PersonEditComponent],
   templateUrl: './person-list.component.html',
   styleUrls: ['./person-list.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -20,6 +21,8 @@ export class PersonListComponent implements OnInit {
   private readonly personService = inject(PersonService);
   private readonly signupService = inject(UserSignService);
   private readonly router = inject(Router);
+
+  @ViewChild(PersonEditComponent) editComponent!: PersonEditComponent;
 
   // Current page items
   private readonly _persons = signal<Person[]>([]);
@@ -104,5 +107,14 @@ export class PersonListComponent implements OnInit {
     this.cursors.clear();
     this.currentPage.set(0); // Temporarily set to 0 to force reload
     void this.loadPage(1);
+  }
+
+  /**
+   * Open the edit dialog for a person
+   */
+  openEditDialog(person: Person): void {
+    if (this.editComponent) {
+      this.editComponent.openEdit(person);
+    }
   }
 }

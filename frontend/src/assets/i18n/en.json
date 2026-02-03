@@ -23,6 +23,29 @@
       "YES": "Yes",
       "NO": "No",
       "SEARCH_PLACEHOLDER": "Search name, firstname or email"
+    },
+    "EDIT": {
+      "TITLE": "Edit Person",
+      "FIRSTNAME": "First name",
+      "LASTNAME": "Last name",
+      "EMAIL": "Email",
+      "EMAIL_DISABLED": "Email cannot be modified",
+      "LANGUAGE": "Preferred language",
+      "IS_ADMIN": "Platform administrator",
+      "HAS_ACCOUNT": "Has account",
+      "SPEAKER_SECTION": "Speaker Information",
+      "COMPANY": "Company",
+      "BIO": "Biography",
+      "REFERENCE": "Reference",
+      "PHOTO_URL": "Photo URL",
+      "SOCIAL_LINKS": "Social Links",
+      "SOCIAL_NETWORK": "Network",
+      "SOCIAL_URL": "Profile URL",
+      "ADD_SOCIAL_LINK": "Add social link",
+      "NO_SPEAKER": "This person is not yet a speaker. Click the button below to enable speaker profile.",
+      "ENABLE_SPEAKER": "Enable speaker profile"
+      ,
+      "ADMIN_DISABLED": "Only platform administrators can change this setting"
     }
   },
   "LANGUAGE": {
@@ -52,21 +75,13 @@
     "PASSWORD": "Password",
     "SUBMIT": "Login",
     "NO_ACCOUNT": "Don't have an account?",
-    "SIGNUP_LINK": "Sign up here"
-  ,
-  "FORGOT": "Forgot password?",
-  "RESET_SENT": "Password reset email sent. Check your inbox."
-  }
-  ,
-  "PERSON": {
-    "LIST": {
-      "TITLE": "People",
-      "FIRSTNAME": "First name",
-      "LASTNAME": "Last name",
-      "EMAIL": "Email",
-      "ADMIN": "Platform admin",
-      "YES": "Yes",
-      "NO": "No"
-    }
+    "SIGNUP_LINK": "Sign up here",
+    "FORGOT": "Forgot password?",
+    "RESET_SENT": "Password reset email sent. Check your inbox."
+  },
+  "COMMON": {
+    "SAVE": "Save",
+    "CANCEL": "Cancel"
   }
 }
+

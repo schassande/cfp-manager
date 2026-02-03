@@ -5,7 +5,7 @@
     <input type="text" placeholder="{{ 'PERSON.LIST.SEARCH_PLACEHOLDER' | translate }}" (input)="onSearchChange($any($event.target).value)" />
   </div>
 
-  <p-table [value]="persons()">
+  <p-table [value]="persons()" [rowsPerPageOptions]="[5, 10, 20]">
     <ng-template pTemplate="header">
       <tr>
         <th>{{ 'PERSON.LIST.FIRSTNAME' | translate }}</th>
@@ -15,7 +15,7 @@
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-p>
-      <tr>
+      <tr (click)="openEditDialog(p)" class="clickable-row">
         <td>{{ p.firstName }}</td>
         <td>{{ p.lastName }}</td>
         <td>{{ p.email }}</td>
@@ -30,3 +30,5 @@
     <button pButton type="button" (click)="next()" icon="pi pi-chevron-right"></button>
   </div>
 </div>
+
+<app-person-edit></app-person-edit>

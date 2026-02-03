@@ -54,6 +54,33 @@
       "YES": "Oui",
       "NO": "Non",
       "SEARCH_PLACEHOLDER": "Recherche (nom, prénom, email)"
+    },
+    "EDIT": {
+      "TITLE": "Modifier la personne",
+      "FIRSTNAME": "Prénom",
+      "LASTNAME": "Nom",
+      "EMAIL": "E-mail",
+      "EMAIL_DISABLED": "L'email ne peut pas être modifié",
+      "LANGUAGE": "Langue préférée",
+      "IS_ADMIN": "Administrateur plateforme",
+      "HAS_ACCOUNT": "Possède un compte",
+      "SPEAKER_SECTION": "Informations de conférencier",
+      "COMPANY": "Entreprise",
+      "BIO": "Biographie",
+      "REFERENCE": "Référence",
+      "PHOTO_URL": "URL de la photo",
+      "SOCIAL_LINKS": "Liens sociaux",
+      "SOCIAL_NETWORK": "Réseau",
+      "SOCIAL_URL": "URL du profil",
+      "ADD_SOCIAL_LINK": "Ajouter un lien social",
+      "NO_SPEAKER": "Cette personne n'est pas encore conférencière. Cliquez sur le bouton ci-dessous pour activer le profil de conférencier.",
+      "ENABLE_SPEAKER": "Activer le profil de conférencier"
+      ,
+      "ADMIN_DISABLED": "Seuls les administrateurs peuvent modifier ce paramètre"
     }
+  },
+  "COMMON": {
+    "SAVE": "Enregistrer",
+    "CANCEL": "Annuler"
   }
 }
