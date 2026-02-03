@@ -1,0 +1,205 @@
+<div class="general-config">
+  <p-toast></p-toast>
+
+  @if (currentForm(); as form) {
+  <form [formGroup]="form" class="config-form">
+    <!-- Name Field -->
+    <div class="form-section">
+      <label for="name" class="form-label">
+        {{ 'CONFERENCE.NAME' | translate }} <span class="required">*</span>
+      </label>
+      <input
+        id="name"
+        pInputText
+        formControlName="name"
+        type="text"
+        class="w-full"
+        placeholder="Nom de la conférence"
+      />
+      @if (form.get('name')?.invalid && form.get('name')?.touched) {
+      <small class="error-message">
+        {{ 'VALIDATION.REQUIRED' | translate }}
+      </small>
+      }
+    </div>
+
+    <!-- Location Field -->
+    <div class="form-section">
+      <label for="location" class="form-label">
+        {{ 'CONFERENCE.LOCATION' | translate }} <span class="required">*</span>
+      </label>
+      <input
+        id="location"
+        pInputText
+        formControlName="location"
+        type="text"
+        class="w-full"
+        placeholder="Lieu de la conférence"
+      />
+      @if (form.get('location')?.invalid && form.get('location')?.touched) {
+      <small class="error-message">
+        {{ 'VALIDATION.REQUIRED' | translate }}
+      </small>
+      }
+    </div>
+
+    <!-- Logo Field -->
+    <div class="form-section">
+      <label for="logo" class="form-label">
+        {{ 'CONFERENCE.LOGO' | translate }}
+      </label>
+      <input
+        id="logo"
+        pInputText
+        formControlName="logo"
+        type="text"
+        class="w-full"
+        placeholder="URL du logo"
+      />
+      @if (form.get('logo')?.value) {
+      <div class="logo-preview">
+        <img [src]="form.get('logo')?.value" alt="Logo preview" />
+      </div>
+      }
+    </div>
+
+    <!-- Dates Field -->
+    <div class="form-section">
+      <label class="form-label">
+        {{ 'CONFERENCE.DATES' | translate }} <span class="required">*</span>
+      </label>
+      <div class="dates-input-group">
+        <input
+          pInputText
+          id="dateInput"
+          type="date"
+          class="date-input"
+          #dateInput
+        />
+        <button
+          pButton
+          type="button"
+          icon="pi pi-plus"
+          class="p-button-sm"
+          (click)="addDate(dateInput.value); dateInput.value = ''"
+          [disabled]="!dateInput.value"
+        ></button>
+      </div>
+      <div class="dates-list">
+        @for (date of dates(); track date) {
+        <div class="date-tag">
+          <span>{{ date | date: 'shortDate' }}</span>
+          <button
+            pButton
+            type="button"
+            icon="pi pi-times"
+            class="p-button-sm p-button-text p-button-danger"
+            (click)="removeDate(date)"
+          ></button>
+        </div>
+        }
+      </div>
+      @if (form.get('dates')?.invalid && form.get('dates')?.touched) {
+      <small class="error-message">
+        {{ 'VALIDATION.REQUIRED' | translate }}
+      </small>
+      }
+    </div>
+
+    <!-- Languages Field -->
+    <div class="form-section">
+      <label for="languages" class="form-label">
+        {{ 'CONFERENCE.LANGUAGES' | translate }} <span class="required">*</span>
+      </label>
+      <p-multiSelect
+        id="languages"
+        [options]="languageOptions()"
+        formControlName="languages"
+        optionLabel="label"
+        optionValue="value"
+        [showToggleAll]="false"
+        display="comma"
+        placeholder="Sélectionnez les langues"
+      ></p-multiSelect>
+      @if (form.get('languages')?.invalid && form.get('languages')?.touched) {
+      <small class="error-message">
+        {{ 'VALIDATION.REQUIRED' | translate }}
+      </small>
+      }
+    </div>
+
+    <!-- Visible Toggle -->
+    <div class="form-section">
+      <label for="visible" class="form-label">
+        {{ 'CONFERENCE.VISIBLE' | translate }}
+      </label>
+      <p-toggleButton
+        id="visible"
+        [onIcon]="'pi pi-check'"
+        [offIcon]="'pi pi-times'"
+        formControlName="visible"
+        onLabel="Visible"
+        offLabel="Caché"
+      ></p-toggleButton>
+    </div>
+
+    <!-- Organizer Emails Field -->
+    <div class="form-section">
+      <label class="form-label">
+        {{ 'CONFERENCE.ORGANIZER_EMAILS' | translate }}
+      </label>
+      <div class="email-input-group">
+        <input
+          pInputText
+          id="emailInput"
+          type="email"
+          class="email-input"
+          #emailInput
+          placeholder="adresse@email.com"
+        />
+        <button
+          pButton
+          type="button"
+          icon="pi pi-plus"
+          class="p-button-sm"
+          (click)="addOrganizerEmail(emailInput.value); emailInput.value = ''"
+          [disabled]="!emailInput.value"
+        ></button>
+      </div>
+      <div class="emails-list">
+        @for (email of organizerEmails(); track email) {
+        <div class="email-tag">
+          <span>{{ email }}</span>
+          <button
+            pButton
+            type="button"
+            icon="pi pi-times"
+            class="p-button-sm p-button-text p-button-danger"
+            (click)="removeOrganizerEmail(email)"
+          ></button>
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="form-actions">
+      <button
+        pButton
+        type="button"
+        label="Annuler"
+        class="p-button-secondary"
+        (click)="onCancel()"
+      ></button>
+      <button
+        pButton
+        type="button"
+        label="Enregistrer"
+        class="p-button-success"
+        (click)="onSave()"
+        [disabled]="form.invalid"
+      ></button>
+    </div>
+  </form>
+  }
+</div>

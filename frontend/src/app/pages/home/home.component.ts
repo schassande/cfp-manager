@@ -3,9 +3,10 @@ import { CommonModule } from '@angular/common';
 import { ConferenceService } from '../../services/conference.service';
 import { Conference } from '../../model/conference.model';
 import { TranslateModule } from '@ngx-translate/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
+import { UserSignService } from '../../services/usersign.service';
 
 @Component({
   selector: 'app-home',
@@ -17,12 +18,19 @@ import { ButtonModule } from 'primeng/button';
 })
 export class HomeComponent {
   private readonly conferenceService = inject(ConferenceService);
+  private readonly usersignService = inject(UserSignService);
+  private readonly router = inject(Router);
   private readonly _conferences = signal<Conference[] | undefined>(undefined);
 
   conferences = computed(() => this._conferences());
+  person = computed(() => this.usersignService.person());
+
 
   constructor() {
     this.conferenceService.all().subscribe((confs: Conference[]) => this._conferences.set(confs));
   }
 
+  createConference() {
+    this.router.navigate(['/conference', 'create']);
+  }
 }

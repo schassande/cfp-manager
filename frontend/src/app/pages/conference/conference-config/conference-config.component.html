@@ -1,0 +1,51 @@
+<section class="conference-config-container">
+  @if (conference(); as conf) {
+  <div class="config-header">
+    <div class="header-content">
+      @if (conf.logo) {
+      <img [src]="conf.logo" alt="logo" width="48" height="48" class="header-logo">
+      }
+      <h1>{{ conf.name }} - {{ 'CONFERENCE.CONFIGURATION' | translate }}</h1>
+    </div>
+  </div>
+
+  <p-tabs>
+    <p-tablist>
+      <p-tab [value]="0">{{'CONFERENCE.CONFIG.GENERAL' | translate}}</p-tab>
+      <p-tab [value]="1">{{'CONFERENCE.CONFIG.SESSION_TYPES' | translate}}</p-tab>
+      <p-tab [value]="2">{{'CONFERENCE.CONFIG.TRACKS' | translate}}</p-tab>
+      <p-tab [value]="3">{{'CONFERENCE.CONFIG.PLANNING_STRUCTURE' | translate}}</p-tab>
+      <p-tab [value]="4">{{'CONFERENCE.CONFIG.CONFERENCEHALL' | translate}}</p-tab>
+      <p-tab [value]="5">{{'CONFERENCE.CONFIG.VOXXRIN' | translate}}</p-tab>
+    </p-tablist>
+    <p-tabpanels>
+      <p-tabpanel [value]="0">
+        <app-conference-general-config [conference]="conf"></app-conference-general-config>
+      </p-tabpanel>      
+      <p-tabpanel [value]="1">
+      <app-conference-tracks-config [conference]="conf"></app-conference-tracks-config>
+      </p-tabpanel>      
+      <p-tabpanel [value]="2">
+        <app-conference-session-types-config [conference]="conf"></app-conference-session-types-config>
+      </p-tabpanel>      
+      <p-tabpanel [value]="3">
+        <app-conference-planning-structure-config [conference]="conf"></app-conference-planning-structure-config>
+      </p-tabpanel>      
+      <p-tabpanel [value]="4">
+        <app-conference-conferencehall-config [conference]="conf"></app-conference-conferencehall-config>
+      </p-tabpanel>      
+      <p-tabpanel [value]="5">
+        <app-conference-voxxrin-config [conference]="conf"></app-conference-voxxrin-config>
+      </p-tabpanel>      
+    </p-tabpanels>
+  </p-tabs>
+  } @else {
+  <div class="loading-container">
+    @if (loading()) {
+    <p>{{ 'CONFERENCE.LOADING' | translate }}</p>
+    } @else {
+    <p>{{ 'CONFERENCE.NOT_FOUND' | translate }}</p>
+    }
+  </div>
+  }
+</section>

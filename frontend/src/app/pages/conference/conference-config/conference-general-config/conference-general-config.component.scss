@@ -1,0 +1,136 @@
+.general-config {
+  padding: 1.5rem;
+  min-height: 300px;
+
+  .config-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 800px;
+  }
+
+  .form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .form-label {
+      font-weight: 600;
+      color: #333;
+      font-size: 0.95rem;
+
+      .required {
+        color: #e74c3c;
+        margin-left: 0.25rem;
+      }
+    }
+
+    input,
+    textarea,
+    ::ng-deep .p-multiselect,
+    ::ng-deep .p-togglebutton {
+      font-size: 0.95rem;
+    }
+
+    .error-message {
+      color: #e74c3c;
+      font-size: 0.85rem;
+      display: block;
+      margin-top: 0.25rem;
+    }
+
+    .logo-preview {
+      margin-top: 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 0.5rem;
+      display: inline-block;
+
+      img {
+        max-width: 200px;
+        max-height: 200px;
+        border-radius: 4px;
+        object-fit: cover;
+      }
+    }
+
+    .dates-input-group {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+
+      .date-input {
+        flex: 1;
+      }
+    }
+
+    .dates-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+
+      .date-tag {
+        background-color: #e8f4f8;
+        border: 1px solid #b3d9e3;
+        border-radius: 4px;
+        padding: 0.4rem 0.6rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+
+        span {
+          font-weight: 500;
+        }
+      }
+    }
+
+    .email-input-group {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+
+      .email-input {
+        flex: 1;
+      }
+    }
+
+    .emails-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+
+      .email-tag {
+        background-color: #f0e8f8;
+        border: 1px solid #d9b3e3;
+        border-radius: 4px;
+        padding: 0.4rem 0.6rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+
+        span {
+          font-weight: 500;
+          word-break: break-all;
+        }
+      }
+    }
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e0e0e0;
+  }
+}
+
+.w-full {
+  width: 100%;
+}
+

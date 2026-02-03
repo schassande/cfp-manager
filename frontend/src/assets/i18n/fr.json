@@ -2,7 +2,12 @@
   "HOME": {
     "TITLE": "Conférences à venir",
     "LOADING": "Chargement des conférences...",
-    "NO_CONFS": "Aucune conférence à venir trouvée."
+    "NO_CONFS": "Aucune conférence à venir trouvée.",
+    "CREATE_CONF": "Créer une conférence",
+    "CONF_NAME": "Nom",
+    "CONF_DATES": "Dates",
+    "CONF_LOCATION": "Lieu",
+    "VIEW": "Voir"
   },
   "MENU": {
     "SIGNUP": "Créer un compte",
@@ -81,6 +86,31 @@
   },
   "COMMON": {
     "SAVE": "Enregistrer",
-    "CANCEL": "Annuler"
+    "CANCEL": "Annuler",
+    "ERROR": "Erreur",
+    "SUCCESS": "Succès"
+  },
+  "CONFERENCE": {
+    "NAME": "Nom de la conférence",
+    "DATES": "Dates",
+    "LOCATION": "Lieu",
+    "LOGO": "Logo",
+    "LANGUAGES": "Langues",
+    "VISIBLE": "Visible",
+    "ORGANIZER_EMAILS": "E-mails des organisateurs",
+    "LOADING": "Chargement de la conférence...",
+    "NOT_FOUND": "Conférence non trouvée",
+    "CONFIGURATION": "Configuration",
+    "CONFIG": {
+      "GENERAL": "Générale",
+      "CONFERENCEHALL": "ConferenceHall",
+      "VOXXRIN": "Voxxrin",
+      "TRACKS": "Pistes",
+      "SESSION_TYPES": "Types de sessions",
+      "PLANNING_STRUCTURE": "Structure de planning",
+      "FORM_ERRORS": "Veuillez corriger les erreurs du formulaire",
+      "GENERAL_UPDATED": "Configuration générale mise à jour avec succès",
+      "UPDATE_ERROR": "Erreur lors de la mise à jour de la configuration"
+    }
   }
 }

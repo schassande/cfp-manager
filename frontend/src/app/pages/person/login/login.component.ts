@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { ButtonModule } from 'primeng/button';
 import { UserSignService } from '../../../services/usersign.service';
+import { RedirectService } from '../../../services/redirect.service';
 
 @Component({
   selector: 'app-login',
@@ -24,6 +25,7 @@ export class LoginComponent {
   private readonly usersignService = inject(UserSignService);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
+  private readonly redirectService = inject(RedirectService);
 
   constructor() {
     this.form = this.fb.group({
@@ -46,8 +48,11 @@ export class LoginComponent {
           const result = await this.usersignService.loginWithEmail(formValue.email, formValue.password);
         
         if (result) {
-          // Navigate to home
-          await this.router.navigate(['/']);
+          // Navigate to stored returnUrl if present and safe, otherwise to home
+          const returnUrl = this.redirectService.get();
+          const target = returnUrl && returnUrl.startsWith('/') ? returnUrl : '/';
+          this.redirectService.clear();
+          await this.router.navigateByUrl(target);
         } else {
           this.error.set('User not found in database');
         }
@@ -67,8 +72,11 @@ export class LoginComponent {
     try {
       const result = await this.usersignService.loginWithGoogle();
       if (result) {
-        // Navigate to home page
-        await this.router.navigate(['/']);
+        // Navigate to stored returnUrl if present and safe, otherwise to home
+        const returnUrl = this.redirectService.get();
+        const target = returnUrl && returnUrl.startsWith('/') ? returnUrl : '/';
+        this.redirectService.clear();
+        await this.router.navigateByUrl(target);
       } else {
         this.error.set('User not found in database');
       }

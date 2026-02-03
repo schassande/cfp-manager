@@ -2,7 +2,12 @@
   "HOME": {
     "TITLE": "Upcoming Conferences",
     "LOADING": "Loading conferences...",
-    "NO_CONFS": "No upcoming conferences found."
+    "NO_CONFS": "No upcoming conferences found.",
+    "CREATE_CONF": "Create Conference",
+    "CONF_NAME": "Name",
+    "CONF_DATES": "Dates",
+    "CONF_LOCATION": "Location",
+    "VIEW": "View"
   },
   "MENU": {
     "SIGNUP": "Sign up",
@@ -81,7 +86,32 @@
   },
   "COMMON": {
     "SAVE": "Save",
-    "CANCEL": "Cancel"
+    "CANCEL": "Cancel",
+    "ERROR": "Error",
+    "SUCCESS": "Success"
+  },
+  "CONFERENCE": {
+    "NAME": "Conference Name",
+    "DATES": "Dates",
+    "LOCATION": "Location",
+    "LOGO": "Logo",
+    "LANGUAGES": "Languages",
+    "VISIBLE": "Visible",
+    "ORGANIZER_EMAILS": "Organizer Emails",
+    "LOADING": "Loading conference...",
+    "NOT_FOUND": "Conference not found",
+    "CONFIGURATION": "Configuration",
+    "CONFIG": {
+      "GENERAL": "General",
+      "CONFERENCEHALL": "ConferenceHall",
+      "VOXXRIN": "Voxxrin",
+      "TRACKS": "Tracks",
+      "SESSION_TYPES": "Session Types",
+      "PLANNING_STRUCTURE": "Planning Structure",
+      "FORM_ERRORS": "Please correct the form errors",
+      "GENERAL_UPDATED": "General configuration updated successfully",
+      "UPDATE_ERROR": "Error updating configuration"
+    }
   }
 }
 
