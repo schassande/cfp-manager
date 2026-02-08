@@ -1,13 +1,11 @@
 <div class="tracks-config">
-  <p-toast></p-toast>
 
   <div class="config-header">
-    <h2>{{ 'CONFERENCE.CONFIG.TRACKS.TITLE' | translate }}</h2>
+    <p>{{ 'CONFERENCE.CONFIG.TRACKS.DESCRIPTION' | translate }}</p>
     @if (!isEditing()) {
     <button pButton type="button" icon="pi pi-plus" (click)="onAddNew()" class="p-button-success" [label]="'CONFERENCE.CONFIG.TRACKS.ADD_TRACK' | translate"></button>
     }
   </div>
-  <p>{{ 'CONFERENCE.CONFIG.TRACKS.DESCRIPTION' | translate }}</p>
 
   <!-- Form for adding/editing track -->
   @if (currentForm(); as form) {

@@ -6,8 +6,6 @@ import { PersistentData, WithId } from "./persistant.model";
 export interface Conference extends PersistentData {
   /** Name of the conference */
   name: string;
-  /** List of dates (ISO 8601 strings) */
-  dates: string[];
   /** Location of the conference */
   location: string;
   /** URL to the conference logo */
@@ -26,7 +24,7 @@ export interface Conference extends PersistentData {
   /** List of session types */
   sessionTypes: SessionType[];
   /** Planning structure: list of days */
-  planning: Day[];
+  days: Day[];
   /** CFP (Call for Papers) information */
   cfp: {
     startDate: string; // ISO 8601
@@ -35,8 +33,6 @@ export interface Conference extends PersistentData {
   };
   /** configuration of the external systems (conferencehall, voxxrin) */
   externalSystemConfigs: ExternalSystemConfig[];
-  /** Planning structure skeleton, one element per day of the conference */
-  planningStructure: DayPlanningStructure[]
 }
 
 /** Track of the conference (e.g., a theme or topic). */
@@ -66,27 +62,23 @@ export interface SessionType extends WithId {
 }
 
 
-/** Planning structure for a specific day. */
-export interface  DayPlanningStructure {
-  dayId: string;
-  slots: PlanningSlot[];
-}
-
 /** A day in the conference schedule. */
 export interface Day extends WithId {
   dayIndex: number;
   date: string; // ISO 8601
-  name: string;
   slots: Slot[];
+  beginTime: string; // ISO 8601 time '09:00'
+  endTime: string; // ISO 8601 time '18:00'
 }
 
 /** A slot in the schedule. */
 export interface Slot extends WithId {
-  startTime: string; // ISO 8601 time
-  endTime: string;   // ISO 8601 time
+  startTime: string; // ISO 8601 time '14:00'
+  endTime: string;   // ISO 8601 time '14:45'
   duration: number;  // in minutes
-  slotType: string;
-  sessionType: string;
+  slotTypeId: string;
+  roomId: string;
+  sessionTypeId: string;
 }
 
 /** Conference Hall integration info. */
@@ -96,13 +88,4 @@ export interface ExternalSystemConfig {
   url: string;
   id: string;
   token: string;
-}
-
-
-/** Planning skeleton: a list of slots. */
-export interface PlanningSlot extends WithId {
-  startTime: string; // ISO 8601 time
-  duration: number;  // in minutes
-  endTime: string;   // ISO 8601 time
-  slotType: string;
 }

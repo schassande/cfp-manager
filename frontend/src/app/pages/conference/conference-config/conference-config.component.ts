@@ -62,7 +62,7 @@ export class ConferenceConfigComponent implements OnInit {
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
-    console.log('ConferenceConfigComponent initialized with id:', id);
+    // console.log('ConferenceConfigComponent initialized with id:', id);
     if (id) {
       this.conferenceService.byId(id).subscribe({
         next: (conf: Conference | undefined) => {
@@ -82,7 +82,7 @@ export class ConferenceConfigComponent implements OnInit {
         id: '',
         lastUpdated: new Date().getTime().toString(),
         name: `New Conference ${rand4}`,
-        dates: [],
+        days: [],
         location: '',
         logo: '',
         languages: [lang.toUpperCase()],
@@ -92,10 +92,8 @@ export class ConferenceConfigComponent implements OnInit {
         tracks: [],
         rooms: [],
         sessionTypes: [],
-        planning: [],
         cfp: { startDate: '', endDate: '', status: 'closed' },
-        externalSystemConfigs: [],
-        planningStructure: [],
+        externalSystemConfigs: []
       };
 
       this.conferenceService.save(defaultConf).subscribe({
@@ -116,8 +114,8 @@ export class ConferenceConfigComponent implements OnInit {
     }
   }
 
-  onGeneralConfigSave(updatedConference: Conference) {
-    this.conferenceService.save(updatedConference).subscribe({
+  onSave() {
+    this.conferenceService.save(this.conference()!).subscribe({
       next: (saved) => {
         this._conference.set(saved);
         this.messageService.add({
@@ -137,7 +135,7 @@ export class ConferenceConfigComponent implements OnInit {
     });
   }
 
-  onGeneralConfigCancel() {
+  onCancel() {
     // Just close the form, no action needed
   }
 

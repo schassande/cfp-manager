@@ -44,7 +44,6 @@ export class ConferenceGeneralConfigComponent implements OnInit {
 
   // Private injects
   private readonly fb = inject(FormBuilder);
-  private readonly conferenceService = inject(ConferenceService);
   private readonly messageService = inject(MessageService);
   private readonly translateService = inject(TranslateService);
   private readonly cdr = inject(ChangeDetectorRef);
@@ -69,7 +68,7 @@ export class ConferenceGeneralConfigComponent implements OnInit {
   readonly dates = computed(() => {
     this.formValueTrigger();
     const formDates = this.currentForm()?.get('dates')?.value || [];
-    console.log('Current dates in form:', formDates);
+    // console.log('Current dates in form:', formDates);
     return formDates;
   });
   readonly sortedDates = computed(() => {
@@ -91,7 +90,6 @@ export class ConferenceGeneralConfigComponent implements OnInit {
     const conf = this.conference();
     const formGroup = this.fb.group({
       name: [conf.name, [Validators.required, Validators.minLength(3)]],
-      dates: [conf.dates, [Validators.required]],
       location: [conf.location, [Validators.required]],
       logo: [conf.logo, []],
       languages: [conf.languages, [Validators.required]],
@@ -114,7 +112,7 @@ export class ConferenceGeneralConfigComponent implements OnInit {
 
     const updatedConference: Conference = {
       ...this.conference(),
-      ...currentForm.value,
+      ...currentForm.value
     };
 
     this.saveRequested.emit(updatedConference);

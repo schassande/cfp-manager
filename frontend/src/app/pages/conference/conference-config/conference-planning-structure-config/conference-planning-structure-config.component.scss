@@ -1,4 +1,42 @@
 .planning-structure-config {
-  padding: 1.5rem;
   min-height: 300px;
+  .config-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  .nav-bar,  .nav-bar-section {
+    display: flex;
+    align-items: center;
+    vertical-align: bottom;
+  }
+  .nav-bar {
+    padding-bottom: 10px;
+    justify-content: center;
+  }
+  .nav-bar-center {
+    margin: 0 20px;
+  }
+  .nav-bar-item {
+    margin: 0 3px;
+  }
+  .nav-bar-section button {
+      cursor: pointer;
+  }
+  .date-picker {
+    font-weight: bold;
+    margin-left: 0;
+  }
+  .p-datepicker {
+    border: 0px !important;
+    box-shadow: none !important;
+  }
+  .delete-day {
+    margin-right: 0;
+  }
 }
+
+  :host ::ng-deep .p-datepicker input {
+    text-align: center;
+  }

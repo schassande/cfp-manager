@@ -34,7 +34,7 @@ export class UserSignService {
           const url = this.redirectService.get(); 
           if (url && url.startsWith('/')) {
             this.redirectService.clear();
-            console.log('Redirecting to URL:', url);
+            //console.log('Redirecting to URL:', url);
             this.router.navigateByUrl(url || '/');
           }
         }

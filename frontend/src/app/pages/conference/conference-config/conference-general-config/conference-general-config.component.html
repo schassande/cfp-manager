@@ -1,6 +1,4 @@
 <div class="general-config">
-  <p-toast></p-toast>
-
   @if (currentForm(); as form) {
   <form [formGroup]="form" class="config-form">
     <!-- Name Field -->
@@ -60,59 +58,6 @@
       <div class="logo-preview">
         <img [src]="form.get('logo')?.value" alt="Logo preview" />
       </div>
-      }
-    </div>
-
-    <!-- Dates Field -->
-    <div class="form-section">
-      <label class="form-label">
-        {{ 'CONFERENCE.CONFIG.GENERAL.DATES' | translate }} <span class="required">*</span>
-        @if (dates()?.length > 0) {
-        <span class="dates-count">({{ dates()?.length }})</span>
-        }
-      </label>
-      <div class="dates-input-group">
-        <input
-          pInputText
-          id="dateInput"
-          type="date"
-          class="date-input"
-          #dateInput
-        />
-        <button
-          pButton
-          type="button"
-          icon="pi pi-plus"
-          class="p-button-sm"
-          (click)="onAddDate(dateInput)"
-          [disabled]="!dateInput.value"
-        ></button>
-      </div>
-      @if (dates()?.length > 0) {
-      <div class="dates-display-section">
-        <div class="dates-summary">
-          {{ 'CONFERENCE.CONFIG.GENERAL.DATES_ADDED' | translate }}
-        </div>
-        <ol class="dates-list">
-          @for (date of sortedDates(); track date) {
-          <li class="date-item">
-            <span class="date-value">{{ date | date: 'fullDate' }}</span>
-            <button
-              pButton
-              type="button"
-              icon="pi pi-times"
-              class="p-button-sm p-button-text p-button-danger"
-              (click)="removeDate(date)"
-              [title]="'COMMON.REMOVE' | translate"
-            ></button>
-          </li>
-          }
-        </ol>
-      </div>
-      } @else if (form.get('dates')?.invalid && form.get('dates')?.touched) {
-      <small class="error-message">
-        {{ 'VALIDATION.REQUIRED' | translate }}
-      </small>
       }
     </div>
 

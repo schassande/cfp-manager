@@ -1,0 +1,91 @@
+.form-panel {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+
+  .form-section {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    .form-label {
+      font-weight: 600;
+      color: #333;
+      font-size: 0.95rem;
+
+      .required {
+        color: #e74c3c;
+        margin-left: 0.25rem;
+      }
+    }
+    .p-datepicker {
+      border: 0px !important;
+      box-shadow: none !important;
+    }
+  }
+}
+:host ::ng-deep .time-picker-small {
+  width: 90px;
+}
+
+.no-slots {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  margin-top: 2rem;
+}
+
+.planner {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 0;
+  height: 720px;
+  font-family: system-ui, Arial, sans-serif;
+  border: 1px solid #cccccc;
+
+}
+
+/* timeline */
+.timeline-col {
+  padding: 8px 6px;
+  border-right: 1px solid #eaeaea;
+  background: #fafafa;
+  position: relative;
+}
+.timeline-inner { position: relative; height: 100%; }
+.tick { position: absolute; transform: translateY(-50%); font-size: 12px; color: #444; }
+.tick-label { display:inline-block; }
+
+/* main area */
+.main-area { display:flex; flex-direction:column; min-width:0; }
+
+.rooms-header { display: grid; align-items: center; border-bottom: 1px solid #ddd; background: #fff; }
+.room-header-cell { padding: 10px 8px; text-align: center; font-weight: 600; border-left: 1px solid #f0f0f0; }
+
+/* rooms grid */
+.rooms-grid { display: grid; flex: 1 1 auto; min-height: 0; }
+.room-column { position: relative; border-left: 1px solid #f6f6f6; overflow: visible; min-height: 0; }
+
+/* time-track */
+.time-track { position: relative; height: 100%; }
+
+/* slot */
+.slot {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  border-radius: 6px;
+  padding: 6px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+  color: #111;
+  box-sizing: border-box;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--slot-bg, #cfe9ff);
+}
+.slot:focus { outline: 2px solid #1976d2; }
+.slot-title { font-weight: 600; font-size: 13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.slot-time { font-size: 11px; opacity: 0.9; margin-top: 4px; }

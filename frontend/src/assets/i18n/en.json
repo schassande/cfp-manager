@@ -176,7 +176,17 @@
       "PLANNING_STRUCTURE": {
         "TAB": "Planning Structure",
         "TITLE": "Planning Structure Configuration",
-        "DESCRIPTION": "Manage the planning structure for your conference here."
+        "DESCRIPTION": "Manage the planning structure for your conference here.",
+        "NO_DAYS": "No days defined",
+        "DAY": "Day {{index}}",
+        "ADD_FIRST_DAY": "Add First Day",
+        "ADD_DAY_BEFORE": "Add Day Before",
+        "ADD_DAY_AFTER": "Add Day After",
+        "REMOVE_DAY": "Remove This Day",
+        "CONFIRM_REMOVE_DAY": "Are you sure you want to remove this day? All slots for this day will also be removed.",
+        "DAY_DATE_CONFLICT": "A day has already been defined for this date.",
+        "BEGIN_DAY_TIME": "Day begin",
+        "END_DAY_TIME": "Day end"
       },
       "SESSION_SOURCE": {
         "TAB": "Session Source",

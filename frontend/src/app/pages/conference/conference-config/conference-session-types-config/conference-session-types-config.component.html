@@ -1,14 +1,11 @@
 <div class="session-types-config">
-  <p-toast></p-toast>
-
   <div class="config-header">
-    <h2>{{ 'CONFERENCE.CONFIG.SESSION_TYPES.TITLE' | translate }}</h2>
+    <p>{{ 'CONFERENCE.CONFIG.SESSION_TYPES.DESCRIPTION' | translate }}</p>
     
     @if (!isEditing()) {
     <button pButton type="button" icon="pi pi-plus" (click)="onAddNew()" class="p-button-success" [label]="'CONFERENCE.CONFIG.SESSION_TYPES.ADD_SESSION_TYPE' | translate"></button>
     }
   </div>
-  <p>{{ 'CONFERENCE.CONFIG.SESSION_TYPES.DESCRIPTION' | translate }}</p>
 
   <!-- Form for adding/editing session type -->
   @if (currentForm(); as form) {

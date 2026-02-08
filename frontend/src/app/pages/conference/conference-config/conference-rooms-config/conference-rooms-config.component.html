@@ -1,13 +1,10 @@
 <div class="rooms-config">
-  <p-toast></p-toast>
-
   <div class="config-header">
-    <h2>{{ 'CONFERENCE.CONFIG.ROOMS.TITLE' | translate }}</h2>
+    <p>{{ 'CONFERENCE.CONFIG.ROOMS.DESCRIPTION' | translate }}</p>
     @if (!isEditing()) {
     <button pButton type="button" icon="pi pi-plus" (click)="onAddNew()" class="p-button-success" [label]="'CONFERENCE.CONFIG.ROOMS.ADD_ROOM' | translate"></button>
     }
   </div>
-  <p>{{ 'CONFERENCE.CONFIG.ROOMS.DESCRIPTION' | translate }}</p>
 
   <!-- Form for adding/editing room -->
   @if (currentForm(); as form) {

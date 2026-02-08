@@ -1,42 +1,163 @@
-import { Component, input, ChangeDetectionStrategy, computed, signal } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy, computed, signal, OnInit, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Conference } from '../../../../model/conference.model';
-import { TranslateModule } from '@ngx-translate/core';
+import { Conference, Day } from '../../../../model/conference.model';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { StepperModule } from 'primeng/stepper';
+import { ButtonModule } from 'primeng/button';
+import { MessageService } from 'primeng/api';
+import { DatePickerModule } from 'primeng/datepicker';
+import { FormsModule } from '@angular/forms';
+import { DayStructure } from './day-structure/day-structure';
 
 @Component({
   selector: 'app-conference-planning-structure-config',
-  imports: [CommonModule, TranslateModule],
-  template: `
-    <div class="planning-structure-config">
-      <p>{{ 'CONFERENCE.CONFIG.PLANNING_STRUCTURE.TITLE' | translate }} - {{ conference().name }}</p>
-    </div>
-  `,
+  imports: [ButtonModule, 
+    CommonModule,
+    DatePickerModule,
+    FormsModule,
+    StepperModule,
+    TranslateModule,
+    DayStructure],
+  templateUrl: './conference-planning-structure-config.component.html',
   styleUrls: ['./conference-planning-structure-config.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ConferencePlanningStructureConfigComponent {
+export class ConferencePlanningStructureConfigComponent implements OnInit {
+  private readonly translateService = inject(TranslateService);
+  private readonly messageService = inject(MessageService);
+
   readonly conference = input.required<Conference>();
-  /*
-  days = computed(() => this.conference().planning || []);
-  day = signal(this.days()[0]);
-  
-  addSlot() {
+  days = signal<Day[]>([]);
+  currentDayIdx = signal(-1); // zero based index
+  currentDay = computed(() => this.days().length > 0 
+    ? this.days()[this.currentDayIdx()] 
+    : undefined);
+  hasPreviousDay = computed(() => this.currentDayIdx() > 0);
+  hasNextDay = computed(() => this.currentDayIdx()>=0 && this.currentDayIdx() < (this.days().length - 1));  
+  currentDayDate: Date|undefined = undefined;
+  disabledDates = computed(() => {
+    if (this.days().length === 0) {
+      return [];
+    }
+    // Disable all dates that are already used by other days, except the current day
+    const currentDate = this.currentDay()?.date;
+    return this.days().filter(d => d.date !== currentDate).map(d => this.stringToDate(d.date));
+  });
+
+  constructor() {
+    effect(() => {
+      const currentDay = this.currentDay();
+      this.currentDayDate = currentDay ? this.stringToDate(currentDay.date) : undefined;
+    });    
   }
-  previousDay() {
-    const currentIndex = this.days().indexOf(this.day()); 
-    if (currentIndex > 0) {
-      this.day.set(this.days()[currentIndex - 1]);
-    } else {
-      this.day.set(this.days()[this.days().length - 1]);
+  ngOnInit(): void {
+    // Initialize current day based on conference planning
+    this.days.set(this.conference().days || []);
+    if (this.days().length > 0) {
+      this.currentDayIdx.set(0); // set to first day index
     }
   }
-  nextDay() {
-    const currentIndex = this.days().indexOf(this.day());
-    if (currentIndex < this.days().length - 1) {
-      this.day.set(this.days()[currentIndex + 1]);
-    } else {
-      this.day.set(this.days()[0]);
+  goToPreviousDay() {
+    if (this.hasPreviousDay()) {
+      this.currentDayIdx.update(idx => idx - 1);
     }
   }
-    */
+  goToNextDay() {
+    if (this.hasNextDay()) {
+      this.currentDayIdx.update(idx => idx + 1);
+    }
+  }
+  addFirstDay() {
+    this.addDay(new Date());
+  }
+  addDayAfterCurrent() {
+    const newDate = new Date(this.currentDay()!.date);
+    newDate.setDate(newDate.getDate() + 1);
+    while (this.days().some(d => d.date === this.dateToString(newDate))) {
+      newDate.setDate(newDate.getDate() + 1);
+    }
+    this.addDay(newDate);
+  }
+  addDayBeforeCurrent() {
+    const newDate = new Date(this.currentDay()!.date);
+    newDate.setDate(newDate.getDate() - 1);
+    while (this.days().some(d => d.date === this.dateToString(newDate))) {
+      newDate.setDate(newDate.getDate() - 1);
+    }
+    this.addDay(newDate);
+  }
+  private addDay(newDate: Date) {
+    const newDay: Day = {
+      id: `day-${Date.now()}`,
+      dayIndex: this.currentDayIdx() - 1,
+      date: this.dateToString(newDate),
+      beginTime: '09:00',
+      endTime: '18:00',
+      slots: [] 
+    };
+    console.log('Adding new day with date:', newDay.date);
+    this.days.update(days => {
+      const newDays = [...days];
+      newDays.splice(this.currentDayIdx(), 0, newDay);
+      newDays.sort((a, b) => this.stringToDate(a.date).getTime() - this.stringToDate(b.date).getTime());
+      this.updateIndexes(newDays);
+      console.log('New list of days:', JSON.stringify(newDays, null, 2));
+      this.conference().days = newDays;
+      return newDays;
+    });
+    // update current day index to the new day
+    this.currentDayIdx.set(this.days().findIndex(d => d.id === newDay.id));
+    console.log('Conference:', JSON.stringify(this.conference(), null, 2));
+  }
+  changeCurrentDayDate(newDate: any) {
+    const newDateStr = this.dateToString(newDate)
+    console.log('Changing current day date to:', newDate, newDateStr);
+    if (!this.days().some(d => d.date === newDateStr)) {
+      // date not already used, we can update current day
+      this.days.update(days => {
+        const newDays = [...days];
+        newDays[this.currentDayIdx()].date = newDateStr;
+        newDays.sort((a, b) => this.stringToDate(a.date).getTime() - this.stringToDate(b.date).getTime());
+        this.updateIndexes(newDays);
+        this.conference().days = newDays;
+        return newDays;
+      });
+      // update current day index to the new day
+      this.currentDayIdx.set(this.days().findIndex(d => d.date === newDateStr));
+    } else {
+      // date already used, show error message
+      this.messageService.add({
+        severity: 'error',
+        summary: this.translateService.instant('COMMON.ERROR'),
+        detail: this.translateService.instant('CONFERENCE.CONFIG.PLANNING_STRUCTURE.DAY_DATE_CONFLICT'),
+      }); 
+    }
+  }
+  removeCurrentDay() {
+    if (confirm(this.translateService.instant('CONFERENCE.CONFIG.PLANNING_STRUCTURE.CONFIRM_REMOVE_DAY'))) {
+      this.days.update(days => {
+        const newDays = [...days];  
+        newDays.splice(this.currentDayIdx(), 1);
+        this.updateIndexes(newDays);
+        this.conference().days = newDays;
+        return newDays;
+      });
+      // update current day index to the new day
+      this.currentDayIdx.update(idx => Math.min(idx, this.days().length - 1));
+    } 
+  }
+  private updateIndexes(days: Day[]) {
+    days.forEach((day, index) => day.dayIndex = index);
+  }
+
+  dateToString(date: Date): string {
+    const str = date.toISOString().split('T')[0];
+    console.log('Converted date to string:', date, '=>',str);
+    return str;
+  }
+  stringToDate(dateStr: string): Date {
+    const date = new Date(dateStr); 
+    console.log('Converting string to date:', dateStr,'=>', date);
+    return date;
+  }
 }

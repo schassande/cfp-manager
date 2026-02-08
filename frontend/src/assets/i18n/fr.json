@@ -174,7 +174,17 @@
       "PLANNING_STRUCTURE": {
         "TAB": "Structure de planification",
         "TITLE": "Configuration de la structure de planification",
-        "DESCRIPTION": "Gérez la structure de planification pour votre conférence ici."
+        "DESCRIPTION": "Gérez la structure de planification pour votre conférence ici.",
+        "NO_DAYS": "Aucun jour défini",
+        "DAY": "Jour {{index}}",
+        "ADD_FIRST_DAY": "Ajouter le premier jour",
+        "ADD_DAY_BEFORE": "Ajouter un jour avant",
+        "ADD_DAY_AFTER": "Ajouter un jour après",
+        "REMOVE_DAY": "Supprimer ce jour",
+        "CONFIRM_REMOVE_DAY": "Êtes-vous sûr de vouloir supprimer ce jour ? Toutes les slots planifiés pour ce jour seront également supprimés.",
+        "DAY_DATE_CONFLICT": "Une autre journée a déjà été définie à cette date.",
+        "BEGIN_DAY_TIME": "Début du jour",
+        "END_DAY_TIME": "Fin du jour"
       },
       "SESSION_SOURCE": {
         "TAB": "Session Source",
