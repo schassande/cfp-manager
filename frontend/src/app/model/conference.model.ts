@@ -48,6 +48,7 @@ export interface Room extends WithId {
   name: string;
   capacity: number;
   plan: string;
+  isSessionRoom: boolean;
 }
 
 /** Type of session (e.g., keynote, workshop). */
@@ -79,6 +80,7 @@ export interface Slot extends WithId {
   duration: number;  // in minutes
   slotTypeId: string;
   roomId: string;
+  overflowRoomIds: string[];
   sessionTypeId: string;
 }
 

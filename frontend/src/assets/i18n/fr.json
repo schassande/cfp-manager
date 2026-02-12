@@ -159,6 +159,7 @@
         "NAME": "Nom",
         "CAPACITY": "Capacité",
         "PLAN": "Plan",
+        "SESSION": "Salle de session",
         "DESCRIPTION": "Gérez les salles de votre conférence ici.",
         "ADD_ROOM": "Ajouter une salle",
         "EDIT":"Modifier",
@@ -193,10 +194,12 @@
         "DURATION" : "Durée (min)",
         "END_TIME": "Heure de fin",
         "ROOM": "Salle",
+        "OVERFLOW_ROOM": "Salles de rediffusion",
         "SLOT_TYPE": "Type de créneau",
         "SESSION_TYPE": "Type de session",
         "SAVE": "Enregistrer le créneau",
-        "CANCEL": "Annuler"
+        "CANCEL": "Annuler",
+        "DELETE": "Delete"
       },
       "SESSION_SOURCE": {
         "TAB": "Session Source",

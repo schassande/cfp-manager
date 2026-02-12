@@ -62,6 +62,20 @@
         />
       </div>
 
+      <!-- Visible Toggle -->
+      <div class="form-section">
+        <label for="isSessionRoom" class="form-label">
+          {{ 'CONFERENCE.CONFIG.GENERAL.SESSION' | translate }}
+        </label>
+        <p-toggleButton
+          id="isSessionRoom"
+          [onIcon]="'pi pi-check'"
+          [offIcon]="'pi pi-times'"
+          formControlName="isSessionRoom"
+          onLabel="Yes"
+          offLabel="No"
+        ></p-toggleButton>
+      </div>
       <!-- Action Buttons -->
       <div class="form-actions">
         <button

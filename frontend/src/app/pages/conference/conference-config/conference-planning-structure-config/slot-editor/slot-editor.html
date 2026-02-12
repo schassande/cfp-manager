@@ -27,6 +27,11 @@
     </div>
 
     <div class="form-section">
+      <label for="overflowRoomIds" class="form-label">{{ 'CONFERENCE.CONFIG.SLOT_EDITOR.OVERFLOW_ROOM' | translate }}</label>
+      <p-multiselect [options]="rooms()" formControlName="overflowRoomIds" optionLabel="name" optionValue="id" optionLabel="name" class="w-full md:w-56" />
+    </div>
+
+    <div class="form-section">
       <label for="startTime" class="form-label">{{ 'CONFERENCE.CONFIG.SLOT_EDITOR.START_TIME' | translate }}</label>
       <p-datepicker formControlName="startTime" class="time-picker-small" 
         stepMinute="5" autofocus="false"
@@ -59,6 +64,7 @@
     </div>
 
     <div class="form-actions">
+      <p-button type="button" (click)="onRemove()" severity="danger" class="btn secondary">{{ 'CONFERENCE.CONFIG.SLOT_EDITOR.DELETE' | translate }}</p-button>
       <p-button type="button" (click)="onCancel()" severity="info" class="btn secondary">{{ 'CONFERENCE.CONFIG.SLOT_EDITOR.CANCEL' | translate }}</p-button>
       <p-button type="submit" (click)="onSave()" severity="success" class="btn primary" [disabled]="form.invalid">{{ 'CONFERENCE.CONFIG.SLOT_EDITOR.SAVE' | translate }}</p-button>
     </div>

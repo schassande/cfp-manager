@@ -161,6 +161,7 @@
         "NAME": "Name",
         "CAPACITY": "Capacity",
         "PLAN": "Plan",
+        "SESSION": "Is session room",
         "DESCRIPTION": "Manage the rooms for your conference here.",
         "ADD_ROOM": "Add Room",
         "EDIT":"Edit",
@@ -195,10 +196,12 @@
         "DURATION" : "Duration (min)",
         "END_TIME": "End Time",
         "ROOM": "Room",
+        "OVERFLOW_ROOM": "Overflow rooms",
         "SLOT_TYPE": "Slot Type",
         "SESSION_TYPE": "Session Type",
         "SAVE": "Save Slot",
-        "CANCEL": "Cancel"
+        "CANCEL": "Cancel",
+        "DELETE": "Delete"
       },
       "SESSION_SOURCE": {
         "TAB": "Session Source",

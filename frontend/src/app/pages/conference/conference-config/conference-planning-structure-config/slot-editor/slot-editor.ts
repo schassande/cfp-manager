@@ -10,6 +10,7 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { ConferenceService } from '../../../../../services/conference.service';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 @Component({
   selector: 'app-slot-editor',
@@ -20,6 +21,7 @@ import { InputTextModule } from 'primeng/inputtext';
     DatePickerModule,
     InputNumberModule,
     InputTextModule,
+    MultiSelectModule,
     ReactiveFormsModule,
     SelectModule,
     TranslateModule
@@ -37,6 +39,7 @@ export class SlotEditorComponent implements OnInit {
   
   save = output<Slot>();
   cancel = output<void>();
+  remove = output<string|undefined>();
 
   slotEditorVisible = signal(false);
 
@@ -62,6 +65,7 @@ export class SlotEditorComponent implements OnInit {
       endTime: [slot?.endTime || '', [Validators.required]],
       duration: [slot?.duration || 30, [Validators.required, Validators.min(1)]],
       roomId: [slot?.roomId || '', []],
+      overflowRoomIds: [slot?.overflowRoomIds || [], []],
       slotTypeId: [slot?.slotTypeId || '', []],
       sessionTypeId: [slot?.sessionTypeId || '', []]
     });
@@ -115,8 +119,12 @@ export class SlotEditorComponent implements OnInit {
       ...this.form()!.value, 
       id: this.slot().id
     };
+    console.log(saved);
     this.slot.set(saved);
     this.save.emit(saved);
+  }
+  onRemove() {
+    this.remove.emit(this.slot() ? this.slot().id : undefined)
   }
   onSlotTypeChanged() {
     this.computeSessionTypeEnabled(this.form()?.get('slotTypeId')?.value);

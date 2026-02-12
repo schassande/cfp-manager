@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, output, model, OnInit, signal, Signal } from '@angular/core';
+import { Component, computed, inject, input, output, model, OnInit, signal, Signal, HostBinding } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Day, Room, SessionType, Slot } from '../../../../../model/conference.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -50,17 +50,21 @@ export class DayStructure implements OnInit {
   private dayEndMs   = computed(() => this.computeTimeOfDay(this.dayEndIso())   );
   totalMinutes = computed(() => Math.max(1, (this.dayEndMs() - this.dayStartMs()) / 60000));
 
+  private readonly tickStep = 30;
+  private readonly tickMainRatio = 2;
+
   // ticks (every 60 minutes by default)
   ticks = computed(() => {
-    const start = new Date(this.dayStartIso());
-    const end = new Date(this.dayEndIso());
-    const stepMin = 60;
-    const results: { label: string; topPercent: number }[] = [];
-    const totalMins = (end.getTime() - start.getTime()) / 60000 || 1;
-    for (let t = new Date(start.getTime()); t <= end; t = new Date(t.getTime() + stepMin * 60000)) {
-      const minsFromStart = (t.getTime() - start.getTime()) / 60000;
-      const topPercent = (minsFromStart / totalMins) * 100;
-      results.push({ label: this.conferenceService.formatHour(t), topPercent });
+    const start = this.dayStartMs();
+    const end = this.dayEndMs();
+    const results: { label: string; main: boolean }[] = [];
+    let idx = 0;
+    for (let t = start; t <= end; t = t + this.tickStep * 60000) {
+      results.push({ 
+        label: this.conferenceService.formatHour(new Date(t)), 
+        main: idx % this.tickMainRatio === 0 
+      });
+      idx++;
       if (results.length > 500) break;
     }
     return results;
@@ -82,23 +86,20 @@ export class DayStructure implements OnInit {
 
   editedSlot = signal<Slot | undefined>(undefined);
   slotEditorVisible = signal<boolean>(false);
+  private lastEditedSlotId: string|undefined;
 
   // Convertit un slot => top% & height% sur la base dayStart/dayEnd
   getSlotPosition(s: Slot) {
-    const dayStart = this.dayStartMs();
-    const totalMins = Math.max(1, this.totalMinutes());
-
-    const sStartMs = new Date(s.startTime).getTime();
-    const sEndMs = new Date(s.endTime).getTime();
-
-    const topMins = Math.max(0, (sStartMs - dayStart) / 60000);
-    // preferer duration si cohérent, sinon calculer
-    const rawDuration = s.duration && s.duration > 0 ? s.duration : Math.max(1, (sEndMs - sStartMs) / 60000);
-    const heightMins = Math.min(rawDuration, Math.max(0, totalMins - topMins));
-
-    const top = (topMins / totalMins) * 100;
-    const height = (heightMins / totalMins) * 100;
-    return { top, height };
+    const dayStart = this.conferenceService.timeStringToDate(this.beginTime).getTime();
+    const slotStart = this.conferenceService.timeStringToDate(s.startTime).getTime();
+    const delta = (slotStart - dayStart) / 60000;
+    // console.log('dayStart',dayStart, 'slotStart', slotStart, 'delta', delta, "min");
+    const startTick = delta / this.tickStep;
+    const durationtick = s.duration / this.tickStep;
+    const roomColIdx = this.rooms().findIndex(room => room.id === s.roomId);
+    const position = { startTick, durationtick, roomColIdx };
+    // console.log(position);
+    return position;
   }
 
   ngOnInit() {
@@ -125,9 +126,22 @@ export class DayStructure implements OnInit {
   onSlotEdit(s: Slot) { 
     this.editedSlot.set({...s});
     this.slotEditorVisible.set(true);
+    this.lastEditedSlotId = s.id;
   }
 
   onSlotAdd() {
+    console.log('onSlotAdd: lastEditedSlotId=', this.lastEditedSlotId);
+    if (this.lastEditedSlotId) {
+      const lastEditedSlot = this.day().slots.find(s => s.id === this.lastEditedSlotId);
+      console.log('onSlotAdd: lastEditedSlot=', lastEditedSlot);
+      if (lastEditedSlot) {
+        this.createSlotFromPrevious(lastEditedSlot);
+        return;
+      } else {
+        this.lastEditedSlotId = undefined;
+      }
+    }
+
     const slot: Slot = {
       id: '',
       startTime: this.beginTime, // beginning of the day
@@ -135,7 +149,8 @@ export class DayStructure implements OnInit {
       duration: 30,
       roomId: this.rooms().length ? this.rooms()[0].id : '',
       slotTypeId: this.slotTypes().length ? this.slotTypes()[0].id : '',
-      sessionTypeId: this.slotTypes().length && this.slotTypes()[0].isSession ? this.sessionTypes()[0].id : ''
+      sessionTypeId: this.slotTypes().length && this.slotTypes()[0].isSession ? this.sessionTypes()[0].id : '',
+      overflowRoomIds: []
     };
     this.editedSlot.set(slot);
     this.slotEditorVisible.set(true);
@@ -149,7 +164,8 @@ export class DayStructure implements OnInit {
       duration: prevSlot.duration,
       roomId: prevSlot.roomId,
       slotTypeId: prevSlot.slotTypeId,
-      sessionTypeId: prevSlot.sessionTypeId
+      sessionTypeId: prevSlot.sessionTypeId,
+      overflowRoomIds: prevSlot.overflowRoomIds
     };
     this.editedSlot.set(slot);
     this.slotEditorVisible.set(true);
@@ -203,13 +219,37 @@ export class DayStructure implements OnInit {
           slot.id = this.genId();
           day.slots.push(slot);
         }
+        this.lastEditedSlotId = slot.id;
         return { ...day};
       });
       this.dayChanged.emit(this.day());
     }
   }
   onSlotEditCancel() {
+    console.log('onSlotEditCancel', this.editedSlot(), this.editedSlot()?.id);
+    if (this.editedSlot() && this.editedSlot()!.id) {
+      this.lastEditedSlotId = this.editedSlot()!.id;
+      console.log('lastEditedSlotId', this.lastEditedSlotId);
+    }
     this.slotEditorVisible.set(false);
     this.editedSlot.set(undefined);
+  }
+  onSlotEditRemove(slotId: string|undefined) {
+    this.slotEditorVisible.set(false);
+    this.editedSlot.set(undefined);
+    let changed = false;
+    this.day.update(day => {
+      if (slotId && slotId.length >= 0) {
+        // delete an existing slot from the list
+        const idx = day.slots.findIndex(s => s.id === slotId);
+        if (idx >= 0) {
+          day.slots.splice(idx, 1);
+          changed = true;
+          return { ...day};
+        }
+      }
+      return day; // no change
+    });
+    if (changed) this.dayChanged.emit(this.day());
   }
 } 

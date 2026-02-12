@@ -121,7 +121,7 @@ export class ConferenceConfigComponent implements OnInit {
         this.messageService.add({
           severity: 'success',
           summary: this.translateService.instant('COMMON.SUCCESS'),
-          detail: this.translateService.instant('CONFERENCE.CONFIG.GENERAL_UPDATED'),
+          detail: this.translateService.instant('CONFERENCE.CONFIG.SAVED'),
         });
       },
       error: (err) => {
