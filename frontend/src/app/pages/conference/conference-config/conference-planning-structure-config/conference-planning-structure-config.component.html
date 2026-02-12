@@ -37,12 +37,14 @@
       </div>
     </div>
     @if (currentDay()) {
-    <app-day-structure 
-      [day]="currentDay()!" 
-      [rooms]="conference()!.rooms"
-      [sessionTypes]="conference()!.sessionTypes"
-      (dayChanged)="dayChanged($event)"
-      ></app-day-structure>
+      <app-day-structure 
+        [day]="currentDay()!" 
+        [rooms]="conference()!.rooms"
+        [sessionTypes]="conference()!.sessionTypes"
+        (dayChanged)="dayChanged($event)"
+        ></app-day-structure>
+
+      
     }
   }
 </div>

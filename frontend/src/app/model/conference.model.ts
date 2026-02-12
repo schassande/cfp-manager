@@ -84,6 +84,18 @@ export interface Slot extends WithId {
   sessionTypeId: string;
 }
 
+export type SlotError = 'BEFORE_DAY_BEGIN' 
+  | 'AFTER_DAY_END'
+  | 'ROOM_DISABLED'
+  | 'OVERLAP_SLOT' 
+  | 'WRONG_ROOM_TYPE' 
+  | 'WRONG_DURATION' // duration != end - start
+  | 'WRONG_DURATION_SESSION' // duration != session.duration
+  | 'START_AFTER_END'
+  | 'UNEXISTING_ROOM'
+  | 'WRONG_SLOT_TYPE'
+  | 'WRONG_SESSION_TYPE';
+
 /** Conference Hall integration info. */
 export interface ExternalSystemConfig {
   systemName: string;

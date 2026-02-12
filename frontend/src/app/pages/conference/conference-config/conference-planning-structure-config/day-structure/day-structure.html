@@ -46,7 +46,7 @@
               }
             </div>
             @for (room of rooms(); track room.id) {
-              <div class="tick-line" aria-hidden="true">
+              <div class="tick-line" aria-hidden="true" (click)="onSlotAdd(room, tick)">
               </div>
             }
           }
@@ -82,19 +82,28 @@
       </div>
     </div>
   }
-  <p-dialog header="Edit Slot" [modal]="true" [visible]="slotEditorVisible()">
+
+  <p-dialog [modal]="true" [visible]="slotEditorVisible()" 
+    header="{{ 'CONFERENCE.CONFIG.SLOT_EDITOR.TITLE' | translate }}"
+    (onHide)="onSlotEditCancel()">
     @if (editedSlot()) {
       <app-slot-editor  
         [slot]="editedSlot()!"
         [rooms]="rooms()"
         [slotTypes]="slotTypes()"
         [sessionTypes]="sessionTypes()"
-        [minTime]="dayStartIso()"
-        [maxTime]="dayEndIso()"
+        [day]="day()"
         (save)="onSlotSave($event)"
         (cancel)="onSlotEditCancel()"
         (remove)="onSlotEditRemove($event)">
       </app-slot-editor>
     }
+  </p-dialog>
+  <p-dialog>
+    <app-copy-roorm-to-room 
+      [rooms]="rooms()"
+      [slots]="day().slots"
+      (newSlots)="createSlots($event)">
+    </app-copy-roorm-to-room>
   </p-dialog>
 }

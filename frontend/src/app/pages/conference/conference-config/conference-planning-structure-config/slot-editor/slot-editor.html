@@ -1,4 +1,4 @@
-@if (currentForm(); as form) {
+@if (form(); as form) {
   <form [formGroup]="form" class="config-form">
     <div class="form-section">
       <label for="slotTypeId" class="form-label">{{ 'CONFERENCE.CONFIG.SLOT_EDITOR.SLOT_TYPE' | translate }}</label>
@@ -17,13 +17,16 @@
     <div class="form-section">
       <label for="sessionTypeId" class="form-label">{{ 'CONFERENCE.CONFIG.SLOT_EDITOR.SESSION_TYPE' | translate }}</label>
       <p-select [options]="sessionTypes()" formControlName="sessionTypeId" 
-        optionValue="id" optionLabel="name" class="w-full md:w-56">
+        optionValue="id" optionLabel="name" class="w-full md:w-56"
+        (onChange)="onSessionTypeChanged()">
       </p-select>
     </div>
 
     <div class="form-section">
       <label for="roomId" class="form-label">{{ 'CONFERENCE.CONFIG.SLOT_EDITOR.ROOM' | translate }}</label>
-      <p-select [options]="rooms()" formControlName="roomId" optionLabel="name" optionValue="id" optionLabel="name" class="w-full md:w-56" />
+      <p-select [options]="rooms()" formControlName="roomId" optionLabel="name" 
+        optionValue="id" optionLabel="name" class="w-full md:w-56" 
+        (onChange)="onRoomChanged()"/>
     </div>
 
     <div class="form-section">
@@ -58,15 +61,26 @@
 
     <div class="form-section">
       <label for="endTime" class="form-label">{{ 'CONFERENCE.CONFIG.SLOT_EDITOR.END_TIME' | translate }}</label>
-      @if (slot()) {
-        {{slot().endTime}}
+      @if (currentSlot()) {
+        {{currentSlot()?.endTime}}
       }
     </div>
-
+    <ul class="errors">
+      @for(slotError of slotErrors(); track slotError) {
+      <li class="error-message">{{ 'CONFERENCE.CONFIG.SLOT_EDITOR.'+slotError | translate }}</li>
+      }
+    </ul>
     <div class="form-actions">
-      <p-button type="button" (click)="onRemove()" severity="danger" class="btn secondary">{{ 'CONFERENCE.CONFIG.SLOT_EDITOR.DELETE' | translate }}</p-button>
-      <p-button type="button" (click)="onCancel()" severity="info" class="btn secondary">{{ 'CONFERENCE.CONFIG.SLOT_EDITOR.CANCEL' | translate }}</p-button>
-      <p-button type="submit" (click)="onSave()" severity="success" class="btn primary" [disabled]="form.invalid">{{ 'CONFERENCE.CONFIG.SLOT_EDITOR.SAVE' | translate }}</p-button>
+      <p-button type="button" (click)="onRemove()" severity="danger" class="btn secondary">
+        {{ 'CONFERENCE.CONFIG.SLOT_EDITOR.DELETE' | translate }}
+      </p-button>
+      <p-button type="button" (click)="onCancel()" severity="info" class="btn secondary">
+        {{ 'CONFERENCE.CONFIG.SLOT_EDITOR.CANCEL' | translate }}
+      </p-button>
+      <p-button type="submit" (click)="onSave()" severity="success" class="btn primary"
+        [disabled]="form.invalid || slotErrors().length > 0">
+        {{ 'CONFERENCE.CONFIG.SLOT_EDITOR.SAVE' | translate }}
+      </p-button>
     </div>
   </form>
 }

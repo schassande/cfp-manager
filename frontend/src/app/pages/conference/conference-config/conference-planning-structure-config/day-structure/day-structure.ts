@@ -10,12 +10,14 @@ import { FormsModule } from '@angular/forms';
 import { SlotEditorComponent } from '../slot-editor/slot-editor';
 import { DialogModule } from 'primeng/dialog';
 import { ConferenceService } from '../../../../../services/conference.service';
+import { CopyRoormToRoom } from '../copy-roorm-to-room/copy-roorm-to-room';
 
 @Component({
   selector: 'app-day-structure',
   imports: [
     ButtonModule,
     CommonModule,
+    CopyRoormToRoom,
     DatePickerModule,
     DialogModule,
     FormsModule,
@@ -57,11 +59,12 @@ export class DayStructure implements OnInit {
   ticks = computed(() => {
     const start = this.dayStartMs();
     const end = this.dayEndMs();
-    const results: { label: string; main: boolean }[] = [];
+    const results: Tick[] = [];
     let idx = 0;
     for (let t = start; t <= end; t = t + this.tickStep * 60000) {
-      results.push({ 
-        label: this.conferenceService.formatHour(new Date(t)), 
+      const startTime = this.conferenceService.formatHour(new Date(t));
+      results.push({ startTime,
+        label: startTime, 
         main: idx % this.tickMainRatio === 0 
       });
       idx++;
@@ -129,46 +132,52 @@ export class DayStructure implements OnInit {
     this.lastEditedSlotId = s.id;
   }
 
-  onSlotAdd() {
-    console.log('onSlotAdd: lastEditedSlotId=', this.lastEditedSlotId);
-    if (this.lastEditedSlotId) {
-      const lastEditedSlot = this.day().slots.find(s => s.id === this.lastEditedSlotId);
-      console.log('onSlotAdd: lastEditedSlot=', lastEditedSlot);
-      if (lastEditedSlot) {
-        this.createSlotFromPrevious(lastEditedSlot);
-        return;
-      } else {
-        this.lastEditedSlotId = undefined;
-      }
+  onSlotAdd(room: Room|undefined = undefined, tick: Tick|undefined = undefined) {
+    const slotType: SlotType|undefined = this.slotTypes().length ? this.slotTypes()[0] : undefined;
+    const sessionType : SessionType|undefined = slotType && slotType.isSession 
+      ? (this.sessionTypes() ? this.sessionTypes()[0] : undefined)
+      : undefined;
+    const duration = sessionType ? sessionType.duration : 30;
+    const lastEditedSlot = this.lastEditedSlotId ? this.day().slots.find(s => s.id === this.lastEditedSlotId) : undefined;
+
+    let slot:Slot|undefined;
+    if (room && tick) {
+      slot  = {
+        id: '',
+        startTime: tick.startTime,
+        duration,
+        endTime: this.conferenceService.computeSlotEndtime(tick.startTime, duration),
+        roomId: room.id,
+        slotTypeId: slotType ? slotType.id : '',
+        sessionTypeId: sessionType ? sessionType.id : '',
+        overflowRoomIds: []
+      };
+      // console.log('Add with context', slot);
+    } else if (lastEditedSlot) {
+      slot = {
+        id: '',
+        startTime: lastEditedSlot.endTime,
+        endTime: this.conferenceService.computeSlotEndtime(lastEditedSlot.endTime, lastEditedSlot.duration),
+        duration: lastEditedSlot.duration,
+        roomId: lastEditedSlot.roomId,
+        slotTypeId: lastEditedSlot.slotTypeId,
+        sessionTypeId: lastEditedSlot.sessionTypeId,
+        overflowRoomIds: lastEditedSlot.overflowRoomIds
+      };
+    } else {
+      slot = {
+        id: '',
+        startTime: this.beginTime, // beginning of the day
+        endTime: this.conferenceService.computeSlotEndtime(this.beginTime, duration),
+        roomId: this.rooms().length ? this.rooms()[0].id : '',
+        duration,
+        slotTypeId: slotType ? slotType.id : '',
+        sessionTypeId: sessionType ? sessionType.id : '',
+        overflowRoomIds: []
+      };
     }
-
-    const slot: Slot = {
-      id: '',
-      startTime: this.beginTime, // beginning of the day
-      endTime: this.conferenceService.computeSlotEndtime(this.beginTime, 30),
-      duration: 30,
-      roomId: this.rooms().length ? this.rooms()[0].id : '',
-      slotTypeId: this.slotTypes().length ? this.slotTypes()[0].id : '',
-      sessionTypeId: this.slotTypes().length && this.slotTypes()[0].isSession ? this.sessionTypes()[0].id : '',
-      overflowRoomIds: []
-    };
-    this.editedSlot.set(slot);
     this.slotEditorVisible.set(true);
-  }
-
-  createSlotFromPrevious(prevSlot: Slot) {
-    const slot: Slot = {
-      id: '',
-      startTime: prevSlot.endTime,
-      endTime: this.conferenceService.computeSlotEndtime(prevSlot.endTime, prevSlot.duration),
-      duration: prevSlot.duration,
-      roomId: prevSlot.roomId,
-      slotTypeId: prevSlot.slotTypeId,
-      sessionTypeId: prevSlot.sessionTypeId,
-      overflowRoomIds: prevSlot.overflowRoomIds
-    };
     this.editedSlot.set(slot);
-    this.slotEditorVisible.set(true);
   }
 
   changeBeginTime(newBeginTimeDate: Date) {
@@ -179,7 +188,7 @@ export class DayStructure implements OnInit {
         validBeginTime = new Date(this.dayEndMs() - 5 * 60000); // end of day minus 5 minutes
       }
       day.beginTime = this.conferenceService.formatHour(validBeginTime);
-      console.log('Begin time changed:', day.beginTime);
+      // TODO check the day slots with the new beginning of the day
       return { ...day};
     });
     this.dayChanged.emit(this.day());
@@ -193,20 +202,17 @@ export class DayStructure implements OnInit {
         validEndTime = new Date(this.dayStartMs() + 5 * 60000); // beginning of day plus 5 minutes
       }
       day.endTime = this.conferenceService.formatHour(validEndTime);
-      console.log('End time changed:', day.endTime);
+      //TODO check the day slots with new end of day
       return { ...day};
     });
     this.dayChanged.emit(this.day());
   }
-  
-  genId(prefix = 's'): string {
-    return prefix + Math.random().toString(36).slice(2, 9);
-  }
-  
+ 
   onSlotSave(slot: Slot) {
     this.slotEditorVisible.set(false);
     this.editedSlot.set(undefined);
-    if (slot) {
+    if (slot && this.conferenceService.isValidSlot(slot, 
+        this.day(), this.slotTypes(), this.sessionTypes(), this.rooms()).length === 0) {
       this.day.update(day => {
         if (slot.id && slot.id.length >= 0) {
           // update an existing slot from the list
@@ -216,7 +222,7 @@ export class DayStructure implements OnInit {
           }
         } else {
           // add a new slot in list
-          slot.id = this.genId();
+          slot.id = this.conferenceService.generateSlotId();
           day.slots.push(slot);
         }
         this.lastEditedSlotId = slot.id;
@@ -226,10 +232,8 @@ export class DayStructure implements OnInit {
     }
   }
   onSlotEditCancel() {
-    console.log('onSlotEditCancel', this.editedSlot(), this.editedSlot()?.id);
     if (this.editedSlot() && this.editedSlot()!.id) {
       this.lastEditedSlotId = this.editedSlot()!.id;
-      console.log('lastEditedSlotId', this.lastEditedSlotId);
     }
     this.slotEditorVisible.set(false);
     this.editedSlot.set(undefined);
@@ -252,4 +256,24 @@ export class DayStructure implements OnInit {
     });
     if (changed) this.dayChanged.emit(this.day());
   }
+  createSlots(newslots: Slot[]) {
+    if (!newslots || newslots.length) return;
+    this.day.update(day => {
+      newslots.forEach(newSlot => {
+        // check the new slot does not overlap another slot
+        if (this.conferenceService.isValidSlot(newSlot, 
+            this.day(), this.slotTypes(), this.sessionTypes(), this.rooms()).length === 0) {
+          day.slots.push(newSlot);
+        }
+      })
+      return {...day};
+    });
+    this.dayChanged.emit(this.day());
+  }
+
 } 
+interface Tick { 
+  label: string;
+  main: boolean, 
+  startTime: string 
+}

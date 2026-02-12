@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Output, signal, model, computed, input, inject, OnInit, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Room, SessionType, Slot } from '../../../../../model/conference.model';
+import { Day, Room, SessionType, Slot } from '../../../../../model/conference.model';
 import { SlotType } from '../../../../../model/slot-type.model';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SelectModule } from 'primeng/select';
@@ -30,47 +30,55 @@ import { MultiSelectModule } from 'primeng/multiselect';
   styleUrls: ['./slot-editor.scss']
 })
 export class SlotEditorComponent implements OnInit {
-  slot = model.required<Slot>();
+  private readonly conferenceService = inject(ConferenceService);
+  private readonly translateService = inject(TranslateService);
+  private readonly fb = inject(FormBuilder);
+
+  slot = input.required<Slot>();
   rooms = input.required<Room[]>();
   slotTypes = input.required<SlotType[]>();
   sessionTypes = input.required<SessionType[]>();
-  minTime = input.required<string>();
-  maxTime = input.required<string>();
-  
+  day = input.required<Day>();
   save = output<Slot>();
   cancel = output<void>();
   remove = output<string|undefined>();
 
-  slotEditorVisible = signal(false);
-
-  private readonly fb = inject(FormBuilder);
-  private readonly conferenceService = inject(ConferenceService);
   protected readonly form = signal<FormGroup | null>(null);
-  protected readonly currentForm = computed(() => this.form());
-  private readonly translateService = inject(TranslateService);
   protected readonly defaultLanguage = signal<string>('EN');
-  protected readonly minDate = computed(() => this.conferenceService.timeStringToDate(this.minTime()));
-  protected readonly maxDate = computed(() => this.conferenceService.timeStringToDate(this.maxTime()));
-  protected readonly slotType = signal<SlotType|undefined>(undefined);
+  protected readonly currentSlot = signal<Slot|undefined>(undefined);
+  protected readonly minDate = computed(() => this.conferenceService.timeStringToDate(this.day().beginTime));
+  protected readonly maxDate = computed(() => this.conferenceService.timeStringToDate(this.day().endTime));
+  slotErrors = computed(() => this.conferenceService.isValidSlot(this.currentSlot(), this.day(), this.slotTypes(), this.sessionTypes(), this.rooms()));
 
   ngOnInit() {
     this.translateService.onLangChange.subscribe(ev => this.defaultLanguage.set(ev.lang.toLocaleUpperCase()));
     this.initializeForm();
   }
 
+  private computeCurrentSlot(): Slot{ 
+    return { 
+      id: this.slot()?.id, 
+      ...this.form()!.value,
+      // these fields can be disabled.
+      sessionTypeId: this.form()!.get('sessionTypeId')!.value,
+      duration: this.form()!.get('duration')!.value
+    }; 
+  }
+
   private initializeForm() {
     const slot = this.slot()!;
     const formGroup = this.fb.group({
       startTime: [slot?.startTime || '', [Validators.required]],
-      endTime: [slot?.endTime || '', [Validators.required]],
-      duration: [slot?.duration || 30, [Validators.required, Validators.min(1)]],
-      roomId: [slot?.roomId || '', []],
+      endTime: [slot?.endTime || '', []],
+      duration: [slot?.duration || 30, [Validators.min(0)]],
+      roomId: [slot?.roomId || '', [Validators.required]],
       overflowRoomIds: [slot?.overflowRoomIds || [], []],
-      slotTypeId: [slot?.slotTypeId || '', []],
+      slotTypeId: [slot?.slotTypeId || '', [Validators.required]],
       sessionTypeId: [slot?.sessionTypeId || '', []]
     });
-    this.computeSessionTypeEnabled(slot.slotTypeId);
     this.form.set(formGroup);
+    this.computeSessionTypeEnabled(slot.slotTypeId);
+    this.currentSlot.set(this.computeCurrentSlot());
   }
 
   onStartTimeOrDurationChange() {
@@ -88,7 +96,7 @@ export class SlotEditorComponent implements OnInit {
       const newEndTimeDateTime = this.conferenceService.timeStringToDate(newEndTime).getTime();
       if (newEndTimeDateTime > this.maxDate().getTime()) {
         // The end time is after max Time of the day => set end time to the end of the day
-        newEndTime = this.maxTime();
+        newEndTime = this.day().beginTime;
 
         //and adjust the duration
         const startTimeDateTime = this.conferenceService.timeStringToDate(startTime).getTime();
@@ -102,12 +110,9 @@ export class SlotEditorComponent implements OnInit {
         this.form()?.get('duration')?.setValue(newDuration);
       }
       this.form()?.get('endTime')?.setValue(newEndTime);
-      this.slot.update(s => {
-        s.startTime = this.form()?.get('startTime')?.value;
-        s.duration = this.form()?.get('duration')?.value;
-        s.endTime = this.form()?.get('endTime')?.value;
-        return s;
-      });
+      this.currentSlot.set(this.computeCurrentSlot());
+
+      this.computeDurationFromSessionType();
     }
   }
   onCancel() {
@@ -115,19 +120,14 @@ export class SlotEditorComponent implements OnInit {
   }
 
   onSave() {
-    const saved: Slot = {
-      ...this.form()!.value, 
-      id: this.slot().id
-    };
-    console.log(saved);
-    this.slot.set(saved);
-    this.save.emit(saved);
+    this.save.emit(this.computeCurrentSlot());
   }
   onRemove() {
-    this.remove.emit(this.slot() ? this.slot().id : undefined)
+    this.remove.emit(this.slot()?.id);
   }
   onSlotTypeChanged() {
     this.computeSessionTypeEnabled(this.form()?.get('slotTypeId')?.value);
+    this.currentSlot.set(this.computeCurrentSlot());
   }
 
   computeSessionTypeEnabled(slotTypeId: string|undefined) {
@@ -140,9 +140,36 @@ export class SlotEditorComponent implements OnInit {
       }
       if (enabled) {
         form.get('sessionTypeId')?.enable();
+        form.get('duration')?.disable();
+        this.computeDurationFromSessionType();
       } else {
         form.get('sessionTypeId')?.disable();
+        form.get('duration')?.enable();
       }
     }
   }
+  onSessionTypeChanged() {
+    this.computeSessionTypeEnabled(this.form()?.get('slotTypeId')?.value);
+    this.currentSlot.set(this.computeCurrentSlot());
+  }
+
+  computeDurationFromSessionType() {
+    const form = this.form();
+    if (!form) return;
+    if (form.get('sessionTypeId')?.enabled) {
+      const _sessionTypeId = this.form()!.get('sessionTypeId')!.value;
+      const _sessionType = this.sessionTypes().find(st => st.id === _sessionTypeId);
+      if (_sessionType) {
+        form.get('duration')!.setValue(_sessionType.duration);
+        const startTime = this.form()?.get('startTime')?.value;
+        const startTimeDate = this.conferenceService.timeStringToDate(startTime).getTime();
+        const endTimeDate = new Date(startTimeDate + _sessionType.duration * 60000);
+        form.get('endTime')!.setValue(this.conferenceService.formatHour(endTimeDate));
+      }
+    }    
+  }
+  onRoomChanged() {
+    this.currentSlot.set(this.computeCurrentSlot());
+  }
 }
+

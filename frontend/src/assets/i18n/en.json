@@ -189,9 +189,13 @@
         "BEGIN_DAY_TIME": "Day begin",
         "END_DAY_TIME": "Day end",
         "ADD_SLOT": "Add slot",
-        "NO_SLOT": "No slot defined for this day"
+        "NO_SLOT": "No slot defined for this day",
+        "COPY_ROOM_TO_ROOM": "Copy all slots from a room to another room",
+        "SOURCE_ROOM": "Source room",
+        "TARGET_ROOM": "Target room"
       },
       "SLOT_EDITOR" : {
+        "TITLE": "Slot editor",
         "START_TIME": "Start Time",
         "DURATION" : "Duration (min)",
         "END_TIME": "End Time",
@@ -201,7 +205,18 @@
         "SESSION_TYPE": "Session Type",
         "SAVE": "Save Slot",
         "CANCEL": "Cancel",
-        "DELETE": "Delete"
+        "DELETE": "Delete",
+        "BEFORE_DAY_BEGIN": "The slot begin time is before the day begin time",
+        "AFTER_DAY_END":"The slot end time is after the day end time",
+        "ROOM_DISABLED":"Room is disabled for the day",
+        "OVERLAP_SLOT":"This slot overlap another slot(s)",
+        "WRONG_ROOM_TYPE":"The room type is not compatible with the slot type",
+        "WRONG_DURATION":"The slot duration does not match the begin/end gap",
+        "WRONG_DURATION_SESSION":"The slot duration does not match the session duration", 
+        "START_AFTER_END":"The slot begin is after the slot end",
+        "UNEXISTING_ROOM":"Room does not exist in the conference",
+        "WRONG_SLOT_TYPE":"Slot type does not exist in the application",
+        "WRONG_SESSION_TYPE'":"Session type does not exist in the conference"
       },
       "SESSION_SOURCE": {
         "TAB": "Session Source",

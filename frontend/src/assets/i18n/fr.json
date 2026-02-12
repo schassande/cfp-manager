@@ -187,9 +187,13 @@
         "BEGIN_DAY_TIME": "Début du jour",
         "END_DAY_TIME": "Fin du jour",
         "ADD_SLOT": "Ajouter un créneau",
-        "NO_SLOT": "Aucune créneau défini pour ce jour"
+        "NO_SLOT": "Aucune créneau défini pour ce jour",
+        "COPY_ROOM_TO_ROOM": "Copier tous les créneaux d'une salle vers une autre salle",
+        "SOURCE_ROOM": "Salle source",
+        "TARGET_ROOM": "Salle destination"
       },
       "SLOT_EDITOR" : {
+        "TITLE": "Editeur de créneau",
         "START_TIME": "Heure de début",
         "DURATION" : "Durée (min)",
         "END_TIME": "Heure de fin",
@@ -199,7 +203,18 @@
         "SESSION_TYPE": "Type de session",
         "SAVE": "Enregistrer le créneau",
         "CANCEL": "Annuler",
-        "DELETE": "Delete"
+        "DELETE": "Delete",
+        "BEFORE_DAY_BEGIN": "Le début du créneau est avant le début de la journée",
+        "AFTER_DAY_END":"La fin du créneau est après la fin de journée",
+        "ROOM_DISABLED":"La salle est désactivée pour la journée",
+        "OVERLAP_SLOT":"Le créneau cheveauche au moins un autre créneau",
+        "WRONG_ROOM_TYPE":"Le type de salle n'est pas compatible avec le type de slot",
+        "WRONG_DURATION":"La durée du créneau ne correspond pas à la différence entre le début et la fin du créneau",
+        "WRONG_DURATION_SESSION":"La durée du créneau ne correspond pas à la durée de la session choisie", 
+        "START_AFTER_END":"Le début du slot est après la fin du slot",
+        "UNEXISTING_ROOM":"La salle n'existe pas dans la conference",
+        "WRONG_SLOT_TYPE":"Le type de slot n'existe pas dans l'application",
+        "WRONG_SESSION_TYPE'":"Le type de session n'existe pas dans la conférence"
       },
       "SESSION_SOURCE": {
         "TAB": "Session Source",
