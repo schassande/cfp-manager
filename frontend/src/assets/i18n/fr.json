@@ -190,7 +190,8 @@
         "NO_SLOT": "Aucune créneau défini pour ce jour",
         "COPY_ROOM_TO_ROOM": "Copier tous les créneaux d'une salle vers une autre salle",
         "SOURCE_ROOM": "Salle source",
-        "TARGET_ROOM": "Salle destination"
+        "TARGET_ROOM": "Salle destination",
+        "COPY_ROOM": "Copier"
       },
       "SLOT_EDITOR" : {
         "TITLE": "Editeur de créneau",

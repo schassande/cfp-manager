@@ -34,11 +34,12 @@ export class CopyRoormToRoom {
   });
 
   onCopy() {
-    if (!this.readyToCopy()) return;
+    if (!this.readyToCopy()) {
+      return;
+    }
     const sourceRoomId = this.sourceRoom()!.id;
     const targetRoomId = this.targetRoom()!.id;
-    this.newSlots.emit(
-      this.slots().filter(slot => slot.roomId === sourceRoomId
+    const newSlots = this.slots().filter(slot => slot.roomId === sourceRoomId
         && (!slot.overflowRoomIds 
           || slot.overflowRoomIds.length === 0 
           || slot.overflowRoomIds.findIndex(rid=> rid === targetRoomId) < 0)
@@ -50,6 +51,7 @@ export class CopyRoormToRoom {
           overflowRoomIds: [] // don't copy overflow
         }
         return newSlot;
-    }));
+    });
+    this.newSlots.emit(newSlots);
   }
 }

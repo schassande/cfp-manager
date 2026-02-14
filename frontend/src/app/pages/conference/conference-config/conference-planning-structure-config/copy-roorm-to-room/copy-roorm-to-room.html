@@ -1,11 +1,12 @@
-toto
-<h2>{{ 'CONFERENCE.CONFIG.PLANNING_STRUCTURE.COPY_ROOM_TO_ROOM' | translate }}Copy slots from a room to another</h2>
-<div class="form-section">
-  <label for="sourceRoom" class="form-label">{{ 'CONFERENCE.CONFIG.PLANNING_STRUCTURE.SOURCE_ROOM' | translate }}</label>
-  <p-select [options]="rooms()" [(ngModel)]="sourceRoom" optionLabel="name" optionLabel="name" class="w-full md:w-56" />
+<div class="config-form">
+  <div class="form-section">
+    <label for="sourceRoom" class="form-label">{{ 'CONFERENCE.CONFIG.PLANNING_STRUCTURE.SOURCE_ROOM' | translate }}</label>
+    <p-select [options]="rooms()" [(ngModel)]="sourceRoom" optionLabel="name" optionLabel="name" class="w-full md:w-56" />
+  </div>
+  <div class="form-section">
+    <label for="targetRoomId" class="form-label">{{ 'CONFERENCE.CONFIG.PLANNING_STRUCTURE.TARGET_ROOM' | translate }}</label>
+    <p-select [options]="rooms()" [(ngModel)]="targetRoom" optionLabel="name" optionLabel="name" class="w-full md:w-56" />
+  </div>
+  <div style="height: 75px;"></div>
+  <button pButton size="small" class="ml-2" severity="success" (click)="onCopy()">{{ 'CONFERENCE.CONFIG.PLANNING_STRUCTURE.COPY_ROOM' | translate }}</button>
 </div>
-<div class="form-section">
-  <label for="targetRoomId" class="form-label">{{ 'CONFERENCE.CONFIG.PLANNING_STRUCTURE.TARGET_ROOM' | translate }}</label>
-  <p-select [options]="rooms()" [(ngModel)]="targetRoom" optionLabel="name" optionLabel="name" class="w-full md:w-56" />
-</div>
-<button pButton size="small" class="ml-2" (click)="onCopy()">{{ 'CONFERENCE.CONFIG.PLANNING_STRUCTURE.COPY_ROOM' | translate }}</button>

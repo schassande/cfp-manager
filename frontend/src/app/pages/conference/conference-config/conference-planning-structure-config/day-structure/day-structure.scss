@@ -1,9 +1,7 @@
 .form-panel {
     display: flex;
     flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 1rem;
+    justify-content: left;
 
   .form-section {
     display: flex;
@@ -106,7 +104,10 @@ $header-height: 50px;
 }
 
 .action-header-cell {
-  border: none;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
 }
 .room-header-cell { 
   padding: 10px 5px; 

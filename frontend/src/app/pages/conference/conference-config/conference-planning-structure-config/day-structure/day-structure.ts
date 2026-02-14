@@ -11,6 +11,8 @@ import { SlotEditorComponent } from '../slot-editor/slot-editor';
 import { DialogModule } from 'primeng/dialog';
 import { ConferenceService } from '../../../../../services/conference.service';
 import { CopyRoormToRoom } from '../copy-roorm-to-room/copy-roorm-to-room';
+import { MenuModule } from 'primeng/menu';
+import { MenuItem } from 'primeng/api';
 
 @Component({
   selector: 'app-day-structure',
@@ -21,6 +23,7 @@ import { CopyRoormToRoom } from '../copy-roorm-to-room/copy-roorm-to-room';
     DatePickerModule,
     DialogModule,
     FormsModule,
+    MenuModule,
     SlotEditorComponent,
     TranslateModule
   ],
@@ -90,6 +93,12 @@ export class DayStructure implements OnInit {
   editedSlot = signal<Slot | undefined>(undefined);
   slotEditorVisible = signal<boolean>(false);
   private lastEditedSlotId: string|undefined;
+
+  menuItems: MenuItem[] = [
+    { label: 'New Slot', icon: 'pi pi-plus', command: () => this.onSlotAdd() },
+    { label: 'Copy Room to Room', icon: 'pi pi-clone', command: () => this.copyRoomVisible.set(true) },
+  ];
+  copyRoomVisible = signal<boolean>(false);
 
   // Convertit un slot => top% & height% sur la base dayStart/dayEnd
   getSlotPosition(s: Slot) {
@@ -257,20 +266,26 @@ export class DayStructure implements OnInit {
     if (changed) this.dayChanged.emit(this.day());
   }
   createSlots(newslots: Slot[]) {
-    if (!newslots || newslots.length) return;
+    console.log('createSlots', newslots);
+    if (!newslots || newslots.length === 0) return;
     this.day.update(day => {
+      let changed = false;
       newslots.forEach(newSlot => {
         // check the new slot does not overlap another slot
-        if (this.conferenceService.isValidSlot(newSlot, 
-            this.day(), this.slotTypes(), this.sessionTypes(), this.rooms()).length === 0) {
+        const errors = this.conferenceService.isValidSlot(newSlot, 
+            this.day(), this.slotTypes(), this.sessionTypes(), this.rooms());
+        if (errors.length === 0) {
+          console.log('Slot valid:', newSlot)
           day.slots.push(newSlot);
+          changed = true;
+        } else {
+          console.log('Slot rejected:', newSlot, 'errors', errors)
         }
       })
-      return {...day};
+      return changed ? {...day} : day;
     });
     this.dayChanged.emit(this.day());
-  }
-
+  }  
 } 
 interface Tick { 
   label: string;

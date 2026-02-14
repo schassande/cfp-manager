@@ -192,7 +192,8 @@
         "NO_SLOT": "No slot defined for this day",
         "COPY_ROOM_TO_ROOM": "Copy all slots from a room to another room",
         "SOURCE_ROOM": "Source room",
-        "TARGET_ROOM": "Target room"
+        "TARGET_ROOM": "Target room",
+        "COPY_ROOM": "Copy"
       },
       "SLOT_EDITOR" : {
         "TITLE": "Slot editor",
