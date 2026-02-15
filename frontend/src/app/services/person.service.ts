@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FirestoreGenericService } from './firestore-generic.service';
 import { Person } from '../model/person.model';
-import { collectionData, limit } from '@angular/fire/firestore';
 import { map, Observable, from } from 'rxjs';
 import { getDocs, orderBy as fbOrderBy, startAfter as fbStartAfter, limit as fbLimit, query as fbQuery, startAt as fbStartAt, endAt as fbEndAt, where as fbWhere } from 'firebase/firestore';
 

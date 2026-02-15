@@ -6,6 +6,7 @@ import { PersistentData, WithId } from "./persistant.model";
 export interface Conference extends PersistentData {
   /** Name of the conference */
   name: string;
+  edition: number;
   /** Location of the conference */
   location: string;
   /** URL to the conference logo */

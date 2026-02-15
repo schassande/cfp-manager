@@ -20,7 +20,13 @@
       <ng-template pTemplate="body" let-conf>
         <tr>
           <td><strong>{{ conf.name }}</strong></td>
-          <td>{{ conf.dates.join(' - ') }}</td>
+          <td>
+            <ul>
+              @for(date of conferenceToDates(conf); track date) {
+                <li>{{ date }}</li>
+              }
+            </ul>
+          </td>
           <td>{{ conf.location }}</td>
           <td>
             <button pButton type="button" icon="pi pi-search" class="p-button-text p-button-sm" [routerLink]="['/conference', conf.id]"></button>

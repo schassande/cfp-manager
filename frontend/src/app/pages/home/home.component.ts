@@ -33,4 +33,7 @@ export class HomeComponent {
   createConference() {
     this.router.navigate(['/conference', 'create']);
   }
+  conferenceToDates(conf: Conference): string[] {
+    return conf.days.map(d => d.date);
+  }
 }

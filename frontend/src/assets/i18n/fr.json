@@ -101,6 +101,7 @@
         "TITLE": "Configuration générale",
         "DESCRIPTION": "Gérez les paramètres généraux de votre conférence ici.",
         "NAME": "Nom de la conférence",
+        "EDITION": "Edition",
         "DATES": "Dates",
         "DATES_ADDED": "Dates ajoutées:",
         "LOCATION": "Lieu",

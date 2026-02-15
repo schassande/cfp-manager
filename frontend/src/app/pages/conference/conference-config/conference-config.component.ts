@@ -82,6 +82,7 @@ export class ConferenceConfigComponent implements OnInit {
         id: '',
         lastUpdated: new Date().getTime().toString(),
         name: `New Conference ${rand4}`,
+        edition: new Date().getFullYear(),
         days: [],
         location: '',
         logo: '',
@@ -133,10 +134,6 @@ export class ConferenceConfigComponent implements OnInit {
         });
       },
     });
-  }
-
-  onCancel() {
-    // Just close the form, no action needed
   }
 
   onActiveTabChange(event: any) {

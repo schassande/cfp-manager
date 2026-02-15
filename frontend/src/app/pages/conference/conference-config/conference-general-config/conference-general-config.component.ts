@@ -52,10 +52,11 @@ export class ConferenceGeneralConfigComponent implements OnInit {
     { label: 'Deutsch', value: 'DE' },
     { label: 'Italiano', value: 'IT' },
   ]);
-
+  private dummy = signal<number>(0);
   // Computed
   protected readonly currentForm = computed(() => this.form());
   readonly organizerEmails = computed(() => {
+    this.dummy();
     return this.currentForm()?.get('organizerEmails')?.value || [];
   });
 
@@ -63,15 +64,17 @@ export class ConferenceGeneralConfigComponent implements OnInit {
     const conf = this.conference();
     this.form.set(this.fb.group({
       name:            [conf.name,            [Validators.required, Validators.minLength(3)]],
+      edition:         [conf.edition,            [Validators.required]],
       location:        [conf.location,        [Validators.required]],
       logo:            [conf.logo,            []],
       languages:       [conf.languages,       [Validators.required]],
       visible:         [conf.visible,         [Validators.required]],
       organizerEmails: [conf.organizerEmails, [Validators.required]],
     }));
-    this.form()?.valueChanges.subscribe((values) => {
+    this.form()!.valueChanges.subscribe((values) => {
       const c = this.conference();
       c.name = values.name;
+      c.edition = values.edition;
       c.location = values.location;
       c.languages = values.languages;
       c.visible = values.visible;
@@ -80,16 +83,22 @@ export class ConferenceGeneralConfigComponent implements OnInit {
   }
 
   addOrganizerEmail(email: string) {
-    const emails = this.currentForm()!.get('organizerEmails')?.value || [];
+    console.log('add', email);
+    let emails = this.currentForm()!.get('organizerEmails')?.value || [];
     if (email && !emails.includes(email)) {
-      this.currentForm()!.patchValue({organizerEmails: [...emails, email]});
+      emails = [...emails, email];
+      console.log('email added', emails);
+      this.currentForm()!.get('organizerEmails')!.setValue(emails);
+      this.dummy.set(this.dummy() + 1);
     }
   }
 
   removeOrganizerEmail(email: string) {
-    const emails = this.currentForm()!.get('organizerEmails')?.value || [];
-    this.currentForm()!.patchValue({
-      organizerEmails: emails.filter((e: string) => e !== email),
-    });
+    console.log('remove', email);
+    let emails = this.currentForm()!.get('organizerEmails')?.value || [];
+    emails = emails.filter((e: string) => e !== email);
+    console.log('email added', emails);
+    this.currentForm()!.get('organizerEmails')!.setValue(emails)
+    this.dummy.set(this.dummy() + 1);
   }
 }

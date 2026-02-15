@@ -4,17 +4,36 @@
     <!-- Name Field -->
     <div class="form-section">
       <label for="name" class="form-label">
-        {{ 'CONFERENCE.CONFIG.GENERAL.NAME' | translate }} <span class="required">*</span>
+        {{ 'CONFERENCE.CONFIG.GENERAL.NAME' | translate }}
       </label>
       <input
         id="name"
         pInputText
         formControlName="name"
         type="text"
-        class="w-full"
         placeholder="Nom de la conférence"
       />
+      <span class="required">*</span>
       @if (form.get('name')?.invalid && form.get('name')?.touched) {
+      <small class="error-message">
+        {{ 'VALIDATION.REQUIRED' | translate }}
+      </small>
+      }
+    </div>
+
+    <!-- Edition Field -->
+    <div class="form-section">
+      <label for="edition" class="form-label">
+        {{ 'CONFERENCE.CONFIG.GENERAL.EDITION' | translate }}
+      </label>
+      <input
+        id="edition"
+        pInputNumber
+        formControlName="edition"
+        type="number"
+      />
+      <span class="required">*</span>
+      @if (form.get('year')?.invalid && form.get('year')?.touched) {
       <small class="error-message">
         {{ 'VALIDATION.REQUIRED' | translate }}
       </small>
@@ -24,47 +43,26 @@
     <!-- Location Field -->
     <div class="form-section">
       <label for="location" class="form-label">
-        {{ 'CONFERENCE.CONFIG.GENERAL.LOCATION' | translate }} <span class="required">*</span>
+        {{ 'CONFERENCE.CONFIG.GENERAL.LOCATION' | translate }}
       </label>
       <input
         id="location"
         pInputText
         formControlName="location"
         type="text"
-        class="w-full"
         placeholder="Lieu de la conférence"
       />
+      <span class="required">*</span>
       @if (form.get('location')?.invalid && form.get('location')?.touched) {
       <small class="error-message">
         {{ 'VALIDATION.REQUIRED' | translate }}
       </small>
       }
     </div>
-
-    <!-- Logo Field -->
-    <div class="form-section">
-      <label for="logo" class="form-label">
-        {{ 'CONFERENCE.CONFIG.GENERAL.LOGO' | translate }}
-      </label>
-      <input
-        id="logo"
-        pInputText
-        formControlName="logo"
-        type="text"
-        class="w-full"
-        placeholder="URL du logo"
-      />
-      @if (form.get('logo')?.value) {
-      <div class="logo-preview">
-        <img [src]="form.get('logo')?.value" alt="Logo preview" />
-      </div>
-      }
-    </div>
-
     <!-- Languages Field -->
     <div class="form-section">
       <label for="languages" class="form-label">
-        {{ 'CONFERENCE.CONFIG.GENERAL.LANGUAGES' | translate }} <span class="required">*</span>
+        {{ 'CONFERENCE.CONFIG.GENERAL.LANGUAGES' | translate }}
       </label>
       <p-multiSelect
         id="languages"
@@ -76,11 +74,34 @@
         display="comma"
         placeholder="Sélectionnez les langues"
       ></p-multiSelect>
+      <span class="required">*</span>
       @if (form.get('languages')?.invalid && form.get('languages')?.touched) {
       <small class="error-message">
         {{ 'VALIDATION.REQUIRED' | translate }}
       </small>
       }
+    </div>
+
+    <!-- Logo Field -->
+    <div class="form-section">
+      <label for="logo" class="form-label">
+        {{ 'CONFERENCE.CONFIG.GENERAL.LOGO' | translate }}
+      </label>
+      <div>
+        <input
+          id="logo"
+          pInputText
+          formControlName="logo"
+          type="text"
+          class="w-full"
+          placeholder="URL du logo"
+        />
+        @if (form.get('logo')?.value) {
+        <div class="logo-preview">
+          <img [src]="form.get('logo')?.value" alt="Logo preview" />
+        </div>
+        }
+      </div>
     </div>
 
     <!-- Visible Toggle -->
@@ -103,37 +124,40 @@
       <label class="form-label">
         {{ 'CONFERENCE.CONFIG.GENERAL.ORGANIZER_EMAILS' | translate }}
       </label>
-      <div class="email-input-group">
-        <input
-          pInputText
-          id="emailInput"
-          type="email"
-          class="email-input"
-          #emailInput
-          placeholder="adress@email.com"
-        />
-        <button
-          pButton
-          type="button"
-          icon="pi pi-plus"
-          class="p-button-sm"
-          (click)="addOrganizerEmail(emailInput.value); emailInput.value = ''"
-          [disabled]="!emailInput.value"
-        ></button>
-      </div>
-      <div class="emails-list">
-        @for (email of organizerEmails(); track email) {
-        <div class="email-tag">
-          <span>{{ email }}</span>
+      <div>
+        <div class="email-input-group">
+          <input
+            pInputText
+            email
+            id="emailInput"
+            type="email"
+            class="email-input"
+            #emailInput
+            placeholder="adress@email.com"
+          />
           <button
             pButton
             type="button"
-            icon="pi pi-times"
-            class="p-button-sm p-button-text p-button-danger"
-            (click)="removeOrganizerEmail(email)"
+            icon="pi pi-plus"
+            class="p-button-sm"
+            (click)="addOrganizerEmail(emailInput.value); emailInput.value = ''"
+            [disabled]="!emailInput.checkValidity()"
           ></button>
         </div>
-        }
+        <div class="emails-list">
+          @for (email of organizerEmails(); track email) {
+          <div class="email-tag">
+            <span>{{ email }}</span>
+            <button
+              pButton
+              type="button"
+              icon="pi pi-times"
+              class="p-button-sm p-button-text p-button-danger"
+              (click)="removeOrganizerEmail(email)"
+            ></button>
+          </div>
+          }
+        </div>
       </div>
     </div>
   </form>

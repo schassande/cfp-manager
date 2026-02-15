@@ -101,6 +101,7 @@
         "TITLE": "General Configuration",
         "DESCRIPTION": "Manage general settings for your conference here.",
         "NAME": "Conference Name",
+        "EDITION": "Edition",
         "DATES": "Dates",
         "DATES_ADDED": "Dates added:",
         "LOCATION": "Location",

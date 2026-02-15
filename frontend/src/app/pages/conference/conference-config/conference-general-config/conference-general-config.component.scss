@@ -5,19 +5,21 @@
   .config-form {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 0.5rem;
     max-width: 800px;
   }
 
   .form-section {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 0.5rem;
 
     .form-label {
       font-weight: 600;
       color: #333;
       font-size: 0.95rem;
+      width: 150px;
+      text-align: right;
 
       .required {
         color: #e74c3c;

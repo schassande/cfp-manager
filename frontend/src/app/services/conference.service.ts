@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { FirestoreGenericService } from './firestore-generic.service';
 import { Conference, Day, Room, SessionType, Slot, SlotError } from '../model/conference.model';
 import { SlotType } from '../model/slot-type.model';
+import { getDocs, orderBy as fbOrderBy, startAfter as fbStartAfter, limit as fbLimit, query as fbQuery, startAt as fbStartAt, endAt as fbEndAt, where as fbWhere } from 'firebase/firestore';
+import { map, Observable, from } from 'rxjs';
 
 /**
  * Service for Conference persistent documents in Firestore.
@@ -14,6 +15,11 @@ export class ConferenceService extends FirestoreGenericService<Conference> {
   }
   public generateSlotId(prefix = 's'): string {
     return prefix + Math.random().toString(36).slice(2, 9);
+  }
+
+  public organizerConferences(email: string): Observable<Conference[]> {
+    return from(getDocs(fbQuery(this.itemsCollection(), fbWhere('organizerEmails', 'array-contains', email)))).pipe(
+      map((qs) => qs.docs.map((qds) => qds.data() as Conference)));
   }
 
   public isValidSlot(slot: Slot|undefined, day: Day, slotTypes: SlotType[], sessionTypes: SessionType[], rooms: Room[]) : SlotError[] {

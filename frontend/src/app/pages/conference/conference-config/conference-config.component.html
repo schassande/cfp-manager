@@ -16,7 +16,7 @@
         label="{{ 'COMMON.CANCEL' | translate }}"
         icon="pi pi-times"
         class="p-button-secondary"
-        (click)="onCancel()"
+        [routerLink]="['/']"
       ></button>
       <button
         pButton
@@ -41,11 +41,7 @@
     </p-tablist>
     <p-tabpanels>
       <p-tabpanel [value]="0">
-        <app-conference-general-config 
-          [conference]="conf"
-          (saveRequested)="onSave()"
-          (cancelRequested)="onCancel()">
-        </app-conference-general-config>
+        <app-conference-general-config [conference]="conf"></app-conference-general-config>
       </p-tabpanel>      
       <p-tabpanel [value]="1">
         <app-conference-session-types-config [conference]="conf"></app-conference-session-types-config>
