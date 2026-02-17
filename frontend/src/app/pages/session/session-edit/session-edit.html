@@ -1,1 +1,139 @@
-<p>session-edit works!</p>
+<div class="session-edit-page">
+  <h2>{{ 'SESSION.EDIT.TITLE' | translate }}</h2>
+
+  @if (loading()) {
+    <div class="state">{{ 'SESSION.EDIT.LOADING' | translate }}</div>
+  } @else if (errorMessage().length > 0) {
+    <div class="state error">{{ errorMessage() | translate }}</div>
+  } @else {
+    <form [formGroup]="form" class="session-form" (ngSubmit)="save()">
+      <div class="form-field">
+        <label for="title">{{ 'SESSION.EDIT.TITLE_FIELD' | translate }}</label>
+        <input id="title" pInputText type="text" formControlName="title" />
+      </div>
+
+      <div class="form-field">
+        <label for="abstractEN">{{ 'SESSION.EDIT.ABSTRACT_EN' | translate }}</label>
+        <textarea
+          id="abstractEN"
+          pTextarea
+          rows="6"
+          formControlName="abstractEN"
+        ></textarea>
+      </div>
+
+      <div class="form-field">
+        <label for="abstractFR">{{ 'SESSION.EDIT.ABSTRACT_FR' | translate }}</label>
+        <textarea
+          id="abstractFR"
+          pTextarea
+          rows="6"
+          formControlName="abstractFR"
+        ></textarea>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-field">
+          <label for="speaker1">{{ 'SESSION.EDIT.SPEAKER_1' | translate }}</label>
+          <p-autocomplete
+            inputId="speaker1"
+            formControlName="speaker1"
+            [suggestions]="speaker1Suggestions()"
+            [dropdown]="false"
+            [minLength]="3"
+            [showClear]="true"
+            [forceSelection]="true"
+            optionLabel="label"
+            (completeMethod)="searchSpeaker1($event)"
+            (onClear)="onSpeakerClear('speaker1')"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="speaker2">{{ 'SESSION.EDIT.SPEAKER_2' | translate }}</label>
+          <p-autocomplete
+            inputId="speaker2"
+            formControlName="speaker2"
+            [suggestions]="speaker2Suggestions()"
+            [dropdown]="false"
+            [minLength]="3"
+            [showClear]="true"
+            [forceSelection]="true"
+            optionLabel="label"
+            (completeMethod)="searchSpeaker2($event)"
+            (onClear)="onSpeakerClear('speaker2')"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="speaker3">{{ 'SESSION.EDIT.SPEAKER_3' | translate }}</label>
+          <p-autocomplete
+            inputId="speaker3"
+            formControlName="speaker3"
+            [suggestions]="speaker3Suggestions()"
+            [dropdown]="false"
+            [minLength]="3"
+            [showClear]="true"
+            [forceSelection]="true"
+            optionLabel="label"
+            (completeMethod)="searchSpeaker3($event)"
+            (onClear)="onSpeakerClear('speaker3')"
+          />
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-field">
+          <label for="sessionTypeId">{{ 'SESSION.EDIT.SESSION_TYPE' | translate }}</label>
+          <p-select
+            inputId="sessionTypeId"
+            [options]="sessionTypeOptions()"
+            optionLabel="label"
+            optionValue="value"
+            formControlName="sessionTypeId"
+            [placeholder]="'SESSION.EDIT.SELECT_VALUE' | translate"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="trackId">{{ 'SESSION.EDIT.TRACK' | translate }}</label>
+          <p-select
+            inputId="trackId"
+            [options]="trackOptions()"
+            optionLabel="label"
+            optionValue="value"
+            formControlName="trackId"
+            [placeholder]="'SESSION.EDIT.SELECT_VALUE' | translate"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="level">{{ 'SESSION.EDIT.LEVEL' | translate }}</label>
+          <p-select
+            inputId="level" 
+            [options]="levelOptions"
+            optionLabel="label"
+            optionValue="value"
+            formControlName="level"
+            [placeholder]="'SESSION.EDIT.SELECT_VALUE' | translate"
+          />
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <p-button
+          type="button"
+          severity="secondary"
+          (click)="cancel()"
+          [label]="'COMMON.CANCEL' | translate"
+        />
+        <p-button
+          type="submit"
+          severity="success"
+          [disabled]="form.invalid || saving()"
+          [label]="'COMMON.SAVE' | translate"
+        />
+      </div>
+    </form>
+  }
+</div>

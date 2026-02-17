@@ -1,0 +1,47 @@
+.session-edit-page {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+h2 {
+  margin-bottom: 1rem;
+}
+
+.state {
+  padding: 0.75rem;
+}
+
+.error {
+  color: #b91c1c;
+}
+
+.session-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.9rem;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+:host ::ng-deep .p-autocomplete,
+:host ::ng-deep .p-inputtext,
+:host ::ng-deep .p-select {
+  width: 100%;
+}

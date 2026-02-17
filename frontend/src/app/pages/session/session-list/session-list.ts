@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { catchError, forkJoin, map, of, take } from 'rxjs';
+import { catchError, combineLatest, forkJoin, map, of, take } from 'rxjs';
 import { SessionService } from '../../../services/session.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ConferenceService } from '../../../services/conference.service';
 import { Conference } from '../../../model/conference.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -49,6 +50,7 @@ interface SelectOption {
 })
 export class SessionList implements OnInit {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly personService = inject(PersonService);
   private readonly sessionService = inject(SessionService);
   private readonly conferenceService = inject(ConferenceService);
@@ -64,17 +66,32 @@ export class SessionList implements OnInit {
   readonly selectedTrackIds = signal<string[]>([]);
   readonly sortBy = signal<'name' | 'statusSubmitDate'>('name');
   readonly conferenceName = computed(() => this.conference()?.name?.trim() ?? '');
+  readonly searchPlaceholder$ = this.translateService.stream('SESSION.LIST.SEARCH_PLACEHOLDER');
+  readonly sortPlaceholder$ = this.translateService.stream('SESSION.LIST.SORT_BY');
+  readonly statusFilterPlaceholder$ = this.translateService.stream('SESSION.LIST.FILTER_STATUS');
+  readonly sessionTypeFilterPlaceholder$ = this.translateService.stream('SESSION.LIST.FILTER_SESSION_TYPE');
+  readonly trackFilterPlaceholder$ = this.translateService.stream('SESSION.LIST.FILTER_TRACK');
+  private readonly sortLabels = toSignal(
+    combineLatest([
+      this.translateService.stream('SESSION.LIST.SORT_NAME'),
+      this.translateService.stream('SESSION.LIST.SORT_STATUS_SUBMIT'),
+    ]),
+    { initialValue: ['', ''] }
+  );
 
-  readonly sortOptions = computed<SelectOption[]>(() => [
-    {
-      label: this.translateService.instant('SESSION.LIST.SORT_NAME'),
-      value: 'name',
-    },
-    {
-      label: this.translateService.instant('SESSION.LIST.SORT_STATUS_SUBMIT'),
-      value: 'statusSubmitDate',
-    },
-  ]);
+  readonly sortOptions = computed<SelectOption[]>(() => {
+    const [sortByName, sortByStatusSubmit] = this.sortLabels();
+    return [
+      {
+        label: sortByName,
+        value: 'name',
+      },
+      {
+        label: sortByStatusSubmit,
+        value: 'statusSubmitDate',
+      },
+    ];
+  });
 
   readonly sessionTypeOptions = computed<SelectOption[]>(() =>
     (this.conference()?.sessionTypes ?? []).map((sessionType) => ({
@@ -196,7 +213,7 @@ export class SessionList implements OnInit {
   });
 
   ngOnInit(): void {
-    const id =this.route.snapshot.paramMap.get('conferenceId');
+    const id = this.route.snapshot.paramMap.get('conferenceId');
     if (!id) {
       return;
     }
@@ -207,6 +224,14 @@ export class SessionList implements OnInit {
       this.sessions.set(sessions);
       this.loadSpeakerNames(sessions);
     });
+  }
+
+  openSessionEdit(sessionId: string): void {
+    const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
+    if (!conferenceId) {
+      return;
+    }
+    void this.router.navigate(['/conference', conferenceId, 'sessions', sessionId, 'edit']);
   }
 
   private computeStatusSeverity(status: SessionStatus | undefined): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {

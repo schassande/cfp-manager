@@ -286,8 +286,8 @@
       "PAGE_TITLE": "{{conference}}: Liste des sessions",
       "SEARCH_PLACEHOLDER": "Rechercher dans les mots de la session",
       "SORT_BY": "Trier par",
-      "SORT_NAME": "Nom",
-      "SORT_STATUS_SUBMIT": "Statut + date de soumission",
+      "SORT_NAME": "Titre",
+      "SORT_STATUS_SUBMIT": "Statut puis date de soumission",
       "FILTER_STATUS": "Statuts",
       "FILTER_SESSION_TYPE": "Types de session",
       "FILTER_TRACK": "Tracks",
@@ -296,6 +296,23 @@
       "UNKNOWN_SPEAKER": "Speaker inconnu",
       "UNKNOWN_TRACK": "Track inconnu",
       "UNKNOWN_SESSION_TYPE": "Type de session inconnu"
+    },
+    "EDIT": {
+      "TITLE": "Edition de session",
+      "LOADING": "Chargement de la session...",
+      "TITLE_FIELD": "Titre",
+      "ABSTRACT_EN": "Resume (EN)",
+      "ABSTRACT_FR": "Resume (FR)",
+      "SPEAKER_1": "Speaker 1",
+      "SPEAKER_2": "Speaker 2",
+      "SPEAKER_3": "Speaker 3",
+      "SESSION_TYPE": "Type de session",
+      "TRACK": "Track",
+      "LEVEL": "Niveau",
+      "SELECT_VALUE": "Selectionner une valeur",
+      "ERROR_NOT_FOUND": "Session introuvable",
+      "ERROR_LOAD": "Impossible de charger la session",
+      "ERROR_SAVE": "Impossible de sauvegarder la session"
     }
   }
 }

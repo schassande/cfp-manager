@@ -152,4 +152,37 @@ export class PersonService extends FirestoreGenericService<Person> {
       })
     );
   }
+
+  /**
+   * Search speakers by prefix on the `search` field.
+   * Requires at least 3 characters and returns up to `maxResults` items.
+   */
+  public searchSpeakersBySearch(searchTerm: string, maxResults = 10): Observable<Person[]> {
+    const normalized = (searchTerm ?? '').trim().toLowerCase();
+    if (normalized.length < 3) {
+      return from(Promise.resolve([] as Person[]));
+    }
+
+    const q = fbQuery(
+      this.itemsCollection(),
+      fbOrderBy('search'),
+      fbStartAt(normalized),
+      fbEndAt(`${normalized}\uf8ff`),
+      fbLimit(Math.max(maxResults * 3, 30))
+    );
+
+    return from(getDocs(q)).pipe(
+      map((qs) => {
+        const persons: Person[] = [];
+        qs.forEach((ds) => {
+          const data = ds.data() as Person;
+          data.id = ds.id;
+          if (data.speaker) {
+            persons.push(data);
+          }
+        });
+        return persons.slice(0, Math.max(maxResults, 1));
+      })
+    );
+  }
 }

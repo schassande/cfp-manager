@@ -288,7 +288,7 @@
       "PAGE_TITLE": "{{conference}}: List of sessions",
       "SEARCH_PLACEHOLDER": "Search in session words",
       "SORT_BY": "Sort by",
-      "SORT_NAME": "Name",
+      "SORT_NAME": "Title",
       "SORT_STATUS_SUBMIT": "Status and submit date",
       "FILTER_STATUS": "Status",
       "FILTER_SESSION_TYPE": "Session types",
@@ -298,6 +298,23 @@
       "UNKNOWN_SPEAKER": "Unknown speaker",
       "UNKNOWN_TRACK": "Unknown track",
       "UNKNOWN_SESSION_TYPE": "Unknown session type"
+    },
+    "EDIT": {
+      "TITLE": "Edit Session",
+      "LOADING": "Loading session...",
+      "TITLE_FIELD": "Title",
+      "ABSTRACT_EN": "Abstract (EN)",
+      "ABSTRACT_FR": "Abstract (FR)",
+      "SPEAKER_1": "Speaker 1",
+      "SPEAKER_2": "Speaker 2",
+      "SPEAKER_3": "Speaker 3",
+      "SESSION_TYPE": "Session type",
+      "TRACK": "Track",
+      "LEVEL": "Level",
+      "SELECT_VALUE": "Select a value",
+      "ERROR_NOT_FOUND": "Session not found",
+      "ERROR_LOAD": "Unable to load session",
+      "ERROR_SAVE": "Unable to save session"
     }
   }
 }

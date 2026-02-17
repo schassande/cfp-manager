@@ -27,7 +27,7 @@
           optionValue="value"
           display="chip"
           [showToggleAll]="false"
-          [placeholder]="'SESSION.LIST.FILTER_SESSION_TYPE' | translate"
+          [placeholder]="(sessionTypeFilterPlaceholder$ | async) ?? ''"
           class="header-control"
         ></p-multiselect>
 
@@ -39,7 +39,7 @@
           optionValue="value"
           display="chip"
           [showToggleAll]="false"
-          [placeholder]="'SESSION.LIST.FILTER_TRACK' | translate"
+          [placeholder]="(trackFilterPlaceholder$ | async) ?? ''"
           class="header-control"
         ></p-multiselect>
 
@@ -51,7 +51,7 @@
           optionValue="value"
           display="chip"
           [showToggleAll]="false"
-          [placeholder]="'SESSION.LIST.FILTER_STATUS' | translate"
+          [placeholder]="(statusFilterPlaceholder$ | async) ?? ''"
           class="header-control"
         ></p-multiselect>
       </div>
@@ -62,7 +62,7 @@
           type="text"
           [ngModel]="searchText()"
           (ngModelChange)="searchText.set($event)"
-          [placeholder]="'SESSION.LIST.SEARCH_PLACEHOLDER' | translate"
+          [placeholder]="(searchPlaceholder$ | async) ?? ''"
           class="header-control header-search"
         />
 
@@ -72,7 +72,7 @@
           (ngModelChange)="sortBy.set($event)"
           optionLabel="label"
           optionValue="value"
-          [placeholder]="'SESSION.LIST.SORT_BY' | translate"
+          [placeholder]="(sortPlaceholder$ | async) ?? ''"
           class="header-control"
         ></p-select>
       </div>
@@ -95,7 +95,14 @@
   <ng-template #list let-items>
     <div class="session-list">
       @for (item of items; track item.session.id) {
-      <div class="session-card">
+      <div
+        class="session-card"
+        role="button"
+        tabindex="0"
+        (click)="openSessionEdit(item.session.id)"
+        (keydown.enter)="openSessionEdit(item.session.id)"
+        (keydown.space)="openSessionEdit(item.session.id); $event.preventDefault()"
+      >
         <div class="line-1">
           <div class="session-title">{{ item.session.title }}</div>
           <p-tag
