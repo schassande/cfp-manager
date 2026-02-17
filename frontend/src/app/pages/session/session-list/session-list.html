@@ -1,0 +1,97 @@
+<p-dataview
+  [value]="filteredSortedSessions()"
+  [paginator]="true"
+  [rows]="20"
+  layout="list"
+  [loading]="loading()"
+  [showCurrentPageReport]="true"
+  currentPageReportTemplate="{first} - {last} / {totalRecords}"
+>
+  <ng-template #header>
+    <div class="session-list-header">
+      <input
+        pInputText
+        type="text"
+        [ngModel]="searchText()"
+        (ngModelChange)="searchText.set($event)"
+        [placeholder]="'SESSION.LIST.SEARCH_PLACEHOLDER' | translate"
+        class="header-control header-search"
+      />
+
+      <p-select
+        [options]="sortOptions()"
+        [ngModel]="sortBy()"
+        (ngModelChange)="sortBy.set($event)"
+        optionLabel="label"
+        optionValue="value"
+        [placeholder]="'SESSION.LIST.SORT_BY' | translate"
+        class="header-control"
+      ></p-select>
+
+      <p-multiselect
+        [options]="statusOptions()"
+        [ngModel]="selectedStatuses()"
+        (ngModelChange)="selectedStatuses.set($event)"
+        optionLabel="label"
+        optionValue="value"
+        display="chip"
+        [showToggleAll]="false"
+        [placeholder]="'SESSION.LIST.FILTER_STATUS' | translate"
+        class="header-control"
+      ></p-multiselect>
+
+      <p-multiselect
+        [options]="sessionTypeOptions()"
+        [ngModel]="selectedSessionTypeIds()"
+        (ngModelChange)="selectedSessionTypeIds.set($event)"
+        optionLabel="label"
+        optionValue="value"
+        display="chip"
+        [showToggleAll]="false"
+        [placeholder]="'SESSION.LIST.FILTER_SESSION_TYPE' | translate"
+        class="header-control"
+      ></p-multiselect>
+
+      <p-multiselect
+        [options]="trackOptions()"
+        [ngModel]="selectedTrackIds()"
+        (ngModelChange)="selectedTrackIds.set($event)"
+        optionLabel="label"
+        optionValue="value"
+        display="chip"
+        [showToggleAll]="false"
+        [placeholder]="'SESSION.LIST.FILTER_TRACK' | translate"
+        class="header-control"
+      ></p-multiselect>
+    </div>
+  </ng-template>
+
+  <ng-template #list let-items>
+    <div class="session-list">
+      @for (item of items; track item.session.id) {
+      <div class="session-card">
+        <div class="line-1">
+          <div class="session-title">{{ item.session.title }}</div>
+          <p-tag
+            [value]="item.session.conference?.status ?? ''"
+            [severity]="item.statusSeverity"
+          ></p-tag>
+        </div>
+
+        <div class="line-2">
+          <div class="speakers">{{ item.speakerNames.join(', ') }}</div>
+          <div class="meta">
+            <p-tag [value]="item.sessionTypeName" severity="info"></p-tag>
+            <p-tag [value]="item.trackName" severity="contrast"></p-tag>
+            <p-tag [value]="item.session.level" severity="info"></p-tag>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+  </ng-template>
+
+  <ng-template #emptymessage>
+    <div class="empty-message">{{ 'SESSION.LIST.EMPTY' | translate }}</div>
+  </ng-template>
+</p-dataview>

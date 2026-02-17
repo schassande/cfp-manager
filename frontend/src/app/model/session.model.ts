@@ -11,6 +11,8 @@ export interface Session extends PersistentData {
   title: string;
   /** Abstract/summary in French and English */
   abstract: { [lang: string]: string };
+  /**  */
+  references: string;
   /** Type of session (e.g., keynote, workshop) */
   sessionType: string;
   /** Speaker 1 id */
@@ -19,12 +21,16 @@ export interface Session extends PersistentData {
   speaker2Id?: string;
   /** Optional Speaker 3 id */
   speaker3Id?: string;
+  /** last date change. Format ISO 8601 YYYY-MM-DD */
+  lastChangeDate: string;
+  /** full text search field */
+  search: string;
   /** Conference-specific information */
   conference?: {
     /** Conference ID */
     conferenceId: string;
     /** Status of the session in this conference */
-    status: string;
+    status: SessionStatus;
     /** id of the source session registered by the speaker */
     sourceSessionUuid?: string;
     /** identifier of the session Type for this conference */
@@ -33,13 +39,23 @@ export interface Session extends PersistentData {
     trackId: string;
     /** Overridden fields for this session in this conference */
     overriddenFields: OverriddenField[];
-    /** Whether the session is scheduled */
-    scheduled: boolean;
     /** Feedback information */
     feedback?: SessionFeedback;
+    /** Submit Date. Format ISO 8601 YYYY-MM-DD */
+    submitDate: string;
+    /** Level of the session */
+    level: SessionLevel
+    /** */
+    conferenceHallId: string;
+    review : {
+      average: number;
+      votes: number;
+    }
   }
 }
 
+export type SessionStatus = 'DRAFT' | 'SUBMITTED' | 'ACCEPTED' | 'BACKUP' | 'REJECTED' | 'PLANIFIED' | 'CONFIRMED' | 'VALIDATED' | 'CANCELLED';
+export type SessionLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
 /**
  * Represents an overridden field for a session in a conference.
  */

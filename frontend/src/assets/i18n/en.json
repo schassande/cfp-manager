@@ -48,8 +48,7 @@
       "SOCIAL_URL": "Profile URL",
       "ADD_SOCIAL_LINK": "Add social link",
       "NO_SPEAKER": "This person is not yet a speaker. Click the button below to enable speaker profile.",
-      "ENABLE_SPEAKER": "Enable speaker profile"
-      ,
+      "ENABLE_SPEAKER": "Enable speaker profile",
       "ADMIN_DISABLED": "Only platform administrators can change this setting"
     }
   },
@@ -146,8 +145,8 @@
         "FIELD_DESCRIPTION_FR": "Description (French)",
         "NO_DESCRIPTION": "None",
         "ADD_TRACK": "Add Track",
-        "EDIT":"Edit",
-        "CANCEL":"Cancel",
+        "EDIT": "Edit",
+        "CANCEL": "Cancel",
         "SAVE": "Save Track",
         "DELETE": "Delete Track",
         "NO_TRACKS": "No tracks defined",
@@ -165,8 +164,8 @@
         "SESSION": "Is session room",
         "DESCRIPTION": "Manage the rooms for your conference here.",
         "ADD_ROOM": "Add Room",
-        "EDIT":"Edit",
-        "CANCEL":"Cancel",
+        "EDIT": "Edit",
+        "CANCEL": "Cancel",
         "SAVE": "Save Room",
         "DELETE": "Delete Room",
         "NO_ROOMS": "No rooms defined",
@@ -199,10 +198,10 @@
         "X_SLOTS": "{{nb}} slots",
         "ROOM_DISABLING_WARNING": "Warning, if you disable a room, all slots allocated on this room for that day will be definitevely deleted."
       },
-      "SLOT_EDITOR" : {
+      "SLOT_EDITOR": {
         "TITLE": "Slot editor",
         "START_TIME": "Start Time",
-        "DURATION" : "Duration (min)",
+        "DURATION": "Duration (min)",
         "END_TIME": "End Time",
         "ROOM": "Room",
         "OVERFLOW_ROOM": "Overflow rooms",
@@ -212,16 +211,16 @@
         "CANCEL": "Cancel",
         "DELETE": "Delete",
         "BEFORE_DAY_BEGIN": "The slot begin time is before the day begin time",
-        "AFTER_DAY_END":"The slot end time is after the day end time",
-        "ROOM_DISABLED":"Room is disabled for the day",
-        "OVERLAP_SLOT":"This slot overlap another slot(s)",
-        "WRONG_ROOM_TYPE":"The room type is not compatible with the slot type",
-        "WRONG_DURATION":"The slot duration does not match the begin/end gap",
-        "WRONG_DURATION_SESSION":"The slot duration does not match the session duration", 
-        "START_AFTER_END":"The slot begin is after the slot end",
-        "UNEXISTING_ROOM":"Room does not exist in the conference",
-        "WRONG_SLOT_TYPE":"Slot type does not exist in the application",
-        "WRONG_SESSION_TYPE'":"Session type does not exist in the conference"
+        "AFTER_DAY_END": "The slot end time is after the day end time",
+        "ROOM_DISABLED": "Room is disabled for the day",
+        "OVERLAP_SLOT": "This slot overlap another slot(s)",
+        "WRONG_ROOM_TYPE": "The room type is not compatible with the slot type",
+        "WRONG_DURATION": "The slot duration does not match the begin/end gap",
+        "WRONG_DURATION_SESSION": "The slot duration does not match the session duration",
+        "START_AFTER_END": "The slot begin is after the slot end",
+        "UNEXISTING_ROOM": "Room does not exist in the conference",
+        "WRONG_SLOT_TYPE": "Slot type does not exist in the application",
+        "WRONG_SESSION_TYPE'": "Session type does not exist in the conference"
       },
       "SESSION_SOURCE": {
         "TAB": "Session Source",
@@ -255,6 +254,21 @@
   },
   "VALIDATION": {
     "REQUIRED": "This field is required"
+  },
+  "SESSION": {
+    "LIST": {
+      "TITLE": "Sessions",
+      "SEARCH_PLACEHOLDER": "Search in session words",
+      "SORT_BY": "Sort by",
+      "SORT_NAME": "Name",
+      "SORT_STATUS_SUBMIT": "Status + submit date",
+      "FILTER_STATUS": "Statuses",
+      "FILTER_SESSION_TYPE": "Session types",
+      "FILTER_TRACK": "Tracks",
+      "EMPTY": "No session found",
+      "UNKNOWN_SPEAKER": "Unknown speaker",
+      "UNKNOWN_TRACK": "Unknown track",
+      "UNKNOWN_SESSION_TYPE": "Unknown session type"
+    }
   }
 }
-

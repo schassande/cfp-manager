@@ -15,6 +15,9 @@
         <strong>{{ 'CONFERENCE.DESCRIPTION' | translate }}:</strong>
         <p>{{ conf.description[lang()] }}</p>
       </div>
+      <div style="margin-top: 1rem;">
+        <a [routerLink]="['/conference', conf.id, 'sessions']">Voir les sessions</a>
+      </div>
       <!-- Add more fields as needed -->
     </p-card>
   </ng-container>

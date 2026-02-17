@@ -79,8 +79,7 @@
       "SOCIAL_URL": "URL du profil",
       "ADD_SOCIAL_LINK": "Ajouter un lien social",
       "NO_SPEAKER": "Cette personne n'est pas encore conférencière. Cliquez sur le bouton ci-dessous pour activer le profil de conférencier.",
-      "ENABLE_SPEAKER": "Activer le profil de conférencier"
-      ,
+      "ENABLE_SPEAKER": "Activer le profil de conférencier",
       "ADMIN_DISABLED": "Seuls les administrateurs peuvent modifier ce paramètre"
     }
   },
@@ -145,9 +144,9 @@
         "FIELD_DESCRIPTION_FR": "Description (French)",
         "NO_DESCRIPTION": "Aucune",
         "ADD_TRACK": "Ajouter une catégorie",
-        "EDIT":"Modifier",
-        "CANCEL":"Annuler",
-        "DELETE":"Supprimer",
+        "EDIT": "Modifier",
+        "CANCEL": "Annuler",
+        "DELETE": "Supprimer",
         "NO_TRACKS": "Aucune catégorie définie",
         "CONFIRM_DELETE": "Êtes-vous sûr de vouloir supprimer cette catégorie ?",
         "TRACK_SAVED": "Catégorie enregistrée avec succès",
@@ -163,8 +162,8 @@
         "SESSION": "Salle de session",
         "DESCRIPTION": "Gérez les salles de votre conférence ici.",
         "ADD_ROOM": "Ajouter une salle",
-        "EDIT":"Modifier",
-        "CANCEL":"Annuler",
+        "EDIT": "Modifier",
+        "CANCEL": "Annuler",
         "SAVE": "Enregistrer la salle",
         "DELETE": "Supprimer la salle",
         "NO_ROOMS": "Aucune salle définie",
@@ -197,10 +196,10 @@
         "X_SLOTS": "{{nb}} créneaux",
         "ROOM_DISABLING_WARNING": "Attention, si vous désactivez une salle, les créneaux alloués à cette salle pour ce jour seront supprimés définitivement."
       },
-      "SLOT_EDITOR" : {
+      "SLOT_EDITOR": {
         "TITLE": "Editeur de créneau",
         "START_TIME": "Heure de début",
-        "DURATION" : "Durée (min)",
+        "DURATION": "Durée (min)",
         "END_TIME": "Heure de fin",
         "ROOM": "Salle",
         "OVERFLOW_ROOM": "Salles de rediffusion",
@@ -210,16 +209,16 @@
         "CANCEL": "Annuler",
         "DELETE": "Delete",
         "BEFORE_DAY_BEGIN": "Le début du créneau est avant le début de la journée",
-        "AFTER_DAY_END":"La fin du créneau est après la fin de journée",
-        "ROOM_DISABLED":"La salle est désactivée pour la journée",
-        "OVERLAP_SLOT":"Le créneau cheveauche au moins un autre créneau",
-        "WRONG_ROOM_TYPE":"Le type de salle n'est pas compatible avec le type de slot",
-        "WRONG_DURATION":"La durée du créneau ne correspond pas à la différence entre le début et la fin du créneau",
-        "WRONG_DURATION_SESSION":"La durée du créneau ne correspond pas à la durée de la session choisie", 
-        "START_AFTER_END":"Le début du slot est après la fin du slot",
-        "UNEXISTING_ROOM":"La salle n'existe pas dans la conference",
-        "WRONG_SLOT_TYPE":"Le type de slot n'existe pas dans l'application",
-        "WRONG_SESSION_TYPE'":"Le type de session n'existe pas dans la conférence"
+        "AFTER_DAY_END": "La fin du créneau est après la fin de journée",
+        "ROOM_DISABLED": "La salle est désactivée pour la journée",
+        "OVERLAP_SLOT": "Le créneau cheveauche au moins un autre créneau",
+        "WRONG_ROOM_TYPE": "Le type de salle n'est pas compatible avec le type de slot",
+        "WRONG_DURATION": "La durée du créneau ne correspond pas à la différence entre le début et la fin du créneau",
+        "WRONG_DURATION_SESSION": "La durée du créneau ne correspond pas à la durée de la session choisie",
+        "START_AFTER_END": "Le début du slot est après la fin du slot",
+        "UNEXISTING_ROOM": "La salle n'existe pas dans la conference",
+        "WRONG_SLOT_TYPE": "Le type de slot n'existe pas dans l'application",
+        "WRONG_SESSION_TYPE'": "Le type de session n'existe pas dans la conférence"
       },
       "SESSION_SOURCE": {
         "TAB": "Session Source",
@@ -253,6 +252,21 @@
   },
   "VALIDATION": {
     "REQUIRED": "Ce champ est obligatoire"
+  },
+  "SESSION": {
+    "LIST": {
+      "TITLE": "Sessions",
+      "SEARCH_PLACEHOLDER": "Rechercher dans les mots de la session",
+      "SORT_BY": "Trier par",
+      "SORT_NAME": "Nom",
+      "SORT_STATUS_SUBMIT": "Statut + date de soumission",
+      "FILTER_STATUS": "Statuts",
+      "FILTER_SESSION_TYPE": "Types de session",
+      "FILTER_TRACK": "Tracks",
+      "EMPTY": "Aucune session trouvee",
+      "UNKNOWN_SPEAKER": "Speaker inconnu",
+      "UNKNOWN_TRACK": "Track inconnu",
+      "UNKNOWN_SESSION_TYPE": "Type de session inconnu"
+    }
   }
 }
-

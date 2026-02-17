@@ -97,11 +97,15 @@ export type SlotError = 'BEFORE_DAY_BEGIN'
   | 'WRONG_SLOT_TYPE'
   | 'WRONG_SESSION_TYPE';
 
-/** Conference Hall integration info. */
-export interface ExternalSystemConfig {
-  systemName: string;
-  env: string;
+export type ExternalSystem = 'CONFERENCE_HALL' | 'VOXXRIN';
+export type Environment = 'PROD' | 'TEST';
+
+/** Conference Hall or voxxrin integration info. */
+export interface ExternalSystemConfig extends WithId {
+  systemName: ExternalSystem;
+  env: Environment;
   url: string;
-  id: string;
   token: string;
+  parameters: any;
+  lastCommunication: string; // date time ISO
 }
