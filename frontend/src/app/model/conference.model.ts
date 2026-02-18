@@ -32,8 +32,6 @@ export interface Conference extends PersistentData {
     endDate: string;   // ISO 8601
     status: string;
   };
-  /** configuration of the external systems (conferencehall, voxxrin) */
-  externalSystemConfigs: ExternalSystemConfig[];
 }
 
 /** Track of the conference (e.g., a theme or topic). */
@@ -96,15 +94,3 @@ export type SlotError = 'BEFORE_DAY_BEGIN'
   | 'UNEXISTING_ROOM'
   | 'WRONG_SLOT_TYPE'
   | 'WRONG_SESSION_TYPE';
-
-export type ExternalSystem = 'CONFERENCE_HALL' | 'VOXXRIN';
-export type Environment = 'PROD' | 'TEST';
-
-/** Conference Hall or voxxrin integration info. */
-export interface ExternalSystemConfig extends WithId {
-  systemName: ExternalSystem;
-  env: Environment;
-  url: string;
-  parameters: any;
-  lastCommunication: string; // date time ISO
-}

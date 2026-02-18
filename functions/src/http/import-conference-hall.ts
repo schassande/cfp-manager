@@ -1,6 +1,7 @@
 import { onRequest } from 'firebase-functions/https';
 import * as logger from 'firebase-functions/logger';
 import { admin } from '../common/firebase-admin';
+import { FIRESTORE_COLLECTIONS } from '../common/firestore-collections';
 import {
   HttpError,
   ensurePostMethod,
@@ -75,7 +76,12 @@ export const importConferenceHall = onRequest({ cors: true, timeoutSeconds: 60 }
       report
     );
 
-    await persistConferenceAfterImport(context.conferenceRef, workingConference, report);
+    await persistConferenceAfterImport(
+      context.conferenceRef,
+      context.conferenceHallConfigRef,
+      workingConference,
+      report
+    );
     logger.info('importConferenceHall completed successfully', {
       conferenceId: context.conferenceId,
       report,
@@ -127,37 +133,69 @@ async function buildImportRequestContext(req: any, db: admin.firestore.Firestore
   logger.info('importConferenceHall conference loaded', {
     conferenceId,
     requesterEmail,
-    externalSystemConfigsCount: Array.isArray(conferenceData?.externalSystemConfigs)
-      ? conferenceData.externalSystemConfigs.length
-      : 0,
     tracksCount: Array.isArray(conferenceData?.tracks) ? conferenceData.tracks.length : 0,
   });
 
-  const config = await resolveImportConfig(db, conferenceId, conferenceData);
-  return { conferenceId, requesterEmail, conferenceRef, conference: conferenceData, config };
+  const { conferenceHallConfigRef, conferenceHallConfig } = await loadConferenceHallConfig(db, conferenceId);
+  const config = await resolveImportConfig(db, conferenceId, conferenceHallConfig);
+  return {
+    conferenceId,
+    requesterEmail,
+    conferenceRef,
+    conferenceHallConfigRef,
+    conference: conferenceData,
+    config,
+  };
 }
 
 /**
- * Resolves Conference Hall import configuration and token from conference settings and secrets.
+ * Loads Conference Hall config persisted in dedicated collection.
+ */
+async function loadConferenceHallConfig(
+  db: admin.firestore.Firestore,
+  conferenceId: string
+): Promise<{ conferenceHallConfigRef: admin.firestore.DocumentReference; conferenceHallConfig: ConferenceHallConfig }> {
+  const configSnap = await db.collection(FIRESTORE_COLLECTIONS.CONFERENCE_HALL_CONFIG)
+    .where('conferenceId', '==', conferenceId)
+    .limit(1)
+    .get();
+  if (!configSnap.empty) {
+    const configDoc = configSnap.docs[0];
+    return {
+      conferenceHallConfigRef: configDoc.ref,
+      conferenceHallConfig: configDoc.data() as ConferenceHallConfig,
+    };
+  }
+
+  const byDocIdSnap = await db.collection(FIRESTORE_COLLECTIONS.CONFERENCE_HALL_CONFIG).doc(conferenceId).get();
+  if (byDocIdSnap.exists) {
+    return {
+      conferenceHallConfigRef: byDocIdSnap.ref,
+      conferenceHallConfig: byDocIdSnap.data() as ConferenceHallConfig,
+    };
+  }
+
+  throw new HttpError(
+    400,
+    'Conference Hall config not found',
+    'importConferenceHall rejected: conference hall config not found',
+    { conferenceId, collection: FIRESTORE_COLLECTIONS.CONFERENCE_HALL_CONFIG }
+  );
+}
+
+/**
+ * Resolves Conference Hall import configuration and token from dedicated settings and secrets.
  */
 async function resolveImportConfig(
   db: admin.firestore.Firestore,
   conferenceId: string,
-  conference: any
+  conferenceHallConfig: ConferenceHallConfig
 ): Promise<ImportConfigContext> {
-  const config = (conference.externalSystemConfigs ?? []).find(
-    (item: any) => item?.systemName === 'CONFERENCE_HALL' && item?.env === 'PROD'
-  );
-  if (!config) {
-    throw new HttpError(
-      400,
-      'Conference Hall PROD config not found',
-      'importConferenceHall rejected: CONFERENCE_HALL PROD config not found',
-      { conferenceId }
-    );
-  }
-
-  const conferenceName = String(config?.parameters?.conferenceName ?? '').trim();
+  const conferenceName = String(
+    conferenceHallConfig?.conferenceName
+    ?? conferenceHallConfig?.parameters?.conferenceName
+    ?? ''
+  ).trim();
   if (!conferenceName) {
     throw new HttpError(
       400,
@@ -185,7 +223,9 @@ async function resolveImportConfig(
   return {
     conferenceName,
     token,
-    sessionTypeFormatMapping: normalizeSessionTypeFormatMapping(config?.parameters?.sessionTypeFormatMapping),
+    sessionTypeFormatMapping: normalizeSessionTypeFormatMapping(
+      conferenceHallConfig?.sessionTypeMappings ?? conferenceHallConfig?.parameters?.sessionTypeFormatMapping
+    ),
   };
 }
 
@@ -193,7 +233,7 @@ async function resolveImportConfig(
  * Loads the Conference Hall API token from conference secrets collection.
  */
 async function loadConferenceHallToken(db: admin.firestore.Firestore, conferenceId: string): Promise<string> {
-  const secretSnap = await db.collection('conferenceSecret')
+  const secretSnap = await db.collection(FIRESTORE_COLLECTIONS.CONFERENCE_SECRET)
     .where('conferenceId', '==', conferenceId)
     .get();
   logger.info('importConferenceHall secrets loaded', {
@@ -273,7 +313,7 @@ async function loadSessionsByConferenceHallId(
   db: admin.firestore.Firestore,
   conferenceId: string
 ): Promise<Map<string, any>> {
-  const sessionsSnap = await db.collection('session')
+  const sessionsSnap = await db.collection(FIRESTORE_COLLECTIONS.SESSION)
     .where('conference.conferenceId', '==', conferenceId)
     .get();
   const sessionsByChId = new Map<string, any>();
@@ -341,7 +381,7 @@ async function preloadConferenceSpeakers(
   conferenceId: string
 ): Promise<{ personByConferenceHallId: Map<string, any>; personByEmailLower: Map<string, any> }> {
   const startedAt = Date.now();
-  const snap = await db.collection('person')
+  const snap = await db.collection(FIRESTORE_COLLECTIONS.PERSON)
     .where('speaker.submittedConferenceIds', 'array-contains', conferenceId)
     .get();
 
@@ -436,7 +476,7 @@ async function importAllSpeakersBatch(
       continue;
     }
 
-    const personId = String(existing?.id ?? '').trim() || db.collection('person').doc().id;
+    const personId = String(existing?.id ?? '').trim() || db.collection(FIRESTORE_COLLECTIONS.PERSON).doc().id;
     mapped.id = personId;
     mapped.email = String(mapped.email ?? '').trim();
     mapped.lastUpdated = Date.now().toString();
@@ -467,7 +507,8 @@ async function importAllSpeakersBatch(
     }
   }
 
-  const emailRefs = Array.from(emailKeysToCheck).map((key) => db.collection('person_emails').doc(key));
+  const emailRefs = Array.from(emailKeysToCheck)
+    .map((key) => db.collection(FIRESTORE_COLLECTIONS.PERSON_EMAILS).doc(key));
   const emailSnaps = emailRefs.length > 0 ? await db.getAll(...emailRefs) : [];
   const emailSnapByKey = new Map<string, admin.firestore.DocumentSnapshot>();
   for (const snap of emailSnaps) {
@@ -497,11 +538,11 @@ async function importAllSpeakersBatch(
       throw new Error(`EMAIL_EXISTS: ${plan.mapped.email}`);
     }
 
-    const personRef = db.collection('person').doc(plan.mapped.id);
+    const personRef = db.collection(FIRESTORE_COLLECTIONS.PERSON).doc(plan.mapped.id);
     batch.set(personRef, plan.mapped);
     opCount += 1;
 
-    const emailRef = db.collection('person_emails').doc(plan.emailKey);
+    const emailRef = db.collection(FIRESTORE_COLLECTIONS.PERSON_EMAILS).doc(plan.emailKey);
     batch.set(emailRef, {
       personId: plan.mapped.id,
       email: plan.mapped.email,
@@ -513,7 +554,7 @@ async function importAllSpeakersBatch(
       const previousEmailSnap = emailSnapByKey.get(plan.previousEmailKey);
       const previousOwner = String(previousEmailSnap?.data()?.personId ?? '');
       if (previousEmailSnap?.exists && previousOwner === plan.mapped.id) {
-        batch.delete(db.collection('person_emails').doc(plan.previousEmailKey));
+        batch.delete(db.collection(FIRESTORE_COLLECTIONS.PERSON_EMAILS).doc(plan.previousEmailKey));
         opCount += 1;
       }
     }
@@ -559,7 +600,7 @@ async function loadExistingPersonsByEmailIndex(
 
   const emailOwnerByKey = new Map<string, string>();
   for (const keyChunk of chunkArray(emailKeys, 200)) {
-    const emailRefs = keyChunk.map((emailKey) => db.collection('person_emails').doc(emailKey));
+    const emailRefs = keyChunk.map((emailKey) => db.collection(FIRESTORE_COLLECTIONS.PERSON_EMAILS).doc(emailKey));
     const emailSnaps = await db.getAll(...emailRefs);
     for (const emailSnap of emailSnaps) {
       const ownerId = String(emailSnap.data()?.personId ?? '').trim();
@@ -572,7 +613,7 @@ async function loadExistingPersonsByEmailIndex(
   const ownerIds = Array.from(new Set(Array.from(emailOwnerByKey.values())));
   const personById = new Map<string, any>();
   for (const ownerChunk of chunkArray(ownerIds, 200)) {
-    const personRefs = ownerChunk.map((id) => db.collection('person').doc(id));
+    const personRefs = ownerChunk.map((id) => db.collection(FIRESTORE_COLLECTIONS.PERSON).doc(id));
     const personSnaps = await db.getAll(...personRefs);
     for (const personSnap of personSnaps) {
       if (!personSnap.exists) {
@@ -635,7 +676,7 @@ async function upsertSessionsBatch(
       const existingSession = sessionsByChId.get(proposal.id);
 
       if (!existingSession) {
-        const ref = db.collection('session').doc();
+        const ref = db.collection(FIRESTORE_COLLECTIONS.SESSION).doc();
         mappedSession.id = ref.id;
         mappedSession.lastUpdated = Date.now().toString();
         batch.set(ref, mappedSession);
@@ -657,7 +698,7 @@ async function upsertSessionsBatch(
           lastUpdated: Date.now().toString(),
         };
         if (!isSameImportedSession(existingSession, mergedSession)) {
-          batch.set(db.collection('session').doc(existingSession.id), mergedSession);
+          batch.set(db.collection(FIRESTORE_COLLECTIONS.SESSION).doc(existingSession.id), mergedSession);
           opCount += 1;
           report.sessionUpdated += 1;
         } else {
@@ -745,24 +786,18 @@ function chunkArray<T>(items: T[], chunkSize: number): T[][] {
  */
 async function persistConferenceAfterImport(
   conferenceRef: admin.firestore.DocumentReference,
+  conferenceHallConfigRef: admin.firestore.DocumentReference,
   workingConference: any,
   report: ImportReport
 ): Promise<void> {
-  const updatedConfigs = (workingConference.externalSystemConfigs ?? []).map((item: any) => {
-    if (item?.systemName === 'CONFERENCE_HALL' && item?.env === 'PROD') {
-      return {
-        ...item,
-        lastCommunication: report.importedAt,
-      };
-    }
-    return item;
-  });
-
   await conferenceRef.set({
     ...workingConference,
-    externalSystemConfigs: updatedConfigs,
     lastUpdated: Date.now().toString(),
   });
+  await conferenceHallConfigRef.set({
+    lastCommunication: report.importedAt,
+    lastUpdated: Date.now().toString(),
+  }, { merge: true });
 }
 
 /**
@@ -866,7 +901,7 @@ function syncTracksFromCategories(
     );
     if (!existingTrack) {
       tracks.push({
-        id: db.collection('conference').doc().id,
+        id: db.collection(FIRESTORE_COLLECTIONS.CONFERENCE).doc().id,
         name: rawCategory,
         description: {},
         color: '#808080',
@@ -1048,6 +1083,19 @@ function normalizeSessionTypeFormatMapping(rawMapping: any): SessionTypeFormatMa
     return {};
   }
   const normalized: SessionTypeFormatMapping = {};
+  if (Array.isArray(rawMapping)) {
+    for (const entry of rawMapping) {
+      const sessionTypeId = String(entry?.sessionTypeId ?? '').trim();
+      if (!sessionTypeId) {
+        continue;
+      }
+      const mappedFormat = String(entry?.conferenceHallFormat ?? '').trim();
+      if (mappedFormat) {
+        normalized[sessionTypeId] = mappedFormat;
+      }
+    }
+    return normalized;
+  }
   for (const [sessionTypeId, value] of Object.entries(rawMapping)) {
     if (!sessionTypeId) {
       continue;
@@ -1228,6 +1276,23 @@ interface SessionTypeFormatMapping {
   [sessionTypeId: string]: string;
 }
 
+interface ConferenceHallConfig {
+  id?: string;
+  conferenceId: string;
+  conferenceName: string;
+  sessionTypeMappings?: SessionTypeMapping[];
+  lastCommunication?: string;
+  parameters?: {
+    conferenceName?: string;
+    sessionTypeFormatMapping?: any;
+  };
+}
+
+interface SessionTypeMapping {
+  sessionTypeId: string;
+  conferenceHallFormat: string;
+}
+
 interface ImportConfigContext {
   conferenceName: string;
   token: string;
@@ -1238,6 +1303,7 @@ interface ImportRequestContext {
   conferenceId: string;
   requesterEmail: string;
   conferenceRef: admin.firestore.DocumentReference;
+  conferenceHallConfigRef: admin.firestore.DocumentReference;
   conference: any;
   config: ImportConfigContext;
 }

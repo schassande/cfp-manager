@@ -1,15 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, OnInit, signal } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { Conference } from '../../../../model/conference.model';
+import { ConferenceHallConfigService } from '../../../../services/conference-hall-config.service';
 import {
   ConferenceHallImportReport,
   ConferenceHallResetReport,
   ConferenceHallService,
 } from '../../../../services/conference-hall.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-conferencehall-import',
@@ -19,11 +21,13 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
   styleUrls: ['./conferencehall-import.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ConferencehallImportComponent {
+export class ConferencehallImportComponent implements OnInit {
   readonly conference = input.required<Conference>();
   private readonly conferenceHallService = inject(ConferenceHallService);
+  private readonly conferenceHallConfigService = inject(ConferenceHallConfigService);
   private readonly translateService = inject(TranslateService);
   private readonly confirmationService = inject(ConfirmationService);
+  private readonly conferenceHallLastImportAt = signal('');
 
   readonly importLoading = signal(false);
   readonly resetLoading = signal(false);
@@ -35,11 +39,12 @@ export class ConferencehallImportComponent {
   readonly error = signal<string | null>(null);
 
   readonly lastImportAt = computed(() => {
-    const config = this.conference().externalSystemConfigs.find(
-      (item) => item.systemName === 'CONFERENCE_HALL' && item.env === 'PROD'
-    );
-    return config?.lastCommunication || '';
+    return this.conferenceHallLastImportAt();
   });
+
+  async ngOnInit(): Promise<void> {
+    await this.refreshConferenceHallConfig();
+  }
 
   async runImport(): Promise<void> {
     const startedAt = performance.now();
@@ -52,6 +57,7 @@ export class ConferencehallImportComponent {
       const report = await this.conferenceHallService.importConference(this.conference());
       this.importExecutionTimeSeconds.set((performance.now() - startedAt) / 1000);
       this.report.set(report);
+      this.conferenceHallLastImportAt.set(report.importedAt ?? '');
     } catch (error: any) {
       this.error.set(error?.message ?? 'Conference Hall import failed');
     } finally {
@@ -93,6 +99,21 @@ export class ConferencehallImportComponent {
       this.error.set(error?.message ?? 'Conference Hall reset failed');
     } finally {
       this.resetLoading.set(false);
+    }
+  }
+
+  private async refreshConferenceHallConfig(): Promise<void> {
+    const conferenceId = this.conference().id;
+    if (!conferenceId) {
+      this.conferenceHallLastImportAt.set('');
+      return;
+    }
+    try {
+      const config = await firstValueFrom(this.conferenceHallConfigService.findByConferenceId(conferenceId));
+      this.conferenceHallLastImportAt.set(config?.lastCommunication ?? '');
+    } catch (error) {
+      console.error('Unable to load Conference Hall config', error);
+      this.conferenceHallLastImportAt.set('');
     }
   }
 }

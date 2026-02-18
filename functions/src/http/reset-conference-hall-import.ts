@@ -1,6 +1,7 @@
 import { onRequest } from 'firebase-functions/https';
 import * as logger from 'firebase-functions/logger';
 import { admin } from '../common/firebase-admin';
+import { FIRESTORE_COLLECTIONS, FirestoreCollectionName } from '../common/firestore-collections';
 import {
   HttpError,
   ensurePostMethod,
@@ -106,7 +107,7 @@ async function authorizeRequest(req: any, db: admin.firestore.Firestore): Promis
  * (sessions having a non-empty `conference.conferenceHallId`) and returns the deleted count.
  */
 async function deleteConferenceSessions(db: admin.firestore.Firestore, conferenceId: string): Promise<number> {
-  const sessionsSnap = await db.collection('session')
+  const sessionsSnap = await db.collection(FIRESTORE_COLLECTIONS.SESSION)
     .where('conference.conferenceId', '==', conferenceId)
     .get();
   const sessionIdsToDelete = sessionsSnap.docs
@@ -119,7 +120,7 @@ async function deleteConferenceSessions(db: admin.firestore.Firestore, conferenc
     sessionCountToDelete: sessionIdsToDelete.length,
   });
 
-  await deleteByDocIds(db, 'session', sessionIdsToDelete);
+  await deleteByDocIds(db, FIRESTORE_COLLECTIONS.SESSION, sessionIdsToDelete);
   logger.info('resetConferenceHallImport sessions deleted', {
     conferenceId,
     sessionDeleted: sessionIdsToDelete.length,
@@ -136,7 +137,7 @@ async function deleteConferenceSessions(db: admin.firestore.Firestore, conferenc
  * Returns the number of deleted speakers.
  */
 async function deleteOrphanConferenceHallSpeakers(db: admin.firestore.Firestore, conferenceId: string): Promise<number> {
-  const personsSnap = await db.collection('person')
+  const personsSnap = await db.collection(FIRESTORE_COLLECTIONS.PERSON)
     .where('speaker.submittedConferenceIds', 'array-contains', conferenceId)
     .get();
   logger.info('resetConferenceHallImport candidate speakers loaded', {
@@ -199,7 +200,11 @@ async function updateConferenceLastUpdated(
  * Deletes documents by id using batched writes.
  * Chunks are limited to keep a safe margin below Firestore batch limits.
  */
-async function deleteByDocIds(db: admin.firestore.Firestore, collectionName: string, ids: string[]): Promise<void> {
+async function deleteByDocIds(
+  db: admin.firestore.Firestore,
+  collectionName: FirestoreCollectionName,
+  ids: string[]
+): Promise<void> {
   for (let i = 0; i < ids.length; i += 450) {
     const chunk = ids.slice(i, i + 450);
     const batch = db.batch();
@@ -221,10 +226,10 @@ async function deletePersonsAndEmailIndexes(
     const chunk = persons.slice(i, i + 225);
     const batch = db.batch();
     for (const person of chunk) {
-      batch.delete(db.collection('person').doc(person.id));
+      batch.delete(db.collection(FIRESTORE_COLLECTIONS.PERSON).doc(person.id));
       const emailKey = String(person.email ?? '').trim().toLowerCase();
       if (emailKey) {
-        batch.delete(db.collection('person_emails').doc(emailKey));
+        batch.delete(db.collection(FIRESTORE_COLLECTIONS.PERSON_EMAILS).doc(emailKey));
       }
     }
     await batch.commit();

@@ -92,7 +92,6 @@ export class ConferenceConfigComponent implements OnInit {
         rooms: [],
         sessionTypes: [],
         cfp: { startDate: '', endDate: '', status: 'closed' },
-        externalSystemConfigs: []
       };
 
       this.conferenceService.save(defaultConf).subscribe({
@@ -117,11 +116,6 @@ export class ConferenceConfigComponent implements OnInit {
     const conference = this.conference()!;
     const sanitizedConference: Conference = {
       ...conference,
-      externalSystemConfigs: (conference.externalSystemConfigs ?? []).map((item: any) => {
-        const safeConfig = { ...item };
-        delete safeConfig.token;
-        return safeConfig;
-      }),
     };
     this.conferenceService.save(sanitizedConference).subscribe({
       next: (saved) => {

@@ -43,6 +43,10 @@ service cloud.firestore {
       allow create: if isConferenceOrganizer(request.resource.data.conferenceId);
       allow read, update, delete: if isConferenceOrganizer(resource.data.conferenceId);
     }
+    match /conference-hall-config/{document=**} {
+      allow create: if isConferenceOrganizer(request.resource.data.conferenceId);
+      allow read, update, delete: if isConferenceOrganizer(resource.data.conferenceId);
+    }
 
     match /session/{document=**} {
       allow create: if request.auth != null;

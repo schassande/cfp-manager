@@ -1,4 +1,5 @@
 import { admin } from '../common/firebase-admin';
+import { FIRESTORE_COLLECTIONS } from '../common/firestore-collections';
 
 /**
  * Typed HTTP error used by request handlers to map business failures to status codes.
@@ -54,7 +55,7 @@ export async function loadConference(
   conferenceId: string,
   operationName: string
 ): Promise<{ conferenceRef: admin.firestore.DocumentReference; conferenceData: any }> {
-  const conferenceRef = db.collection('conference').doc(conferenceId);
+  const conferenceRef = db.collection(FIRESTORE_COLLECTIONS.CONFERENCE).doc(conferenceId);
   const conferenceSnap = await conferenceRef.get();
   if (!conferenceSnap.exists) {
     throw new HttpError(
@@ -139,4 +140,3 @@ export function ensureRequesterIsOrganizer(
     );
   }
 }
-

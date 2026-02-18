@@ -1,4 +1,5 @@
 import { admin } from '../common/firebase-admin';
+import { FIRESTORE_COLLECTIONS } from '../common/firestore-collections';
 import { computePersonSearchField } from './person-search';
 
 /**
@@ -19,12 +20,12 @@ export async function upsertPersonWithEmailIndex(
       throw new Error('MISSING_EMAIL');
     }
 
-    const personsCol = db.collection('person');
+    const personsCol = db.collection(FIRESTORE_COLLECTIONS.PERSON);
     const personRef = person.id ? personsCol.doc(person.id) : personsCol.doc();
     const personSnap = await tx.get(personRef);
     const currentStored = personSnap.exists ? personSnap.data() : null;
 
-    const emailRef = db.collection('person_emails').doc(emailKey);
+    const emailRef = db.collection(FIRESTORE_COLLECTIONS.PERSON_EMAILS).doc(emailKey);
     const emailSnap = await tx.get(emailRef);
     const emailOwnerPersonId = String(emailSnap.data()?.personId ?? '');
     if (emailSnap.exists && emailOwnerPersonId !== personRef.id) {
@@ -33,7 +34,7 @@ export async function upsertPersonWithEmailIndex(
 
     const previousEmailKey = String(currentStored?.email ?? '').trim().toLowerCase();
     if (previousEmailKey && previousEmailKey !== emailKey) {
-      const previousEmailRef = db.collection('person_emails').doc(previousEmailKey);
+      const previousEmailRef = db.collection(FIRESTORE_COLLECTIONS.PERSON_EMAILS).doc(previousEmailKey);
       const previousEmailSnap = await tx.get(previousEmailRef);
       const previousOwner = String(previousEmailSnap.data()?.personId ?? '');
       if (previousEmailSnap.exists && previousOwner === personRef.id) {
