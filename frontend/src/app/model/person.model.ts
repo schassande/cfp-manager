@@ -18,6 +18,8 @@ export interface Person extends PersistentData {
   hasAccount: boolean;
   /** Whether the person is a platform administrator (default false on creation) */
   isPlatformAdmin?: boolean;
+  /** Whether the person is a speaker profile */
+  isSpeaker: boolean;
   /** Preferred language for communication and interface */
   preferredLanguage: string;
   /** Search field: concatenation of lastName, firstName, email, speaker.company (space-separated, lowercase) */

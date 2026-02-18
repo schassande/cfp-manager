@@ -62,6 +62,7 @@ export class SignupComponent {
           email: formValue.email,
           search: '',
           hasAccount: true,
+          isSpeaker: false,
           preferredLanguage: 'en',
           isPlatformAdmin: false
         };

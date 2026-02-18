@@ -9,8 +9,8 @@ import { PersistentData } from "./persistant.model";
 export interface Session extends PersistentData {
   /** Title of the session */
   title: string;
-  /** Abstract/summary in French and English */
-  abstract: { [lang: string]: string };
+  /** Abstract/summary  */
+  abstract: string;
   /**  */
   references: string;
   /** Type of session (e.g., keynote, workshop) */
@@ -45,6 +45,7 @@ export interface Session extends PersistentData {
     submitDate: string;
     /** Level of the session */
     level: SessionLevel
+    langs: string[];
     /** */
     conferenceHallId: string;
     review : {

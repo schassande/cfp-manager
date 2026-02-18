@@ -117,6 +117,7 @@ export class UserSignService {
         email: user.email,
         search: '',
         hasAccount: true,
+        isSpeaker: false,
         preferredLanguage: 'en',
         isPlatformAdmin: false
       };

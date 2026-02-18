@@ -55,8 +55,7 @@ export class SessionEdit implements OnInit {
 
   readonly form = this.fb.group({
     title: ['', [Validators.required]],
-    abstractEN: [''],
-    abstractFR: [''],
+    abstract: [''],
     speaker1: [null as SpeakerOption | null],
     speaker2: [null as SpeakerOption | null],
     speaker3: [null as SpeakerOption | null],
@@ -138,11 +137,7 @@ export class SessionEdit implements OnInit {
     const updated: Session = {
       ...initial,
       title: raw.title?.trim() ?? '',
-      abstract: {
-        ...(initial.abstract ?? {}),
-        EN: raw.abstractEN ?? '',
-        FR: raw.abstractFR ?? '',
-      },
+      abstract: raw.abstract ?? '',
       speaker1Id: raw.speaker1?.value?.id ?? '',
       speaker2Id: raw.speaker2?.value?.id || undefined,
       speaker3Id: raw.speaker3?.value?.id || undefined,
@@ -211,8 +206,7 @@ export class SessionEdit implements OnInit {
       next: ({ speaker1, speaker2, speaker3 }) => {
         this.form.patchValue({
           title: session.title ?? '',
-          abstractEN: session.abstract?.['EN'] ?? '',
-          abstractFR: session.abstract?.['FR'] ?? '',
+          abstract: session.abstract ?? '',
           speaker1: this.toSpeakerOption(speaker1),
           speaker2: this.toSpeakerOption(speaker2),
           speaker3: this.toSpeakerOption(speaker3),
@@ -225,8 +219,7 @@ export class SessionEdit implements OnInit {
       error: () => {
         this.form.patchValue({
           title: session.title ?? '',
-          abstractEN: session.abstract?.['EN'] ?? '',
-          abstractFR: session.abstract?.['FR'] ?? '',
+          abstract: session.abstract ?? '',
           sessionTypeId: session.conference?.sessionTypeId ?? '',
           trackId: session.conference?.trackId ?? '',
           level: session.conference?.level ?? '',
@@ -289,8 +282,7 @@ export class SessionEdit implements OnInit {
     };
 
     addIfChanged('title', initial.title ?? '', updated.title ?? '');
-    addIfChanged('abstract.EN', initial.abstract?.['EN'] ?? '', updated.abstract?.['EN'] ?? '');
-    addIfChanged('abstract.FR', initial.abstract?.['FR'] ?? '', updated.abstract?.['FR'] ?? '');
+    addIfChanged('abstract', initial.abstract ?? '', updated.abstract ?? '');
     addIfChanged('speakerId1', initial.speaker1Id ?? '', updated.speaker1Id ?? '');
     addIfChanged('speakerId2', initial.speaker2Id ?? '', updated.speaker2Id ?? '');
     addIfChanged('speakerId3', initial.speaker3Id ?? '', updated.speaker3Id ?? '');

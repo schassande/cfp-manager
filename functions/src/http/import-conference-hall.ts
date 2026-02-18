@@ -9,6 +9,7 @@ import {
   getRequesterEmailFromAuthorization,
   ensureRequesterIsOrganizer,
 } from './conference-http-common';
+import { computePersonSearchField } from './person-search';
 
 const PROGRESS_LOG_EVERY = 10;
 const FIRESTORE_BATCH_SAFE_LIMIT = 430;
@@ -899,7 +900,7 @@ function mapPerson(speaker: ConferenceHallSpeakerDto, conference: any, conferenc
     url,
   }));
 
-  return {
+  const mapped = {
     id: existing?.id ?? '',
     lastUpdated: existing?.lastUpdated ?? Date.now().toString(),
     firstName,
@@ -907,6 +908,7 @@ function mapPerson(speaker: ConferenceHallSpeakerDto, conference: any, conferenc
     email: speaker.email ?? existing?.email ?? '',
     hasAccount: existing?.hasAccount ?? false,
     isPlatformAdmin: existing?.isPlatformAdmin ?? false,
+    isSpeaker: true,
     preferredLanguage: existing?.preferredLanguage ?? preferredLanguage,
     search: '',
     speaker: {
@@ -919,6 +921,8 @@ function mapPerson(speaker: ConferenceHallSpeakerDto, conference: any, conferenc
       submittedConferenceIds: mergeSubmittedConferenceIds(existing?.speaker?.submittedConferenceIds, conferenceId),
     },
   };
+  mapped.search = computePersonSearchField(mapped);
+  return mapped;
 }
 
 function mergeSubmittedConferenceIds(existingIds: any, conferenceId: string): string[] {
@@ -947,13 +951,15 @@ function mapSession(
   const sessionTypeId = findSessionId(conference, proposal.formats ?? [], sessionTypeFormatMapping);
   const mappedSessionType = (conference.sessionTypes ?? []).find((item: any) => item.id === sessionTypeId);
   const trackId = findTrackId(conference, proposal.categories ?? []);
-  const lang = String((proposal.languages?.[0] ?? conference.languages?.[0] ?? 'en')).toLowerCase();
+  const langs = (proposal.languages ?? ['FR']).map(l=>l.toUpperCase());
   const submitDate = proposal.submittedAt || new Date().toISOString();
+  const abstract = proposal.abstract ?? '';
+  
   return {
     id: '',
     lastUpdated: Date.now().toString(),
     title: proposal.title ?? '',
-    abstract: { [lang]: proposal.abstract ?? '' },
+    abstract,
     references: proposal.references ?? '',
     sessionType: String(mappedSessionType?.name ?? proposal.formats?.[0] ?? ''),
     speaker1Id: speakerIds[0] ?? '',
@@ -970,6 +976,7 @@ function mapSession(
       overriddenFields: [],
       submitDate,
       level,
+      langs,
       conferenceHallId: proposal.id,
       review: {
         average: proposal.review?.average ?? 0,
@@ -1121,6 +1128,7 @@ function isSameImportedPerson(a: any, b: any): boolean {
     preferredLanguage: a.preferredLanguage,
     hasAccount: a.hasAccount,
     isPlatformAdmin: a.isPlatformAdmin ?? false,
+    isSpeaker: a.isSpeaker ?? false,
   }) === JSON.stringify({
     firstName: b.firstName,
     lastName: b.lastName,
@@ -1129,6 +1137,7 @@ function isSameImportedPerson(a: any, b: any): boolean {
     preferredLanguage: b.preferredLanguage,
     hasAccount: b.hasAccount,
     isPlatformAdmin: b.isPlatformAdmin ?? false,
+    isSpeaker: b.isSpeaker ?? false,
   });
 }
 

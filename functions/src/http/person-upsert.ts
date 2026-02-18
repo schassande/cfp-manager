@@ -1,4 +1,5 @@
 import { admin } from '../common/firebase-admin';
+import { computePersonSearchField } from './person-search';
 
 /**
  * Creates or updates a person while maintaining the `person_emails` uniqueness index in a transaction.
@@ -46,6 +47,7 @@ export async function upsertPersonWithEmailIndex(
     if (person.isPlatformAdmin === undefined) {
       person.isPlatformAdmin = false;
     }
+    person.isSpeaker = !!(person.speaker && typeof person.speaker === 'object');
     if (person.speaker && typeof person.speaker === 'object') {
       const submittedConferenceIds = Array.isArray(person.speaker.submittedConferenceIds)
         ? person.speaker.submittedConferenceIds
@@ -58,6 +60,7 @@ export async function upsertPersonWithEmailIndex(
         )
       );
     }
+    person.search = computePersonSearchField(person);
 
     tx.set(personRef, person);
     tx.set(emailRef, {

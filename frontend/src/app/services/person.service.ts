@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { FirestoreGenericService } from './firestore-generic.service';
 import { Person } from '../model/person.model';
-import { map, Observable, from } from 'rxjs';
+import { map, Observable, from, of } from 'rxjs';
 import { getDocs, orderBy as fbOrderBy, startAfter as fbStartAfter, limit as fbLimit, query as fbQuery, startAt as fbStartAt, endAt as fbEndAt, where as fbWhere } from 'firebase/firestore';
 
 /**
@@ -29,6 +29,7 @@ export class PersonService extends FirestoreGenericService<Person> {
    * Override save to compute search field before saving
    */
   public override save(item: Person): Observable<Person> {
+    item.isSpeaker = !!item.speaker;
     item.search = this.computeSearchField(item);
     return super.save(item);
   }
@@ -154,35 +155,44 @@ export class PersonService extends FirestoreGenericService<Person> {
   }
 
   /**
-   * Search speakers by prefix on the `search` field.
-   * Requires at least 3 characters and returns up to `maxResults` items.
+   * Search speakers with exact match on firstName, lastName or email.
    */
   public searchSpeakersBySearch(searchTerm: string, maxResults = 10): Observable<Person[]> {
     const normalized = (searchTerm ?? '').trim().toLowerCase();
-    if (normalized.length < 3) {
-      return from(Promise.resolve([] as Person[]));
+    const raw = (searchTerm ?? '').trim();
+    if (!raw) {
+      return of([] as Person[]);
     }
+    const requestedResults = Math.max(maxResults, 1);
 
-    const q = fbQuery(
-      this.itemsCollection(),
-      fbOrderBy('search'),
-      fbStartAt(normalized),
-      fbEndAt(`${normalized}\uf8ff`),
-      fbLimit(Math.max(maxResults * 3, 30))
-    );
+    return from((async () => {
+      const personsById = new Map<string, Person>();
+      const [firstNameSnap, lastNameSnap, emailSnap] = await Promise.all([
+        getDocs(fbQuery(this.itemsCollection(), fbWhere('isSpeaker', '==', true), fbWhere('firstName', '==', raw), fbLimit(requestedResults))),
+        getDocs(fbQuery(this.itemsCollection(), fbWhere('isSpeaker', '==', true), fbWhere('lastName', '==', raw), fbLimit(requestedResults))),
+        getDocs(fbQuery(this.itemsCollection(), fbWhere('isSpeaker', '==', true), fbWhere('email', '==', normalized), fbLimit(requestedResults))),
+      ]);
 
-    return from(getDocs(q)).pipe(
-      map((qs) => {
-        const persons: Person[] = [];
-        qs.forEach((ds) => {
+      const appendSnapshot = (snapshot: any) => {
+
+        snapshot.forEach((ds: any) => {
+          if (personsById.size >= requestedResults) {
+            return;
+          }
           const data = ds.data() as Person;
           data.id = ds.id;
-          if (data.speaker) {
-            persons.push(data);
+          if (personsById.has(data.id)) {
+            return;
           }
+          personsById.set(data.id, data);
         });
-        return persons.slice(0, Math.max(maxResults, 1));
-      })
-    );
+      };
+
+      appendSnapshot(firstNameSnap);
+      appendSnapshot(lastNameSnap);
+      appendSnapshot(emailSnap);
+
+      return Array.from(personsById.values()).slice(0, requestedResults);
+    })());
   }
 }
