@@ -76,6 +76,7 @@ export class ConferenceGeneralConfigComponent implements OnInit {
       c.name = values.name;
       c.edition = values.edition;
       c.location = values.location;
+      c.logo = values.logo;
       c.languages = values.languages;
       c.visible = values.visible;
       c.organizerEmails = values.organizerEmails;

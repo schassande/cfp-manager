@@ -15,6 +15,25 @@
 .menu-left .logo {
   height: 36px;
 }
+.menu-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.app-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #1a1a1a;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.1rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+.app-title:hover {
+  color: #1976d2;
+}
 .menu-right {
   display: flex;
   align-items: center;

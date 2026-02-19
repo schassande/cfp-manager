@@ -7,7 +7,7 @@
       @if (conf.logo) {
       <img [src]="conf.logo" alt="logo" width="48" height="48" class="header-logo">
       }
-      <h1>{{ conf.name }} - {{ 'CONFERENCE.CONFIG.TITLE' | translate }}</h1>
+      <h1>{{ conf.name }} {{ conf.edition }} - {{ 'CONFERENCE.CONFIG.TITLE' | translate }}</h1>
     </div>
     <div class="header-actions">
       <button

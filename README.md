@@ -152,4 +152,5 @@ TODO list :
 - soumission de session par les speakers
 - Evaluation des sessions (abandon conferencehall)
   - Envoie emails
-
+- Mode mono conference
+- 

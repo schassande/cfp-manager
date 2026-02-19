@@ -1,8 +1,8 @@
 {
   "HOME": {
-    "TITLE": "Conférences à venir",
+    "TITLE": "Conférences",
     "LOADING": "Chargement des conférences...",
-    "NO_CONFS": "Aucune conférence à venir trouvée.",
+    "NO_CONFS": "Aucune conférence trouvée.",
     "CREATE_CONF": "Créer une conférence",
     "CONF_NAME": "Nom",
     "CONF_DATES": "Dates",
@@ -96,6 +96,9 @@
     "MANAGE": {
       "TITLE": "Gestion de la conférence",
       "SUBTITLE": "Choisissez l'action à effectuer.",
+      "DELETE_BUTTON": "Supprimer la conference",
+      "DELETE_CONFIRM": "Confirmez-vous la suppression definitive de cette conference et de toutes les donnees associees ?",
+      "DELETE_ERROR": "La suppression de la conference a echoue.",
       "ACTIONS": {
         "CONFIG": "Configuration générale",
         "IMPORT": "Importer les sessions",
@@ -135,7 +138,7 @@
       }
     },
     "CONFIG": {
-      "TITLE": "Configuration de la conférence",
+      "TITLE": "Configuration générale",
       "GENERAL": {
         "TAB": "Générale",
         "TITLE": "Configuration générale",
@@ -408,3 +411,4 @@
     }
   }
 }
+

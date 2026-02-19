@@ -1,5 +1,6 @@
 <section class="conference-manage-container">
-  <h1>{{ 'CONFERENCE.MANAGE.TITLE' | translate }}</h1>
+  <p-confirmdialog></p-confirmdialog>
+  <h1 class="manage-title">{{ conferenceTitle() }}</h1>
   <p class="subtitle">{{ 'CONFERENCE.MANAGE.SUBTITLE' | translate }}</p>
 
   <div class="actions" *ngIf="conferenceId() as id">
@@ -23,5 +24,20 @@
       <i class="pi pi-users"></i>
       <span>{{ 'CONFERENCE.MANAGE.ACTIONS.SPEAKERS' | translate }}</span>
     </a>
+  </div>
+
+  <div class="danger-zone" *ngIf="conferenceId()">
+    <button
+      pButton
+      type="button"
+      severity="danger"
+      icon="pi pi-trash"
+      [label]="'CONFERENCE.MANAGE.DELETE_BUTTON' | translate"
+      [loading]="deleting()"
+      (click)="confirmDeleteConference()"
+    ></button>
+    @if (deleteError()) {
+      <p class="delete-error">{{ deleteError() }}</p>
+    }
   </div>
 </section>

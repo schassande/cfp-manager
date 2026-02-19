@@ -1,6 +1,6 @@
 {
   "HOME": {
-    "TITLE": "Upcoming Conferences",
+    "TITLE": "Conferences",
     "LOADING": "Loading conferences...",
     "NO_CONFS": "No upcoming conferences found.",
     "CREATE_CONF": "Create Conference",
@@ -96,6 +96,9 @@
     "MANAGE": {
       "TITLE": "Conference management",
       "SUBTITLE": "Choose the action to perform.",
+      "DELETE_BUTTON": "Delete conference",
+      "DELETE_CONFIRM": "Do you confirm permanent deletion of this conference and all related data?",
+      "DELETE_ERROR": "Conference deletion failed.",
       "ACTIONS": {
         "CONFIG": "General configuration",
         "IMPORT": "Import sessions",
@@ -135,7 +138,7 @@
       }
     },
     "CONFIG": {
-      "TITLE": "Conference Configuration",
+      "TITLE": "General configuration",
       "GENERAL": {
         "TAB": "General",
         "TITLE": "General Configuration",
@@ -410,3 +413,4 @@
     }
   }
 }
+

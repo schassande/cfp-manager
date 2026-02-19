@@ -8,6 +8,7 @@ export const FIRESTORE_COLLECTIONS = {
   CONFERENCE_SPEAKER: 'conference-speaker',
   ACTIVITY: 'activity',
   ACTIVITY_PARTICIPATION: 'activityParticipation',
+  SESSION_ALLOCATION: 'session-allocation',
   SLOT_TYPE: 'slot-type',
 } as const;
 
