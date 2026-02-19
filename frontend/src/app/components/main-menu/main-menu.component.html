@@ -1,6 +1,17 @@
 <header class="main-menu">
   <div class="menu-left">
     <img routerLink="/"  ngOptimizedImage src="assets/logo.png" width="36" height="36" alt="Logo" class="logo" />
+    @if (managedConferenceLogo()) {
+      <img
+        [routerLink]="managedConferenceManageRoute()"
+        ngOptimizedImage
+        [src]="managedConferenceLogo()"
+        width="30"
+        height="30"
+        alt="Conference logo"
+        class="managed-conference-logo"
+      />
+    }
     <a routerLink="/" class="app-title">Conference Manager</a>
   </div>
   <div class="menu-right">

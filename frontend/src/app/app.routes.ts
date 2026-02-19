@@ -17,17 +17,18 @@ import { SessionEdit } from './pages/session/session-edit/session-edit';
 import { SessionImportComponent } from './pages/session/session-import/session-import.component';
 import { SessionAllocation } from './pages/session/session-allocation/session-allocation';
 import { ConferenceOrganizerGuard } from './guards/conference-organizer.guard';
+import { ConferenceManageContextGuard } from './guards/conference-manage-context.guard';
 
 export const routes: Routes = [
 	{ path: '', component: HomeComponent, pathMatch: 'full' },
 	{ path: 'conference/create', component: ConferenceConfigComponent, canActivate: [AuthGuard] },
-	{ path: 'conference/:conferenceId/edit', component: ConferenceConfigComponent, canActivate: [AuthGuard] },
-	{ path: 'conference/:conferenceId/manage', component: ConferenceManage, canActivate: [AuthGuard, ConferenceOrganizerGuard] },
-	{ path: 'conference/:conferenceId/speakers', component: ConferenceSpeakers, canActivate: [AuthGuard, ConferenceOrganizerGuard] },
-	{ path: 'conference/:conferenceId/sessions', component: SessionList, canActivate: [AuthGuard, ConferenceOrganizerGuard] },
-	{ path: 'conference/:conferenceId/allocation', component: SessionAllocation, canActivate: [AuthGuard, ConferenceOrganizerGuard] },
-	{ path: 'conference/:conferenceId/sessions/import', component: SessionImportComponent, canActivate: [AuthGuard, ConferenceOrganizerGuard] },
-	{ path: 'conference/:conferenceId/sessions/:sessionId/edit', component: SessionEdit, canActivate: [AuthGuard] },
+	{ path: 'conference/:conferenceId/edit', component: ConferenceConfigComponent, canActivate: [AuthGuard, ConferenceManageContextGuard] },
+	{ path: 'conference/:conferenceId/manage', component: ConferenceManage, canActivate: [AuthGuard, ConferenceOrganizerGuard, ConferenceManageContextGuard] },
+	{ path: 'conference/:conferenceId/speakers', component: ConferenceSpeakers, canActivate: [AuthGuard, ConferenceOrganizerGuard, ConferenceManageContextGuard] },
+	{ path: 'conference/:conferenceId/sessions', component: SessionList, canActivate: [AuthGuard, ConferenceOrganizerGuard, ConferenceManageContextGuard] },
+	{ path: 'conference/:conferenceId/allocation', component: SessionAllocation, canActivate: [AuthGuard, ConferenceOrganizerGuard, ConferenceManageContextGuard] },
+	{ path: 'conference/:conferenceId/sessions/import', component: SessionImportComponent, canActivate: [AuthGuard, ConferenceOrganizerGuard, ConferenceManageContextGuard] },
+	{ path: 'conference/:conferenceId/sessions/:sessionId/edit', component: SessionEdit, canActivate: [AuthGuard, ConferenceManageContextGuard] },
 	{ path: 'conference/:conferenceId', component: ConferenceViewComponent },
 	{ path: 'preference', component: PreferenceComponent },
 	{ path: 'admin/persons', component: PersonListComponent, canActivate: [AdminGuard] },

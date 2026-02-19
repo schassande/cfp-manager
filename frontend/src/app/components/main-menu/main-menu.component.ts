@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, signal, inject, effect } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
+import { filter } from 'rxjs/operators';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AvatarModule } from 'primeng/avatar';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
@@ -9,6 +11,7 @@ import { MenuItem } from 'primeng/api';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UserSignService } from '../../services/usersign.service';
 import { firstValueFrom } from 'rxjs';
+import { ConferenceManageContextService } from '../../services/conference-manage-context.service';
 
 @Component({
   selector: 'app-main-menu',
@@ -22,8 +25,11 @@ export class MainMenuComponent {
   private readonly signupService = inject(UserSignService);
   private readonly router = inject(Router);
   private readonly translate = inject(TranslateService);
+  private readonly conferenceManageContextService = inject(ConferenceManageContextService);
 
   person = computed(() => this.signupService.person());
+  managedConferenceLogo = computed(() => this.conferenceManageContextService.conferenceLogo());
+  managedConferenceManageRoute = computed(() => this.conferenceManageContextService.manageRoute());
   private readonly _avatarMenuItems = signal<MenuItem[]>([]);
   avatarMenuItems = computed(() => this._avatarMenuItems());
 
@@ -47,6 +53,17 @@ export class MainMenuComponent {
       void this.setMenuItems();
       void this.setAdminMenuItems();
     });
+
+    this.router.events
+      .pipe(
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+        takeUntilDestroyed()
+      )
+      .subscribe((event) => {
+        if (!this.isConferenceManagementRoute(event.urlAfterRedirects)) {
+          this.conferenceManageContextService.clearContext();
+        }
+      });
   }
 
   private async setMenuItems() {
@@ -137,5 +154,28 @@ export class MainMenuComponent {
   private setLanguage(lang: 'en' | 'fr') {
     this.translate.use(lang);
     this._currentLang.set(lang);
+  }
+
+  private isConferenceManagementRoute(url: string): boolean {
+    const cleanUrl = String(url ?? '').split('?')[0].split('#')[0];
+    const segments = cleanUrl.split('/').filter((segment) => segment.length > 0);
+    if (segments.length < 3 || segments[0] !== 'conference' || !segments[1]) {
+      return false;
+    }
+
+    const section = segments[2];
+    if (section === 'manage' || section === 'edit' || section === 'speakers' || section === 'allocation') {
+      return true;
+    }
+
+    if (section !== 'sessions') {
+      return false;
+    }
+
+    if (segments.length === 3 || segments[3] === 'import') {
+      return true;
+    }
+
+    return segments.length >= 5 && segments[4] === 'edit';
   }
 }
