@@ -104,6 +104,36 @@
         "SPEAKERS": "Gérer les speakers"
       }
     },
+    "SPEAKERS": {
+      "TITLE": "Speakers",
+      "TITLE_PAGE": "Speakers de {{conference}}",
+      "FILTER_SESSION_TYPE": "Type de session",
+      "FILTER_SEARCH": "Recherche (min 3 caracteres)",
+      "FILTER_HAS_UNAVAILABLE_SLOT": "A des indisponibilites",
+      "FILTER_HAS_MULTIPLE_SESSIONS": "A plusieurs sessions",
+      "ADD_SPEAKER": "Ajouter un speaker",
+      "COUNT": "{{filtered}} / {{total}} speakers",
+      "UNKNOWN_SPEAKER": "Speaker inconnu",
+      "UNAVAILABLE_SLOTS": "Indisponibilites",
+      "EMPTY": "Aucun speaker",
+      "EDIT": {
+        "TITLE": "Edition Speaker",
+        "TAB_PERSON": "Personne",
+        "TAB_SPEAKER": "Speaker",
+        "TAB_AVAILABILITY": "Disponibilite",
+        "FIRST_NAME": "Prenom",
+        "LAST_NAME": "Nom",
+        "COMPANY": "Entreprise",
+        "REFERENCE": "Reference",
+        "PHOTO_URL": "Photo URL",
+        "BIO": "Bio",
+        "SOCIAL_LINKS": "Social links",
+        "SOCIAL_NETWORK": "Reseau",
+        "SOCIAL_URL": "URL",
+        "ADD": "Ajouter",
+        "CALCULATED_UNAVAILABLE": "Slots indisponibles calcules"
+      }
+    },
     "CONFIG": {
       "TITLE": "Configuration de la conférence",
       "GENERAL": {

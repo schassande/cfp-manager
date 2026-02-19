@@ -72,6 +72,25 @@ export class PersonService extends FirestoreGenericService<Person> {
     );
   }
 
+  bySubmittedConferenceId(conferenceId: string): Observable<Person[]> {
+    return from(
+      getDocs(
+        fbQuery(
+          this.itemsCollection(),
+          fbWhere('speaker.submittedConferenceIds', 'array-contains', conferenceId)
+        )
+      )
+    ).pipe(
+      map((qs) =>
+        qs.docs.map((qds) => {
+          const data = qds.data() as Person;
+          data.id = qds.id;
+          return data;
+        })
+      )
+    );
+  }
+
   /**
    * Combined search and pagination using the search field.
    * Searches with prefix match on the computed search field.

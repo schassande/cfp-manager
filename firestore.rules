@@ -16,9 +16,39 @@ service cloud.firestore {
         && request.auth.token.email == get(personPath).data.email;
     }
 
+    // Firestore Rules does not support iterating a dynamic list with loops.
+    // We check the first submitted conference ids explicitly (pragmatic bounded check).
+    function isOrganizerOfAnySubmittedConferenceIds(submittedConferenceIds) {
+      return request.auth != null
+        && submittedConferenceIds is list
+        && (
+          (submittedConferenceIds.size() > 0 && isConferenceOrganizer(submittedConferenceIds[0])) ||
+          (submittedConferenceIds.size() > 1 && isConferenceOrganizer(submittedConferenceIds[1])) ||
+          (submittedConferenceIds.size() > 2 && isConferenceOrganizer(submittedConferenceIds[2])) ||
+          (submittedConferenceIds.size() > 3 && isConferenceOrganizer(submittedConferenceIds[3])) ||
+          (submittedConferenceIds.size() > 4 && isConferenceOrganizer(submittedConferenceIds[4])) ||
+          (submittedConferenceIds.size() > 5 && isConferenceOrganizer(submittedConferenceIds[5])) ||
+          (submittedConferenceIds.size() > 6 && isConferenceOrganizer(submittedConferenceIds[6])) ||
+          (submittedConferenceIds.size() > 7 && isConferenceOrganizer(submittedConferenceIds[7])) ||
+          (submittedConferenceIds.size() > 8 && isConferenceOrganizer(submittedConferenceIds[8])) ||
+          (submittedConferenceIds.size() > 9 && isConferenceOrganizer(submittedConferenceIds[9]))
+        );
+    }
+
+    function canOrganizerEditPersonFromExistingSubmissions() {
+      return request.auth != null
+        && resource.data.speaker is map
+        && isOrganizerOfAnySubmittedConferenceIds(resource.data.speaker.submittedConferenceIds);
+    }
+
     match /person/{document=**} {
       allow read; 
-      allow update, delete: if request.auth != null 
+      allow update: if request.auth != null
+        && (
+          request.auth.token.email == resource.data.email
+          || canOrganizerEditPersonFromExistingSubmissions()
+        );
+      allow delete: if request.auth != null
       	&& request.auth.token.email == resource.data.email;
       allow create: if request.auth != null 
       	&& request.auth.token.email == request.resource.data.email;

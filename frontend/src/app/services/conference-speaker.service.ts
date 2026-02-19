@@ -11,7 +11,7 @@ import {
   where,
   writeBatch,
 } from '@angular/fire/firestore';
-import { from, Observable } from 'rxjs';
+import { from, map, Observable } from 'rxjs';
 
 /**
  * Service for ConferenceSpeaker persistent documents in Firestore.
@@ -28,6 +28,25 @@ export class ConferenceSpeakerService extends FirestoreGenericService<Conference
 
   protected override getCollectionName(): string {
     return 'conference-speaker';
+  }
+
+  byConferenceId(conferenceId: string): Observable<ConferenceSpeaker[]> {
+    return from(
+      getDocs(
+        query(
+          collection(this.db, this.getCollectionName()),
+          where('conferenceId', '==', conferenceId)
+        )
+      )
+    ).pipe(
+      map((qs) =>
+        qs.docs.map((qds) => {
+          const data = qds.data() as ConferenceSpeaker;
+          data.id = qds.id;
+          return data;
+        })
+      )
+    );
   }
 
   syncFromSession(session: Session, previousSession?: Session): Observable<void> {

@@ -1155,9 +1155,10 @@ function mapPerson(speaker: ConferenceHallSpeakerDto, conference: any, conferenc
 
 function mergeSubmittedConferenceIds(existingIds: any, conferenceId: string): string[] {
   const ids = Array.isArray(existingIds) ? existingIds : [];
+  // Put current conference first so Firestore rules bounded checks prioritize recent conferences.
   return Array.from(
     new Set(
-      [...ids, conferenceId]
+      [conferenceId, ...ids]
         .map((value) => String(value ?? '').trim())
         .filter((value) => value.length > 0)
     )
