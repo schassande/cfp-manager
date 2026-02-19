@@ -14,6 +14,12 @@ import { computePersonSearchField } from './person-search';
 
 const PROGRESS_LOG_EVERY = 10;
 const FIRESTORE_BATCH_SAFE_LIMIT = 430;
+const SESSION_STATUSES_REQUIRING_CONFERENCE_SPEAKER = new Set([
+  'ACCEPTED',
+  'SPEAKER_CONFIRMED',
+  'SCHEDULED',
+  'PROGRAMMED',
+]);
 
 /**
  * HTTP endpoint that imports proposals, speakers and tracks from Conference Hall.
@@ -347,6 +353,7 @@ async function upsertSessionsFromProposals(
   });
 
   const { personByConferenceHallId, personByEmailLower } = await preloadConferenceSpeakers(db, conferenceId);
+  const conferenceSpeakerByPersonId = await preloadConferenceSpeakersDocs(db, conferenceId);
 
   const speakerPersonIdByConferenceHallId = await importAllSpeakersBatch(
     db,
@@ -365,6 +372,7 @@ async function upsertSessionsFromProposals(
     sessionsByChId,
     sessionTypeFormatMapping,
     speakerPersonIdByConferenceHallId,
+    conferenceSpeakerByPersonId,
     report
   );
 
@@ -409,6 +417,34 @@ async function preloadConferenceSpeakers(
   });
 
   return { personByConferenceHallId, personByEmailLower };
+}
+
+async function preloadConferenceSpeakersDocs(
+  db: admin.firestore.Firestore,
+  conferenceId: string
+): Promise<Map<string, any>> {
+  const startedAt = Date.now();
+  const snap = await db.collection(FIRESTORE_COLLECTIONS.CONFERENCE_SPEAKER)
+    .where('conferenceId', '==', conferenceId)
+    .get();
+
+  const conferenceSpeakerByPersonId = new Map<string, any>();
+  snap.forEach((doc) => {
+    const data = { id: doc.id, ...doc.data() } as any;
+    const personId = String(data?.personId ?? '').trim();
+    if (personId) {
+      conferenceSpeakerByPersonId.set(personId, data);
+    }
+  });
+
+  logger.info('importConferenceHall preload conference-speaker completed', {
+    conferenceId,
+    loadedConferenceSpeakersCount: snap.size,
+    byPersonIdCount: conferenceSpeakerByPersonId.size,
+    elapsedMs: Date.now() - startedAt,
+  });
+
+  return conferenceSpeakerByPersonId;
 }
 
 interface SpeakerBatchPlan {
@@ -641,6 +677,7 @@ async function upsertSessionsBatch(
   sessionsByChId: Map<string, any>,
   sessionTypeFormatMapping: SessionTypeFormatMapping,
   speakerPersonIdByConferenceHallId: Map<string, string>,
+  conferenceSpeakerByPersonId: Map<string, any>,
   report: ImportReport
 ): Promise<void> {
   const startedAt = Date.now();
@@ -665,9 +702,25 @@ async function upsertSessionsBatch(
     try {
       const existingSession = sessionsByChId.get(proposal.id);
       const existingSessionStatus = String(existingSession?.conference?.status ?? '').trim();
-      const speakerIds = (proposal.speakers ?? [])
-        .map((speaker) => speakerPersonIdByConferenceHallId.get(String(speaker?.id ?? '').trim()) ?? '')
-        .filter((id) => id.length > 0);
+      const speakerPairByPersonId = new Map<string, string>();
+      for (const speaker of proposal.speakers ?? []) {
+        const conferenceHallSpeakerId = String(speaker?.id ?? '').trim();
+        if (!conferenceHallSpeakerId) {
+          continue;
+        }
+        const personId = String(speakerPersonIdByConferenceHallId.get(conferenceHallSpeakerId) ?? '').trim();
+        if (!personId) {
+          continue;
+        }
+        if (!speakerPairByPersonId.has(personId)) {
+          speakerPairByPersonId.set(personId, conferenceHallSpeakerId);
+        }
+      }
+      let speakerIds = Array.from(speakerPairByPersonId.keys());
+      if (speakerIds.length === 0) {
+        // Legacy/import fallback: keep existing speaker links when CH speaker -> person mapping is unavailable.
+        speakerIds = extractSessionSpeakerIds(existingSession);
+      }
       const mappedSession = mapSession(
         proposal,
         conference,
@@ -676,12 +729,12 @@ async function upsertSessionsBatch(
         sessionTypeFormatMapping,
         existingSessionStatus
       );
+      const sessionId = String(existingSession?.id ?? '').trim() || db.collection(FIRESTORE_COLLECTIONS.SESSION).doc().id;
+      mappedSession.id = sessionId;
 
       if (!existingSession) {
-        const ref = db.collection(FIRESTORE_COLLECTIONS.SESSION).doc();
-        mappedSession.id = ref.id;
         mappedSession.lastUpdated = Date.now().toString();
-        batch.set(ref, mappedSession);
+        batch.set(db.collection(FIRESTORE_COLLECTIONS.SESSION).doc(mappedSession.id), mappedSession);
         opCount += 1;
         report.sessionAdded += 1;
       } else {
@@ -706,6 +759,25 @@ async function upsertSessionsBatch(
         } else {
           report.sessionUnchanged += 1;
         }
+      }
+
+      const conferenceSpeakerSyncResult = syncConferenceSpeakersForSession({
+        db,
+        conferenceId,
+        sessionId: mappedSession.id,
+        existingSession,
+        mappedSession,
+        sourceIdByPersonId: speakerPairByPersonId,
+        conferenceSpeakerByPersonId,
+      });
+
+      for (const entry of conferenceSpeakerSyncResult.upserts) {
+        batch.set(db.collection(FIRESTORE_COLLECTIONS.CONFERENCE_SPEAKER).doc(entry.id), entry);
+        opCount += 1;
+      }
+      for (const id of conferenceSpeakerSyncResult.deleteIds) {
+        batch.delete(db.collection(FIRESTORE_COLLECTIONS.CONFERENCE_SPEAKER).doc(id));
+        opCount += 1;
       }
     } catch (err: any) {
       logger.error('importConferenceHall proposal upsert failed', {
@@ -739,6 +811,125 @@ async function upsertSessionsBatch(
     commits: commitCount,
     elapsedMs: Date.now() - startedAt,
   });
+}
+
+function syncConferenceSpeakersForSession(input: {
+  db: admin.firestore.Firestore;
+  conferenceId: string;
+  sessionId: string;
+  existingSession: any;
+  mappedSession: any;
+  sourceIdByPersonId: Map<string, string>;
+  conferenceSpeakerByPersonId: Map<string, any>;
+}): { upserts: any[]; deleteIds: string[] } {
+  const previousSpeakerIds = extractSessionSpeakerIds(input.existingSession);
+  const nextSpeakerIds = extractSessionSpeakerIds(input.mappedSession);
+  const previousSet = new Set(previousSpeakerIds);
+  const nextSet = new Set(nextSpeakerIds);
+  const shouldExistAfterImport = SESSION_STATUSES_REQUIRING_CONFERENCE_SPEAKER.has(
+    String(input.mappedSession?.conference?.status ?? '').trim()
+  );
+
+  const addedSpeakerIds = shouldExistAfterImport ? nextSpeakerIds : [];
+  const removedSpeakerIds = shouldExistAfterImport
+    ? previousSpeakerIds.filter((id) => !nextSet.has(id))
+    : Array.from(new Set([...previousSpeakerIds, ...nextSpeakerIds]));
+
+  const upserts: any[] = [];
+  const deleteIds: string[] = [];
+
+  for (const personId of addedSpeakerIds) {
+    const existing = input.conferenceSpeakerByPersonId.get(personId);
+    const currentSessionIds = normalizeIdList(existing?.sessionIds);
+    const nextSessionIds = uniqueSorted([...currentSessionIds, input.sessionId]);
+    if (existing && sameIdList(currentSessionIds, nextSessionIds)) {
+      continue;
+    }
+
+    const sourceId = String(input.sourceIdByPersonId.get(personId) ?? '').trim();
+    const merged = {
+      id: String(existing?.id ?? '').trim() || input.db.collection(FIRESTORE_COLLECTIONS.CONFERENCE_SPEAKER).doc().id,
+      conferenceId: input.conferenceId,
+      personId,
+      unavailableSlotsId: normalizeIdList(existing?.unavailableSlotsId),
+      sessionIds: nextSessionIds,
+      source: String(existing?.source ?? 'CONFERENCE_HALL') || 'CONFERENCE_HALL',
+      sourceId: String(existing?.sourceId ?? sourceId).trim() || personId,
+      lastUpdated: Date.now().toString(),
+    };
+    input.conferenceSpeakerByPersonId.set(personId, merged);
+    upserts.push(merged);
+  }
+
+  for (const personId of removedSpeakerIds) {
+    if (!previousSet.has(personId) && !nextSet.has(personId)) {
+      continue;
+    }
+    const existing = input.conferenceSpeakerByPersonId.get(personId);
+    if (!existing) {
+      continue;
+    }
+
+    const currentSessionIds = normalizeIdList(existing?.sessionIds);
+    if (!currentSessionIds.includes(input.sessionId)) {
+      continue;
+    }
+
+    const nextSessionIds = currentSessionIds.filter((id) => id !== input.sessionId);
+    if (nextSessionIds.length === 0) {
+      input.conferenceSpeakerByPersonId.delete(personId);
+      const existingConferenceSpeakerId = String(existing.id ?? '').trim();
+      if (existingConferenceSpeakerId) {
+        deleteIds.push(existingConferenceSpeakerId);
+      }
+      continue;
+    }
+
+    const merged = {
+      ...existing,
+      sessionIds: nextSessionIds,
+      unavailableSlotsId: normalizeIdList(existing?.unavailableSlotsId),
+      lastUpdated: Date.now().toString(),
+    };
+    input.conferenceSpeakerByPersonId.set(personId, merged);
+    upserts.push(merged);
+  }
+
+  return { upserts, deleteIds };
+}
+
+function extractSessionSpeakerIds(session: any): string[] {
+  if (!session) {
+    return [];
+  }
+  return uniqueSorted([
+    String(session.speaker1Id ?? '').trim(),
+    String(session.speaker2Id ?? '').trim(),
+    String(session.speaker3Id ?? '').trim(),
+  ].filter((id) => id.length > 0));
+}
+
+function normalizeIdList(value: any): string[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return uniqueSorted(value.map((item) => String(item ?? '').trim()).filter((item) => item.length > 0));
+}
+
+function uniqueSorted(values: string[]): string[] {
+  return Array.from(new Set(values)).sort((a, b) => a.localeCompare(b));
+}
+
+function sameIdList(a: string[], b: string[]): boolean {
+  if (a.length !== b.length) {
+    return false;
+  }
+  for (let index = 0; index < a.length; index += 1) {
+    if (a[index] !== b[index]) {
+      return false;
+    }
+  }
+  return true;
 }
 
 function collectUniqueSpeakers(proposals: ConferenceHallProposalDto[]): Map<string, ConferenceHallSpeakerDto> {

@@ -5,6 +5,7 @@ export const FIRESTORE_COLLECTIONS = {
   SESSION: 'session',
   PERSON: 'person',
   PERSON_EMAILS: 'person_emails',
+  CONFERENCE_SPEAKER: 'conference-speaker',
   ACTIVITY: 'activity',
   ACTIVITY_PARTICIPATION: 'activityParticipation',
   SLOT_TYPE: 'slot-type',

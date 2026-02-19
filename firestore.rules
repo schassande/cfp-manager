@@ -31,6 +31,7 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+
     match /conference/{document=**} {
       allow read;
       allow update, delete: if request.auth != null 
@@ -38,7 +39,6 @@ service cloud.firestore {
       allow create:         if request.auth != null 
       	&& request.auth.token.email in request.resource.data.organizerEmails;
     }
-
     match /conferenceSecret/{document=**} {
       allow create: if isConferenceOrganizer(request.resource.data.conferenceId);
       allow read, update, delete: if isConferenceOrganizer(resource.data.conferenceId);
@@ -47,6 +47,11 @@ service cloud.firestore {
       allow create: if isConferenceOrganizer(request.resource.data.conferenceId);
       allow read, update, delete: if isConferenceOrganizer(resource.data.conferenceId);
     }
+    match /conference-speaker/{document=**} {
+      allow create: if isConferenceOrganizer(request.resource.data.conferenceId);
+      allow read, update, delete: if isConferenceOrganizer(resource.data.conferenceId);
+    }
+
 
     match /session/{document=**} {
       allow create: if request.auth != null;
@@ -58,7 +63,6 @@ service cloud.firestore {
               );
       allow read;
     }
-
     match /session-allocation/{document=**} {
       allow create: if isConferenceOrganizer(request.resource.data.conferenceId);
       allow read, update, delete: if isConferenceOrganizer(resource.data.conferenceId);

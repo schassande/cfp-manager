@@ -8,12 +8,13 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { TextareaModule } from 'primeng/textarea';
-import { forkJoin, Observable, of, take } from 'rxjs';
+import { forkJoin, Observable, of, switchMap, take } from 'rxjs';
 import { Conference, SessionType, Track } from '../../../model/conference.model';
 import { Person } from '../../../model/person.model';
 import { OverriddenField, Session, SessionLevel, SessionStatus } from '../../../model/session.model';
 import { SessionStatusBadgeComponent } from '../../../components/session-status-badge/session-status-badge.component';
 import { ConferenceService } from '../../../services/conference.service';
+import { ConferenceSpeakerService } from '../../../services/conference-speaker.service';
 import { PersonService } from '../../../services/person.service';
 import { SessionService } from '../../../services/session.service';
 
@@ -81,6 +82,7 @@ export class SessionEdit implements OnInit {
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
   private readonly sessionService = inject(SessionService);
+  private readonly conferenceSpeakerService = inject(ConferenceSpeakerService);
   private readonly conferenceService = inject(ConferenceService);
   private readonly personService = inject(PersonService);
 
@@ -198,7 +200,10 @@ export class SessionEdit implements OnInit {
     updatedConference.overriddenFields = this.computeOverriddenFields(initial, updated, existingOverrides);
 
     this.saving.set(true);
-    this.sessionService.save(updated).pipe(take(1)).subscribe({
+    this.sessionService.save(updated).pipe(
+      take(1),
+      switchMap((savedSession) => this.conferenceSpeakerService.syncFromSession(savedSession, initial))
+    ).subscribe({
       next: () => {
         this.saving.set(false);
         const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
