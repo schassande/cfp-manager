@@ -301,6 +301,7 @@
       "TITLE": "Edition de session",
       "LOADING": "Chargement de la session...",
       "STATUS": "Statut",
+      "TRANSITIONS": "Transitions possibles",
       "TITLE_FIELD": "Titre",
       "ABSTRACT": "Resumé",
       "SPEAKER_1": "Orateur 1",
@@ -326,6 +327,16 @@
       "DECLINED_BY_SPEAKER": "Refusée par l'orateur",
       "PROGRAMMED": "Programmée",
       "CANCELLED": "Annulée"
+    },
+    "TRANSITION": {
+      "SUBMIT": "Soumettre",
+      "REJECT": "Rejeter",
+      "ACCEPT": "Accepter",
+      "WAITLIST": "Déclarer backup",
+      "CONFIRM_SPEAKER": "Confirmation de participation",
+      "DECLINE_SPEAKER": "Refus de participation",
+      "CONFIRM_AFTER_SCHEDULE": "Confirmation de participation",
+      "CANCEL": "Annuler la session"
     }
   }
 }

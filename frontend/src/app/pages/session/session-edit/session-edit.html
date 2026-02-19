@@ -9,8 +9,24 @@
     <form [formGroup]="form" class="session-form" (ngSubmit)="save()">
       <div class="form-field">
         <label>{{ 'SESSION.EDIT.STATUS' | translate }}</label>
-        <div>{{ ('SESSION.STATUS.' + (initialSession()?.conference?.status ?? 'UNKNOWN')) | translate }}</div>
+        <app-session-status-badge [status]="selectedStatus() || 'UNKNOWN'"></app-session-status-badge>
       </div>
+
+      @if (availableStatusTransitions().length > 0) {
+      <div class="form-field">
+        <label>{{ 'SESSION.EDIT.TRANSITIONS' | translate }}</label>
+        <div class="form-actions">
+          @for (transition of availableStatusTransitions(); track transition.to + '-' + transition.actionKey) {
+          <p-button
+            type="button"
+            severity="secondary"
+            [label]="('SESSION.TRANSITION.' + transition.actionKey) | translate"
+            (click)="applyStatusTransition(transition)"
+          />
+          }
+        </div>
+      </div>
+      }
 
       <div class="form-field">
         <label for="title">{{ 'SESSION.EDIT.TITLE_FIELD' | translate }}</label>

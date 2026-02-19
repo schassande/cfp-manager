@@ -9,7 +9,9 @@ import { ConferenceService } from '../../../services/conference.service';
 import { Conference } from '../../../model/conference.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Session, SessionStatus } from '../../../model/session.model';
+import { getSessionStatusTranslationKey } from '../../../model/session-status.utils';
 import { PersonService } from '../../../services/person.service';
+import { SessionStatusBadgeComponent } from '../../../components/session-status-badge/session-status-badge.component';
 import { DataViewModule } from 'primeng/dataview';
 import { InputTextModule } from 'primeng/inputtext';
 import { MultiSelectModule } from 'primeng/multiselect';
@@ -18,7 +20,6 @@ import { TagModule } from 'primeng/tag';
 
 interface SessionForView {
   session: Session;
-  statusLabel: string;
   speakerNames: string[];
   sessionTypeName: string;
   sessionTypeColor: string;
@@ -26,7 +27,6 @@ interface SessionForView {
   trackName: string;
   trackColor: string;
   trackTextColor: string;
-  statusSeverity: 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast';
 }
 
 interface SelectOption {
@@ -45,6 +45,7 @@ interface SelectOption {
     MultiSelectModule,
     SelectModule,
     TagModule,
+    SessionStatusBadgeComponent,
   ],
   templateUrl: './session-list.html',
   styleUrl: './session-list.scss',
@@ -153,7 +154,6 @@ export class SessionList implements OnInit {
 
       return {
         session,
-        statusLabel: this.translateStatusLabel(session.conference?.status),
         speakerNames: speakers,
         sessionTypeName,
         sessionTypeColor,
@@ -161,7 +161,6 @@ export class SessionList implements OnInit {
         trackName,
         trackColor,
         trackTextColor: this.computeTextColorForBackground(trackColor),
-        statusSeverity: this.computeStatusSeverity(session.conference?.status),
       };
     });
   });
@@ -243,41 +242,6 @@ export class SessionList implements OnInit {
     void this.router.navigate(['/conference', conferenceId, 'sessions', sessionId, 'edit']);
   }
 
-  private computeStatusSeverity(status: SessionStatus | undefined): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
-    switch (status) {
-      case 'PROGRAMMED':
-      case 'SPEAKER_CONFIRMED':
-      case 'SCHEDULED':
-        return 'success';
-      case 'SUBMITTED':
-      case 'ACCEPTED':
-        return 'info';
-      case 'WAITLISTED':
-      case 'DRAFT':
-        return 'warn';
-      case 'DECLINED_BY_SPEAKER':
-      case 'REJECTED':
-      case 'CANCELLED':
-        return 'danger';
-      default:
-        return 'secondary';
-    }
-  }
-
-  private statusTranslationKey(status: SessionStatus | string | undefined): string {
-    const value = String(status ?? '').trim().toUpperCase();
-    if (!value) {
-      return 'SESSION.STATUS.UNKNOWN';
-    }
-    return `SESSION.STATUS.${value}`;
-  }
-
-  private translateStatusLabel(status: SessionStatus | string | undefined): string {
-    const key = this.statusTranslationKey(status).replace('SESSION.STATUS.', '');
-    const labels = this.sessionStatusTranslations();
-    return labels?.[key] ?? String(status ?? '');
-  }
-
   private computeTextColorForBackground(backgroundColor: string): string {
     const normalized = backgroundColor.trim();
     const shortHexMatch = normalized.match(/^#([0-9a-fA-F]{3})$/);
@@ -303,6 +267,12 @@ export class SessionList implements OnInit {
 
     const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
     return luminance > 0.6 ? '#111827' : '#FFFFFF';
+  }
+
+  private translateStatusLabel(status: SessionStatus | string | undefined): string {
+    const key = getSessionStatusTranslationKey(status).replace('SESSION.STATUS.', '');
+    const labels = this.sessionStatusTranslations();
+    return labels?.[key] ?? String(status ?? '');
   }
 
   private loadSpeakerNames(sessions: Session[]): void {

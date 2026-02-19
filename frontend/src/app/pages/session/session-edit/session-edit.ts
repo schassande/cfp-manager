@@ -11,15 +11,54 @@ import { TextareaModule } from 'primeng/textarea';
 import { forkJoin, Observable, of, take } from 'rxjs';
 import { Conference, SessionType, Track } from '../../../model/conference.model';
 import { Person } from '../../../model/person.model';
-import { OverriddenField, Session, SessionLevel } from '../../../model/session.model';
+import { OverriddenField, Session, SessionLevel, SessionStatus } from '../../../model/session.model';
+import { SessionStatusBadgeComponent } from '../../../components/session-status-badge/session-status-badge.component';
 import { ConferenceService } from '../../../services/conference.service';
 import { PersonService } from '../../../services/person.service';
 import { SessionService } from '../../../services/session.service';
 
+/**
+ * Option affichée dans les auto-complétions de speakers.
+ */
 interface SpeakerOption {
+  /** Libellé affiché à l'utilisateur. */
   label: string;
+  /** Personne associée à l'option sélectionnée. */
   value: Person;
 }
+
+/**
+ * Transition de statut autorisée depuis un état donné.
+ */
+interface SessionStatusTransition {
+  /** Statut cible appliqué quand l'action est déclenchée. */
+  to: SessionStatus;
+  /** Clé i18n du libellé d'action affiché sur le bouton. */
+  actionKey: string;
+}
+
+const SESSION_STATUS_TRANSITIONS: Record<SessionStatus, SessionStatusTransition[]> = {
+  DRAFT: [{ to: 'SUBMITTED', actionKey: 'SUBMIT' }],
+  SUBMITTED: [
+    { to: 'REJECTED', actionKey: 'REJECT' },
+    { to: 'ACCEPTED', actionKey: 'ACCEPT' },
+    { to: 'WAITLISTED', actionKey: 'WAITLIST' },
+  ],
+  REJECTED: [],
+  WAITLISTED: [
+    { to: 'REJECTED', actionKey: 'REJECT' },
+    { to: 'ACCEPTED', actionKey: 'ACCEPT' },
+  ],
+  ACCEPTED: [{ to: 'SPEAKER_CONFIRMED', actionKey: 'CONFIRM_SPEAKER' }], // 'SCHEDULED' excluded: done by planning workflow.
+  SPEAKER_CONFIRMED: [], // 'PROGRAMMED' excluded: done by planning workflow.
+  SCHEDULED: [
+    { to: 'DECLINED_BY_SPEAKER', actionKey: 'DECLINE_SPEAKER' },
+    { to: 'PROGRAMMED', actionKey: 'CONFIRM_AFTER_SCHEDULE' },
+  ],
+  DECLINED_BY_SPEAKER: [],
+  PROGRAMMED: [{ to: 'CANCELLED', actionKey: 'CANCEL' }],
+  CANCELLED: [],
+};
 
 @Component({
   selector: 'app-session-edit',
@@ -30,6 +69,7 @@ interface SpeakerOption {
     InputTextModule,
     ReactiveFormsModule,
     SelectModule,
+    SessionStatusBadgeComponent,
     TextareaModule,
     TranslateModule,
   ],
@@ -49,6 +89,7 @@ export class SessionEdit implements OnInit {
   readonly errorMessage = signal('');
   readonly conference = signal<Conference | undefined>(undefined);
   readonly initialSession = signal<Session | undefined>(undefined);
+  readonly selectedStatus = signal<SessionStatus | ''>('');
   readonly speaker1Suggestions = signal<SpeakerOption[]>([]);
   readonly speaker2Suggestions = signal<SpeakerOption[]>([]);
   readonly speaker3Suggestions = signal<SpeakerOption[]>([]);
@@ -83,6 +124,14 @@ export class SessionEdit implements OnInit {
     { label: 'INTERMEDIATE', value: 'INTERMEDIATE' },
     { label: 'ADVANCED', value: 'ADVANCED' },
   ];
+
+  readonly availableStatusTransitions = computed<SessionStatusTransition[]>(() => {
+    const current = this.selectedStatus();
+    if (!current) {
+      return [];
+    }
+    return SESSION_STATUS_TRANSITIONS[current] ?? [];
+  });
 
   ngOnInit(): void {
     const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
@@ -132,6 +181,7 @@ export class SessionEdit implements OnInit {
       sessionTypeId: raw.sessionTypeId ?? '',
       trackId: raw.trackId ?? '',
       level: (raw.level as SessionLevel) ?? initial.conference.level,
+      status: (this.selectedStatus() || initial.conference.status) as SessionStatus,
     };
 
     const updated: Session = {
@@ -197,7 +247,17 @@ export class SessionEdit implements OnInit {
     this.form.get(controlName)?.setValue(null);
   }
 
+  applyStatusTransition(transition: SessionStatusTransition): void {
+    const allowedTransitions = this.availableStatusTransitions();
+    const isAllowed = allowedTransitions.some((item) => item.to === transition.to && item.actionKey === transition.actionKey);
+    if (!isAllowed) {
+      return;
+    }
+    this.selectedStatus.set(transition.to);
+  }
+
   private populateForm(session: Session): void {
+    this.selectedStatus.set((session.conference?.status ?? '') as SessionStatus | '');
     forkJoin({
       speaker1: this.loadSpeaker(session.speaker1Id),
       speaker2: this.loadSpeaker(session.speaker2Id),

@@ -303,6 +303,7 @@
       "TITLE": "Edit Session",
       "LOADING": "Loading session...",
       "STATUS": "Status",
+      "TRANSITIONS": "Available transitions",
       "TITLE_FIELD": "Title",
       "ABSTRACT": "Abstract",
       "SPEAKER_1": "Speaker 1",
@@ -328,6 +329,16 @@
       "DECLINED_BY_SPEAKER": "Declined by speaker",
       "PROGRAMMED": "Programmed",
       "CANCELLED": "Cancelled"
+    },
+    "TRANSITION": {
+      "SUBMIT": "Submit",
+      "REJECT": "Reject",
+      "ACCEPT": "Accept",
+      "WAITLIST": "Waitlist",
+      "CONFIRM_SPEAKER": "Speaker confirms",
+      "DECLINE_SPEAKER": "Speaker declines",
+      "CONFIRM_AFTER_SCHEDULE": "Speaker confirms",
+      "CANCEL": "Cancel session"
     }
   }
 }
