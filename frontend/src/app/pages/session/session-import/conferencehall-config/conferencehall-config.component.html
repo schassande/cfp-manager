@@ -1,4 +1,5 @@
 <div class="conferencehall-config">
+  <h3>Configuration</h3>
   @if (currentForm(); as form) {
   <form [formGroup]="form" class="config-form">
     <div class="form-section">
@@ -45,7 +46,7 @@
       <div class="mapping-table-container">
         @if (conference().sessionTypes.length) {
         <div class="mapping-table" formGroupName="sessionTypeFormatMapping">
-          <div class="mapping-header">Type de session</div>
+          <div class="mapping-header"></div>
           <div class="mapping-header">Format Conference Hall</div>
           @for (sessionType of conference().sessionTypes; track sessionType.id) {
           <div class="mapping-cell mapping-session-type">{{ sessionType.name }}</div>

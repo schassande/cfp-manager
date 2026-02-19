@@ -17,16 +17,16 @@
             (keydown.enter)="onRoomClick(room)"
             (keydown.space)="onRoomClick(room); $event.preventDefault()"
           >
-            <div class="card-header">
-              <h3>{{ room.name }}</h3>
-            </div>
-            <div class="card-body">
-              <div class="info-row single-line">
-                <span class="label">{{ 'CONFERENCE.CONFIG.ROOMS.CAPACITY' | translate }}:</span>
-                <span class="value">{{ room.capacity }}</span>
-                <span class="label">{{ 'CONFERENCE.CONFIG.ROOMS.SESSION' | translate }}:</span>
-                <span class="value">{{ (room.isSessionRoom ? 'PERSON.LIST.YES' : 'PERSON.LIST.NO') | translate }}</span>
+            <div class="room-line">
+              <div class="room-main">
+                <i
+                  class="room-icon pi"
+                  [class.pi-users]="room.isSessionRoom"
+                  [class.pi-home]="!room.isSessionRoom"
+                ></i>
+                <h3>{{ room.name }}</h3>
               </div>
+              <div class="room-capacity">{{ room.capacity }}</div>
             </div>
           </article>
           }

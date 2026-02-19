@@ -19,14 +19,9 @@
             (keydown.enter)="onTrackClick(track)"
             (keydown.space)="onTrackClick(track); $event.preventDefault()"
           >
-            <div class="card-header">
+            <div class="track-line">
+              <i class="track-icon" [class]="track.icon || 'pi pi-tag'"></i>
               <h3>{{ track.name }}</h3>
-            </div>
-            <div class="card-body">
-              <div class="info-row single-line">
-                <span class="label">{{ 'CONFERENCE.CONFIG.TRACKS.ICON' | translate }}:</span>
-                <span class="value">{{ track.icon || '-' }}</span>
-              </div>
             </div>
           </article>
           }

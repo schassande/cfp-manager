@@ -69,7 +69,15 @@ export class SessionList implements OnInit {
   readonly selectedSessionTypeIds = signal<string[]>([]);
   readonly selectedTrackIds = signal<string[]>([]);
   readonly sortBy = signal<'name' | 'statusSubmitDate'>('name');
-  readonly conferenceName = computed(() => this.conference()?.name?.trim() ?? '');
+  readonly conferenceName = computed(() => {
+    const conference = this.conference();
+    if (!conference) {
+      return '';
+    }
+    const name = String(conference.name ?? '').trim();
+    const edition = String(conference.edition ?? '').trim();
+    return edition ? `${name} ${edition}` : name;
+  });
   readonly searchPlaceholder$ = this.translateService.stream('SESSION.LIST.SEARCH_PLACEHOLDER');
   readonly sortPlaceholder$ = this.translateService.stream('SESSION.LIST.SORT_BY');
   readonly statusFilterPlaceholder$ = this.translateService.stream('SESSION.LIST.FILTER_STATUS');

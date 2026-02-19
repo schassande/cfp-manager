@@ -19,18 +19,21 @@
             (keydown.enter)="onSessionTypeClick(sessionType)"
             (keydown.space)="onSessionTypeClick(sessionType); $event.preventDefault()"
           >
-            <div class="card-header">
-              <h3>{{ sessionType.name }}</h3>
-            </div>
-            <div class="card-body">
-              <div class="info-row single-line">
-                <span class="label">{{ 'CONFERENCE.CONFIG.SESSION_TYPES.DURATION' | translate }}:</span>
-                <span class="value">{{ sessionType.duration }} {{ 'CONFERENCE.CONFIG.SESSION_TYPES.MINUTES' | translate }}</span>
-                <span class="label">{{ 'CONFERENCE.CONFIG.SESSION_TYPES.MAX_SPEAKERS' | translate }}:</span>
-                <span class="value">{{ sessionType.maxSpeakers }}</span>
-                @if (!sessionType.visible) {
-                <span class="visibility-badge">{{ 'CONFERENCE.CONFIG.SESSION_TYPES.HIDDEN' | translate }}</span>
+            <div class="session-type-line">
+              <div class="session-type-main">
+                @if (sessionType.icon) {
+                  <i class="session-type-icon" [class]="sessionType.icon"></i>
                 }
+                <h3>{{ sessionType.name }}</h3>
+                <span class="max-speakers">
+                  {{ 'CONFERENCE.CONFIG.SESSION_TYPES.MAX_SPEAKERS' | translate }}: {{ sessionType.maxSpeakers }}
+                </span>
+                @if (!sessionType.visible) {
+                  <span class="visibility-badge">{{ 'CONFERENCE.CONFIG.SESSION_TYPES.HIDDEN' | translate }}</span>
+                }
+              </div>
+              <div class="session-type-duration">
+                {{ sessionType.duration }} {{ 'CONFERENCE.CONFIG.SESSION_TYPES.MINUTES' | translate }}
               </div>
             </div>
           </article>

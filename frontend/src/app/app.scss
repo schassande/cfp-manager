@@ -1,6 +1,7 @@
 
 // Styles globaux éventuels ici
 .main-content {
-	margin-top: 80px;
-	min-height: calc(100vh - 56px);
+  padding-top: 56px;
+  min-height: 100vh;
+  box-sizing: border-box;
 }

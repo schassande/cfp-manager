@@ -3,7 +3,7 @@
     'CONFERENCE.SPEAKERS.TITLE_PAGE'
       | translate
         : {
-            conference: conference()?.name || ''
+            conference: ((conference()?.name || '') + (conference()?.edition ? ' ' + conference()?.edition : '')).trim()
           }
   }}
 </h2>
