@@ -6,11 +6,10 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { MessageService } from 'primeng/api';
 import { ConferenceService } from '../../../../services/conference.service';
 import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
-import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
-import { ToggleButtonModule } from 'primeng/togglebutton';
+import { DataViewModule } from 'primeng/dataview';
+import { DialogModule } from 'primeng/dialog';
 
 @Component({
   selector: 'app-conference-tracks-config',
@@ -20,10 +19,9 @@ import { ToggleButtonModule } from 'primeng/togglebutton';
     TranslateModule,
     ButtonModule,
     InputTextModule,
-    InputNumberModule,
-    ToggleButtonModule,
     ToastModule,
-    CardModule,    
+    DataViewModule,
+    DialogModule,
   ],
   templateUrl: './conference-tracks-config.component.html',
   styleUrls: ['./conference-tracks-config.component.scss'],
@@ -41,10 +39,18 @@ readonly conference = input.required<Conference>();
   protected readonly tracks = signal<Track[]>([]);
   protected readonly form = signal<FormGroup | null>(null);
   protected readonly editingId = signal<string | null>(null);
+  protected readonly dialogVisible = signal(false);
   private readonly formValueTrigger = signal<number>(0);
 
   protected readonly isEditing = computed(() => this.editingId() !== null);
   protected readonly currentForm = computed(() => this.form());
+  protected readonly currentEditingTrack = computed(() => {
+    const id = this.editingId();
+    if (!id) {
+      return undefined;
+    }
+    return this.tracks().find((track) => track.id === id);
+  });
   protected readonly currentTracks = computed(() => {
     this.formValueTrigger();
     return this.tracks();
@@ -74,14 +80,17 @@ readonly conference = input.required<Conference>();
   onAddNew() {
     this.editingId.set(null);
     this.createNewForm();
+    this.dialogVisible.set(true);
   }
 
   onEdit(track: Track) {
     this.editingId.set(track.id);
     this.createNewForm(track);
+    this.dialogVisible.set(true);
   }
 
   onCancel() {
+    this.dialogVisible.set(false);
     this.form.set(null);
     this.editingId.set(null);
   }
@@ -98,6 +107,9 @@ readonly conference = input.required<Conference>();
         next: () => {
           this.tracks.set(updatedTracks);
           this.formValueTrigger.update((v) => v + 1);
+          this.form.set(null);
+          this.editingId.set(null);
+          this.dialogVisible.set(false);
           this.cdr.markForCheck();
           this.messageService.add({
             severity: 'success',
@@ -170,6 +182,7 @@ readonly conference = input.required<Conference>();
         this.formValueTrigger.update((v) => v + 1);
         this.form.set(null);
         this.editingId.set(null);
+        this.dialogVisible.set(false);
         this.cdr.markForCheck();
         this.messageService.add({
           severity: 'success',
@@ -188,4 +201,38 @@ readonly conference = input.required<Conference>();
     });
   }
 
+  onTrackClick(track: Track) {
+    this.onEdit(track);
+  }
+
+  onDialogHide() {
+    this.onCancel();
+  }
+
+  computeTextColorForBackground(backgroundColor: string): string {
+    const normalized = backgroundColor.trim();
+    const shortHexMatch = normalized.match(/^#([0-9a-fA-F]{3})$/);
+    const fullHexMatch = normalized.match(/^#([0-9a-fA-F]{6})$/);
+
+    let r = 0;
+    let g = 0;
+    let b = 0;
+
+    if (shortHexMatch) {
+      const hex = shortHexMatch[1];
+      r = parseInt(`${hex[0]}${hex[0]}`, 16);
+      g = parseInt(`${hex[1]}${hex[1]}`, 16);
+      b = parseInt(`${hex[2]}${hex[2]}`, 16);
+    } else if (fullHexMatch) {
+      const hex = fullHexMatch[1];
+      r = parseInt(hex.substring(0, 2), 16);
+      g = parseInt(hex.substring(2, 4), 16);
+      b = parseInt(hex.substring(4, 6), 16);
+    } else {
+      return '#FFFFFF';
+    }
+
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return luminance > 0.6 ? '#111827' : '#FFFFFF';
+  }
 }

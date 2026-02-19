@@ -6,11 +6,12 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { MessageService } from 'primeng/api';
 import { ConferenceService } from '../../../../services/conference.service';
 import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
 import { ToggleButtonModule } from 'primeng/togglebutton';
+import { DataViewModule } from 'primeng/dataview';
+import { DialogModule } from 'primeng/dialog';
 
 @Component({
   selector: 'app-conference-rooms-config',
@@ -23,7 +24,8 @@ import { ToggleButtonModule } from 'primeng/togglebutton';
     InputNumberModule,
     ToggleButtonModule,
     ToastModule,
-    CardModule,    
+    DataViewModule,
+    DialogModule,
   ],
   templateUrl: './conference-rooms-config.component.html',
   styleUrls: ['./conference-rooms-config.component.scss'],
@@ -41,10 +43,18 @@ export class ConferenceRoomsConfigComponent {
   protected readonly rooms = signal<Room[]>([]);
   protected readonly form = signal<FormGroup | null>(null);
   protected readonly editingId = signal<string | null>(null);
+  protected readonly dialogVisible = signal(false);
   private readonly formValueTrigger = signal<number>(0);
 
   protected readonly isEditing = computed(() => this.editingId() !== null);
   protected readonly currentForm = computed(() => this.form());
+  protected readonly currentEditingRoom = computed(() => {
+    const id = this.editingId();
+    if (!id) {
+      return undefined;
+    }
+    return this.rooms().find((room) => room.id === id);
+  });
   protected readonly currentRooms = computed(() => {
     this.formValueTrigger();
     return this.rooms();
@@ -73,14 +83,17 @@ export class ConferenceRoomsConfigComponent {
   onAddNew() {
     this.editingId.set(null);
     this.createNewForm();
+    this.dialogVisible.set(true);
   }
 
   onEdit(room: Room) {
     this.editingId.set(room.id);
     this.createNewForm(room);
+    this.dialogVisible.set(true);
   }
 
   onCancel() {
+    this.dialogVisible.set(false);
     this.form.set(null);
     this.editingId.set(null);
   }
@@ -97,11 +110,14 @@ export class ConferenceRoomsConfigComponent {
         next: () => {
           this.rooms.set(updatedRooms);
           this.formValueTrigger.update((v) => v + 1);
+          this.form.set(null);
+          this.editingId.set(null);
+          this.dialogVisible.set(false);
           this.cdr.markForCheck();
           this.messageService.add({
             severity: 'success',
             summary: this.translateService.instant('COMMON.SUCCESS'),
-            detail: this.translateService.instant('CONFERENCE.CONFIG.ROOMS.TRACK_DELETED'),
+            detail: this.translateService.instant('CONFERENCE.CONFIG.ROOMS.ROOM_DELETED'),
           });
         },
         error: (err) => {
@@ -109,7 +125,7 @@ export class ConferenceRoomsConfigComponent {
           this.messageService.add({
             severity: 'error',
             summary: this.translateService.instant('COMMON.ERROR'),
-            detail: this.translateService.instant('CONFERENCE.CONFIG.ROOMS.TRACK_DELETE_ERROR'),
+            detail: this.translateService.instant('CONFERENCE.CONFIG.ROOMS.ROOM_DELETE_ERROR'),
           });
         },
       });
@@ -138,8 +154,8 @@ export class ConferenceRoomsConfigComponent {
           ? {
               ...st,
               ...formValue,
-              plan: st.plan, 
-              capacity: st.capacity, 
+              plan: formValue.plan || '',
+              capacity: formValue.capacity || 0,
             }
           : st
       );
@@ -165,6 +181,7 @@ export class ConferenceRoomsConfigComponent {
         this.formValueTrigger.update((v) => v + 1);
         this.form.set(null);
         this.editingId.set(null);
+        this.dialogVisible.set(false);
         this.cdr.markForCheck();
         this.messageService.add({
           severity: 'success',
@@ -181,5 +198,13 @@ export class ConferenceRoomsConfigComponent {
         });
       },
     });
+  }
+
+  onRoomClick(room: Room) {
+    this.onEdit(room);
+  }
+
+  onDialogHide() {
+    this.onCancel();
   }
 }

@@ -1,35 +1,67 @@
 <div class="tracks-config">
-
   <div class="config-header">
     <p>{{ 'CONFERENCE.CONFIG.TRACKS.DESCRIPTION' | translate }}</p>
-    @if (!isEditing()) {
     <button pButton type="button" icon="pi pi-plus" (click)="onAddNew()" class="p-button-success" [label]="'CONFERENCE.CONFIG.TRACKS.ADD_TRACK' | translate"></button>
-    }
   </div>
 
-  <!-- Form for adding/editing track -->
-  @if (currentForm(); as form) {
-  <div class="track-form-card">
+  <div class="tracks-list">
+    <p-dataview [value]="currentTracks()" layout="list">
+      <ng-template #list let-items>
+        <div class="tracks-grid">
+          @for (track of items; track track.id) {
+          <article
+            class="track-card"
+            role="button"
+            tabindex="0"
+            [style.background-color]="track.color || '#3498db'"
+            [style.color]="computeTextColorForBackground(track.color || '#3498db')"
+            (click)="onTrackClick(track)"
+            (keydown.enter)="onTrackClick(track)"
+            (keydown.space)="onTrackClick(track); $event.preventDefault()"
+          >
+            <div class="card-header">
+              <h3>{{ track.name }}</h3>
+            </div>
+            <div class="card-body">
+              <div class="info-row single-line">
+                <span class="label">{{ 'CONFERENCE.CONFIG.TRACKS.ICON' | translate }}:</span>
+                <span class="value">{{ track.icon || '-' }}</span>
+              </div>
+            </div>
+          </article>
+          }
+        </div>
+      </ng-template>
+
+      <ng-template #emptymessage>
+        <div class="empty-state">
+          <p>{{ 'CONFERENCE.CONFIG.TRACKS.NO_TRACKS' | translate }}</p>
+        </div>
+      </ng-template>
+    </p-dataview>
+  </div>
+
+  <p-dialog
+    [modal]="true"
+    [visible]="dialogVisible()"
+    [header]="(isEditing() ? 'CONFERENCE.CONFIG.TRACKS.EDIT' : 'CONFERENCE.CONFIG.TRACKS.ADD_TRACK') | translate"
+    [style]="{ width: 'min(920px, 95vw)' }"
+    [draggable]="false"
+    [resizable]="false"
+    (onHide)="onDialogHide()"
+  >
+    @if (currentForm(); as form) {
     <form [formGroup]="form" class="track-form">
-      <!-- Name Field -->
       <div class="form-section">
         <label for="name" class="form-label">
           {{ 'CONFERENCE.CONFIG.TRACKS.NAME' | translate }} <span class="required">*</span>
         </label>
-        <input
-          id="name"
-          pInputText
-          formControlName="name"
-          type="text"
-          class="w-full"
-          placeholder="Track name"
-        />
+        <input id="name" pInputText formControlName="name" type="text" class="w-full" placeholder="Track name" />
         @if (form.get('name')?.invalid && form.get('name')?.touched) {
         <small class="error-message">{{ 'VALIDATION.REQUIRED' | translate }}</small>
         }
       </div>
 
-      <!-- Color Field -->
       <div class="form-row">
         <div class="form-section">
           <label for="color" class="form-label">
@@ -41,7 +73,6 @@
           </div>
         </div>
 
-        <!-- Icon Field -->
         <div class="form-section">
           <label for="icon" class="form-label">
             {{ 'CONFERENCE.CONFIG.TRACKS.ICON' | translate }}
@@ -57,7 +88,6 @@
         </div>
       </div>
 
-      <!-- Description Field EN -->
       <div class="form-section">
         <label for="description_en" class="form-label">
           {{ 'CONFERENCE.CONFIG.TRACKS.FIELD_DESCRIPTION_EN' | translate }}
@@ -71,7 +101,7 @@
           placeholder="Track description"
         ></textarea>
       </div>
-      <!-- Description Field FR -->
+
       <div class="form-section">
         <label for="description_fr" class="form-label">
           {{ 'CONFERENCE.CONFIG.TRACKS.FIELD_DESCRIPTION_FR' | translate }}
@@ -85,8 +115,18 @@
           placeholder="Track description"
         ></textarea>
       </div>
-      <!-- Action Buttons -->
+
       <div class="form-actions">
+        @if (currentEditingTrack(); as editingTrack) {
+        <button
+          pButton
+          type="button"
+          icon="pi pi-trash"
+          [label]="'CONFERENCE.CONFIG.TRACKS.DELETE' | translate"
+          class="p-button-danger"
+          (click)="onDelete(editingTrack)"
+        ></button>
+        }
         <button
           pButton
           type="button"
@@ -104,70 +144,6 @@
         ></button>
       </div>
     </form>
-  </div>
-  }
-
-  <!-- Tracks List -->
-  <div class="tracks-list">
-    @if (currentTracks() && currentTracks().length > 0) {
-    <div class="tracks-grid">
-      @for (track of currentTracks(); track track.id) {
-      <div class="track-card">
-        <div class="card-header">
-          <div class="track-color" [style.background-color]="track.color"></div>
-          <h3>{{ track.name }}</h3>
-        </div>
-        <div class="card-body">
-          @if (track.description) {
-          <div class="info-row">
-            <span class="label">{{ 'CONFERENCE.CONFIG.TRACKS.FIELD_DESCRIPTION_EN' | translate }}:</span>
-            <span class="value description">
-            @if (track.description['EN']) {
-              {{ track.description['EN'] }}
-            } @else {
-              {{ 'CONFERENCE.CONFIG.TRACKS.NO_DESCRIPTION' | translate }}
-            }
-            </span>
-          </div>
-          <div class="info-row">
-            <span class="label">{{ 'CONFERENCE.CONFIG.TRACKS.FIELD_DESCRIPTION_FR' | translate }}:</span>
-            <span class="value description">
-            @if (track.description['FR']) {
-              {{ track.description['FR'] }}
-            } @else {
-              {{ 'CONFERENCE.CONFIG.TRACKS.NO_DESCRIPTION' | translate }}
-            }
-            </span>
-          </div>
-          }
-        </div>
-        <div class="card-actions">
-          <button
-            pButton
-            type="button"
-            icon="pi pi-pencil"
-            class="p-button-sm p-button-info"
-            (click)="onEdit(track)"
-            [title]="'CONFERENCE.CONFIG.TRACKS.EDIT' | translate"
-            [disabled]="isEditing()"
-          ></button>
-          <button
-            pButton
-            type="button"
-            icon="pi pi-trash"
-            class="p-button-sm p-button-danger"
-            (click)="onDelete(track)"
-            [title]="'CONFERENCE.CONFIG.TRACKS.DELETE' | translate"
-            [disabled]="isEditing()"
-          ></button>
-        </div>
-      </div>
-      }
-    </div>
-    } @else {
-    <div class="empty-state">
-      <p>{{ 'CONFERENCE.CONFIG.TRACKS.NO_TRACKS' | translate }}</p>
-    </div>
     }
-  </div>
+  </p-dialog>
 </div>

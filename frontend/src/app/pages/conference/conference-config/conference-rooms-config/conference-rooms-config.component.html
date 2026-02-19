@@ -1,83 +1,115 @@
 <div class="rooms-config">
   <div class="config-header">
     <p>{{ 'CONFERENCE.CONFIG.ROOMS.DESCRIPTION' | translate }}</p>
-    @if (!isEditing()) {
     <button pButton type="button" icon="pi pi-plus" (click)="onAddNew()" class="p-button-success" [label]="'CONFERENCE.CONFIG.ROOMS.ADD_ROOM' | translate"></button>
-    }
   </div>
 
-  <!-- Form for adding/editing room -->
-  @if (currentForm(); as form) {
-  <div class="room-form-card">
+  <div class="rooms-list">
+    <p-dataview [value]="currentRooms()" layout="list">
+      <ng-template #list let-items>
+        <div class="rooms-grid">
+          @for (room of items; track room.id) {
+          <article
+            class="room-card"
+            role="button"
+            tabindex="0"
+            (click)="onRoomClick(room)"
+            (keydown.enter)="onRoomClick(room)"
+            (keydown.space)="onRoomClick(room); $event.preventDefault()"
+          >
+            <div class="card-header">
+              <h3>{{ room.name }}</h3>
+            </div>
+            <div class="card-body">
+              <div class="info-row single-line">
+                <span class="label">{{ 'CONFERENCE.CONFIG.ROOMS.CAPACITY' | translate }}:</span>
+                <span class="value">{{ room.capacity }}</span>
+                <span class="label">{{ 'CONFERENCE.CONFIG.ROOMS.SESSION' | translate }}:</span>
+                <span class="value">{{ (room.isSessionRoom ? 'PERSON.LIST.YES' : 'PERSON.LIST.NO') | translate }}</span>
+              </div>
+            </div>
+          </article>
+          }
+        </div>
+      </ng-template>
+
+      <ng-template #emptymessage>
+        <div class="empty-state">
+          <p>{{ 'CONFERENCE.CONFIG.ROOMS.NO_ROOMS' | translate }}</p>
+        </div>
+      </ng-template>
+    </p-dataview>
+  </div>
+
+  <p-dialog
+    [modal]="true"
+    [visible]="dialogVisible()"
+    [header]="(isEditing() ? 'CONFERENCE.CONFIG.ROOMS.EDIT' : 'CONFERENCE.CONFIG.ROOMS.ADD_ROOM') | translate"
+    [style]="{ width: 'min(920px, 95vw)' }"
+    [draggable]="false"
+    [resizable]="false"
+    (onHide)="onDialogHide()"
+  >
+    @if (currentForm(); as form) {
     <form [formGroup]="form" class="room-form">
       <div class="form-row">
-        <!-- Name Field -->
         <div class="form-section">
           <label for="name" class="form-label">
             {{ 'CONFERENCE.CONFIG.ROOMS.NAME' | translate }} <span class="required">*</span>
           </label>
-          <input
-            id="name"
-            pInputText
-            formControlName="name"
-            type="text"
-            class="w-full"
-            placeholder="Room name"
-          />
+          <input id="name" pInputText formControlName="name" type="text" class="w-full" placeholder="Room name" />
           @if (form.get('name')?.invalid && form.get('name')?.touched) {
           <small class="error-message">{{ 'VALIDATION.REQUIRED' | translate }}</small>
           }
         </div>
 
-        <!-- capacity Field -->
         <div class="form-section">
           <label for="capacity" class="form-label">
             {{ 'CONFERENCE.CONFIG.ROOMS.CAPACITY' | translate }}
           </label>
-          <div class="capacity-input-group">
-            <p-inputNumber id="capacity" type="number" [showButtons]="true" [step]="1" [min]="0" [max]="1000" required formControlName="capacity">
-              <ng-template #incrementbuttonicon>
-                <span class="pi pi-plus"></span>
-              </ng-template>
-              <ng-template #decrementbuttonicon>
-                <span class="pi pi-minus"></span>
-              </ng-template>
-            </p-inputNumber>
-          </div>
+          <p-inputNumber id="capacity" type="number" [showButtons]="true" [step]="1" [min]="0" [max]="1000" formControlName="capacity">
+            <ng-template #incrementbuttonicon>
+              <span class="pi pi-plus"></span>
+            </ng-template>
+            <ng-template #decrementbuttonicon>
+              <span class="pi pi-minus"></span>
+            </ng-template>
+          </p-inputNumber>
         </div>
       </div>
 
-      <!-- Plan Field -->
       <div class="form-section">
         <label for="plan" class="form-label">
           {{ 'CONFERENCE.CONFIG.ROOMS.PLAN' | translate }}
         </label>
-        <input
-          id="plan"
-          pInputText
-          formControlName="plan"
-          type="text"
-          class="w-full"
-          placeholder="url of the room plan"
-        />
+        <input id="plan" pInputText formControlName="plan" type="text" class="w-full" placeholder="url of the room plan" />
       </div>
 
-      <!-- Visible Toggle -->
       <div class="form-section">
         <label for="isSessionRoom" class="form-label">
-          {{ 'CONFERENCE.CONFIG.GENERAL.SESSION' | translate }}
+          {{ 'CONFERENCE.CONFIG.ROOMS.SESSION' | translate }}
         </label>
         <p-toggleButton
           id="isSessionRoom"
           [onIcon]="'pi pi-check'"
           [offIcon]="'pi pi-times'"
           formControlName="isSessionRoom"
-          onLabel="Yes"
-          offLabel="No"
+          [onLabel]="'PERSON.LIST.YES' | translate"
+          [offLabel]="'PERSON.LIST.NO' | translate"
         ></p-toggleButton>
       </div>
-      <!-- Action Buttons -->
+
       <div class="form-actions">
+        @if (currentEditingRoom(); as editingRoom) {
+        <button
+          pButton
+          type="button"
+          icon="pi pi-trash"
+          [label]="'CONFERENCE.CONFIG.ROOMS.DELETE' | translate"
+          class="p-button-danger"
+          (click)="onDelete(editingRoom)"
+        ></button>
+        }
         <button
           pButton
           type="button"
@@ -95,60 +127,6 @@
         ></button>
       </div>
     </form>
-  </div>
-  }
-
-  <!-- Rooms List -->
-  <div class="rooms-list">
-    @if (currentRooms() && currentRooms().length > 0) {
-    <div class="rooms-grid">
-
-      @for (room of currentRooms(); track room.id) {
-      <div class="room-card">
-        <div class="card-header">
-          <div class="room-name"></div>
-          <h3>{{ room.name }}</h3>
-        </div>
-        <div class="card-body">
-          <div class="info-row">
-            <span class="label">{{ 'CONFERENCE.CONFIG.ROOMS.CAPACITY' | translate }}:</span>
-            <span class="value capacity">{{ room.capacity }}</span>
-          </div>
-          @if (room.plan) {
-          <div class="info-row">
-            <span class="label">{{ 'CONFERENCE.CONFIG.ROOMS.PLAN' | translate }}:</span>
-            <img [src]="room.plan" alt="{{ room.name }} plan" class="room-plan" />
-          </div>
-          }
-        </div>
-        <div class="card-actions">
-          <button
-            pButton
-            type="button"
-            icon="pi pi-pencil"
-            class="p-button-sm p-button-info"
-            (click)="onEdit(room)"
-            [title]="'CONFERENCE.CONFIG.ROOMS.EDIT' | translate"
-            [disabled]="isEditing()"
-          ></button>
-          <button
-            pButton
-            type="button"
-            icon="pi pi-trash"
-            class="p-button-sm p-button-danger"
-            (click)="onDelete(room)"
-            [title]="'CONFERENCE.CONFIG.ROOMS.DELETE' | translate"
-            [disabled]="isEditing()"
-          ></button>
-        </div>
-      </div>
-      }
-
-    </div>
-    } @else {
-    <div class="empty-state">
-      <p>{{ 'CONFERENCE.CONFIG.ROOMS.NO_ROOMS' | translate }}</p>
-    </div>
     }
-  </div>
+  </p-dialog>
 </div>
