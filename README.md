@@ -108,6 +108,7 @@ stateDiagram-v2
     SUBMITTED --> ACCEPTED: Committee accepts the session proposal
     SUBMITTED --> WAITLISTED: Committee waitlists the proposal
 
+    REJECTED --> ACCEPTED: Committee made a mistake.
     WAITLISTED --> REJECTED: Waitlist not needed
     WAITLISTED --> ACCEPTED: Replaces another approved session
 
@@ -124,3 +125,31 @@ stateDiagram-v2
     PROGRAMMED --> CANCELLED: Speaker cancels
 
 ```
+
+
+TODO list :
+- Home plus joli
+- ajout speaker,
+- Ajout session
+- Afficher dans l'édition d'une session le slot ou il est alloué
+- Afficher dans l'édition d'un speaker (onglet Sessions)
+   - la liste des sessions soumises et retenues
+   - les slot ou il est alloué
+- Prendre en compte les contraintes d'indispo des speakers dans l'allocation
+- Allocation : combo pour afficher les sessions d'un speaker donné. ça ne laisse visible que ses sessions + affichage de la liste des slots/session sous la combo
+- Allocation : mode d'affichage spéciale pour voir les langs
+- Allocation automatique des sessions
+  - choisir des critères stratégies 
+    - variété des tracks
+- Activités 
+- Intendance
+- Export excel
+- Impression planning
+  - jour
+  - salle par jour
+- Publication voxxrin
+- Theme dark
+- soumission de session par les speakers
+- Evaluation des sessions (abandon conferencehall)
+  - Envoie emails
+

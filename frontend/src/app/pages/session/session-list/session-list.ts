@@ -12,6 +12,7 @@ import { Session, SessionStatus } from '../../../model/session.model';
 import { getSessionStatusTranslationKey } from '../../../model/session-status.utils';
 import { PersonService } from '../../../services/person.service';
 import { SessionStatusBadgeComponent } from '../../../components/session-status-badge/session-status-badge.component';
+import { ButtonModule } from 'primeng/button';
 import { DataViewModule } from 'primeng/dataview';
 import { InputTextModule } from 'primeng/inputtext';
 import { MultiSelectModule } from 'primeng/multiselect';
@@ -40,6 +41,7 @@ interface SelectOption {
     CommonModule,
     FormsModule,
     TranslateModule,
+    ButtonModule,
     DataViewModule,
     InputTextModule,
     MultiSelectModule,

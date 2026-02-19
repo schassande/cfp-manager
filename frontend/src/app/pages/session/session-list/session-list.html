@@ -78,16 +78,18 @@
       </div>
 
       <div class="toolbar-row count-row">
-      <div class="session-count">
-        {{
-          'SESSION.LIST.COUNT'
-            | translate
-              : {
-                  filtered: filteredSortedSessions().length,
-                  total: sessionsForView().length
-                }
-        }}
-      </div>
+        <div class="session-count">
+          {{
+            'SESSION.LIST.COUNT'
+              | translate
+                : {
+                    filtered: filteredSortedSessions().length,
+                    total: sessionsForView().length
+                  }
+          }}
+        </div>
+
+        <button pButton type="button" label="Add session" icon="pi pi-plus" class="add-session-button"></button>
       </div>
     </div>
   </ng-template>

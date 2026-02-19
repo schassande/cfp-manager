@@ -45,7 +45,9 @@ const SESSION_STATUS_TRANSITIONS: Record<SessionStatus, SessionStatusTransition[
     { to: 'ACCEPTED', actionKey: 'ACCEPT' },
     { to: 'WAITLISTED', actionKey: 'WAITLIST' },
   ],
-  REJECTED: [],
+  REJECTED: [
+    { to: 'WAITLISTED', actionKey: 'WAITLIST' },
+  ],
   WAITLISTED: [
     { to: 'REJECTED', actionKey: 'REJECT' },
     { to: 'ACCEPTED', actionKey: 'ACCEPT' },
