@@ -45,9 +45,10 @@ interface TimelineTick {
   main: boolean;
 }
 
-interface TimelineRange {
+interface TimelineSegment {
   start: number;
   end: number;
+  compressedStart: number;
 }
 
 interface DayPlanningView {
@@ -182,9 +183,9 @@ export class SessionAllocation implements OnInit {
     const slotTypeById = this.slotTypeById();
     return (conference.days ?? []).map((day) => {
       const enabledRooms = this.computeEnabledRooms(day, conference);
-      const timelineRange = this.computeTimelineRange(day, enabledRooms, slotTypeById);
-      const timelineTicks = this.computeTimelineTicks(timelineRange);
-      const slotViews = this.computeSlotViews(day, enabledRooms, slotTypeById, timelineRange.start);
+      const timelineSegments = this.computeTimelineSegments(day, enabledRooms, slotTypeById);
+      const timelineTicks = this.computeTimelineTicks(timelineSegments);
+      const slotViews = this.computeSlotViews(day, enabledRooms, slotTypeById, timelineSegments);
       return {
         day,
         enabledRooms,
@@ -706,52 +707,90 @@ export class SessionAllocation implements OnInit {
     return conference.rooms.filter((room) => room.isSessionRoom && !disabledRooms.has(room.id));
   }
 
-  private computeTimelineRange(day: Day, enabledRooms: Room[], slotTypeById: Map<string, SlotType>): TimelineRange {
+  private computeTimelineSegments(
+    day: Day,
+    enabledRooms: Room[],
+    slotTypeById: Map<string, SlotType>
+  ): TimelineSegment[] {
     const dayStart = this.computeTimeOfDay(day, day.beginTime);
     const dayEnd = this.computeTimeOfDay(day, day.endTime);
     const enabledRoomIds = new Set(enabledRooms.map((room) => room.id));
     const sessionSlots = day.slots.filter(
       (slot) => !!slotTypeById.get(slot.slotTypeId)?.isSession && enabledRoomIds.has(slot.roomId)
     );
+    const stepMs = this.tickStep * 60000;
 
     if (!sessionSlots.length) {
-      return {
+      return [{
         start: dayStart,
         end: dayEnd,
-      };
+        compressedStart: 0,
+      }];
     }
 
-    let minStart = Number.POSITIVE_INFINITY;
-    let maxEnd = Number.NEGATIVE_INFINITY;
-    sessionSlots.forEach((slot) => {
-      const slotStart = this.computeTimeOfDay(day, slot.startTime);
-      const slotEnd = slotStart + (slot.duration * 60000);
-      minStart = Math.min(minStart, slotStart);
-      maxEnd = Math.max(maxEnd, slotEnd);
-    });
+    const rawIntervals = sessionSlots
+      .map((slot) => {
+        const slotStart = this.computeTimeOfDay(day, slot.startTime);
+        const slotEnd = slotStart + (slot.duration * 60000);
+        const alignedStart = dayStart + (Math.floor((slotStart - dayStart) / stepMs) * stepMs);
+        const alignedEnd = dayStart + (Math.ceil((slotEnd - dayStart) / stepMs) * stepMs);
+        return {
+          start: Math.max(dayStart, alignedStart),
+          end: Math.min(dayEnd, alignedEnd),
+        };
+      })
+      .filter((interval) => interval.end > interval.start)
+      .sort((a, b) => a.start - b.start);
 
-    const stepMs = this.tickStep * 60000;
-    const alignedStart = dayStart + (Math.floor((minStart - dayStart) / stepMs) * stepMs);
-    const alignedEnd = dayStart + (Math.ceil((maxEnd - dayStart) / stepMs) * stepMs);
+    if (!rawIntervals.length) {
+      return [{
+        start: dayStart,
+        end: dayEnd,
+        compressedStart: 0,
+      }];
+    }
 
-    return {
-      start: Math.max(dayStart, alignedStart),
-      end: Math.min(dayEnd, alignedEnd),
-    };
+    const mergedIntervals: Array<{ start: number; end: number }> = [];
+    for (const interval of rawIntervals) {
+      const last = mergedIntervals[mergedIntervals.length - 1];
+      if (!last || interval.start > last.end) {
+        mergedIntervals.push({ ...interval });
+        continue;
+      }
+      last.end = Math.max(last.end, interval.end);
+    }
+
+    const segments: TimelineSegment[] = [];
+    let compressedStart = 0;
+    for (const interval of mergedIntervals) {
+      segments.push({
+        start: interval.start,
+        end: interval.end,
+        compressedStart,
+      });
+      compressedStart += interval.end - interval.start;
+    }
+
+    return segments;
   }
 
-  private computeTimelineTicks(range: TimelineRange): TimelineTick[] {
+  private computeTimelineTicks(segments: TimelineSegment[]): TimelineTick[] {
     const ticks: TimelineTick[] = [];
-    for (let current = range.start; current <= range.end; current += this.tickStep * 60000) {
-      const currentDate = new Date(current);
-      ticks.push({
-        label: this.conferenceService.formatHour(currentDate),
-        main: currentDate.getMinutes() === 0,
-      });
-      if (ticks.length > 1000) {
-        break;
+    const stepMs = this.tickStep * 60000;
+
+    for (const segment of segments) {
+      for (let current = segment.start; current < segment.end; current += stepMs) {
+        const currentDate = new Date(current);
+        ticks.push({
+          label: this.conferenceService.formatHour(currentDate),
+          main: currentDate.getMinutes() === 0,
+        });
+        if (ticks.length > 1000) {
+          return ticks;
+        }
       }
     }
+
     return ticks;
   }
 
@@ -759,9 +798,10 @@ export class SessionAllocation implements OnInit {
     day: Day,
     enabledRooms: Room[],
     slotTypeById: Map<string, SlotType>,
-    timelineStart: number
+    timelineSegments: TimelineSegment[]
   ): SlotView[] {
     const roomIndexById = new Map<string, number>(enabledRooms.map((room, idx) => [room.id, idx]));
+    const stepMs = this.tickStep * 60000;
 
     return day.slots
       .filter((slot) => !!slotTypeById.get(slot.slotTypeId)?.isSession)
@@ -772,15 +812,17 @@ export class SessionAllocation implements OnInit {
         }
         const room = enabledRooms[roomColIdx];
         const slotStart = this.computeTimeOfDay(day, slot.startTime);
-        const deltaMinutes = (slotStart - timelineStart) / 60000;
+        const slotEnd = slotStart + (slot.duration * 60000);
+        const compressedStart = this.toCompressedTime(slotStart, timelineSegments);
+        const compressedEnd = this.toCompressedTime(slotEnd, timelineSegments);
         return {
           key: this.toSlotKey(day.id, slot.id, slot.roomId),
           day,
           slot,
           room,
           roomColIdx,
-          startTick: deltaMinutes / this.tickStep,
-          durationTick: slot.duration / this.tickStep,
+          startTick: compressedStart / stepMs,
+          durationTick: (compressedEnd - compressedStart) / stepMs,
         };
       })
       .filter((value): value is SlotView => !!value)
@@ -790,6 +832,24 @@ export class SessionAllocation implements OnInit {
         }
         return a.slot.startTime.localeCompare(b.slot.startTime);
       });
+  }
+
+  private toCompressedTime(time: number, segments: TimelineSegment[]): number {
+    if (!segments.length) {
+      return 0;
+    }
+
+    for (const segment of segments) {
+      if (time < segment.start) {
+        return segment.compressedStart;
+      }
+      if (time <= segment.end) {
+        return segment.compressedStart + (time - segment.start);
+      }
+    }
+
+    const last = segments[segments.length - 1];
+    return last.compressedStart + (last.end - last.start);
   }
 
   private resolveTrack(session: Session): Track | undefined {

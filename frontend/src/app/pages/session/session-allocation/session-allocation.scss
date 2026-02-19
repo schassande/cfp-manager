@@ -55,10 +55,13 @@ $header-height: 40px;
   padding: 0.4rem;
   background: #ffffff;
   position: absolute;
-  width: $room-width;
-  top: calc(#{$tick-height} * var(--start-tick, 0));
-  height: calc(#{$tick-height} * var(--duration, 1));
-  left: calc(#{$room-width} * var(--room-col-idx, 0));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(#{$room-width} - 4px);
+  top: calc((#{$tick-height} * var(--start-tick, 0)) + 2px);
+  height: max(calc((#{$tick-height} * var(--duration, 1)) - 4px), 3rem);
+  left: calc((#{$room-width} * var(--room-col-idx, 0)) + 2px);
   overflow: hidden;
   z-index: 2;
   cursor: pointer;
@@ -73,13 +76,16 @@ $header-height: 40px;
   display: block;
   width: 100%;
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   line-height: 1.1;
   color: inherit;
   text-align: center;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  word-break: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .filters {
