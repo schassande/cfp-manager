@@ -106,7 +106,7 @@
         <div class="line-1">
           <div class="session-title">{{ item.session.title }}</div>
           <p-tag
-            [value]="item.session.conference?.status ?? ''"
+            [value]="item.statusLabel"
             [severity]="item.statusSeverity"
           ></p-tag>
         </div>

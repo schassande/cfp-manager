@@ -18,6 +18,7 @@ import { TagModule } from 'primeng/tag';
 
 interface SessionForView {
   session: Session;
+  statusLabel: string;
   speakerNames: string[];
   sessionTypeName: string;
   sessionTypeColor: string;
@@ -71,6 +72,10 @@ export class SessionList implements OnInit {
   readonly statusFilterPlaceholder$ = this.translateService.stream('SESSION.LIST.FILTER_STATUS');
   readonly sessionTypeFilterPlaceholder$ = this.translateService.stream('SESSION.LIST.FILTER_SESSION_TYPE');
   readonly trackFilterPlaceholder$ = this.translateService.stream('SESSION.LIST.FILTER_TRACK');
+  private readonly sessionStatusTranslations = toSignal(
+    this.translateService.stream('SESSION.STATUS'),
+    { initialValue: {} as Record<string, string> }
+  );
   private readonly sortLabels = toSignal(
     combineLatest([
       this.translateService.stream('SESSION.LIST.SORT_NAME'),
@@ -117,7 +122,10 @@ export class SessionList implements OnInit {
     });
     return Array.from(statuses)
       .sort((a, b) => a.localeCompare(b))
-      .map((status) => ({ label: status, value: status }));
+      .map((status) => ({
+        label: this.translateStatusLabel(status),
+        value: status,
+      }));
   });
 
   readonly sessionsForView = computed<SessionForView[]>(() => {
@@ -145,6 +153,7 @@ export class SessionList implements OnInit {
 
       return {
         session,
+        statusLabel: this.translateStatusLabel(session.conference?.status),
         speakerNames: speakers,
         sessionTypeName,
         sessionTypeColor,
@@ -253,6 +262,20 @@ export class SessionList implements OnInit {
       default:
         return 'secondary';
     }
+  }
+
+  private statusTranslationKey(status: SessionStatus | string | undefined): string {
+    const value = String(status ?? '').trim().toUpperCase();
+    if (!value) {
+      return 'SESSION.STATUS.UNKNOWN';
+    }
+    return `SESSION.STATUS.${value}`;
+  }
+
+  private translateStatusLabel(status: SessionStatus | string | undefined): string {
+    const key = this.statusTranslationKey(status).replace('SESSION.STATUS.', '');
+    const labels = this.sessionStatusTranslations();
+    return labels?.[key] ?? String(status ?? '');
   }
 
   private computeTextColorForBackground(backgroundColor: string): string {

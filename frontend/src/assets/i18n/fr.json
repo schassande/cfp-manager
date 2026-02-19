@@ -300,6 +300,7 @@
     "EDIT": {
       "TITLE": "Edition de session",
       "LOADING": "Chargement de la session...",
+      "STATUS": "Statut",
       "TITLE_FIELD": "Titre",
       "ABSTRACT": "Resumé",
       "SPEAKER_1": "Orateur 1",
@@ -312,6 +313,19 @@
       "ERROR_NOT_FOUND": "Session introuvable",
       "ERROR_LOAD": "Impossible de charger la session",
       "ERROR_SAVE": "Impossible de sauvegarder la session"
+    },
+    "STATUS": {
+      "UNKNOWN": "Inconnu",
+      "DRAFT": "Brouillon",
+      "SUBMITTED": "Soumise",
+      "REJECTED": "Rejetée",
+      "WAITLISTED": "Liste d'attente",
+      "ACCEPTED": "Acceptée",
+      "SPEAKER_CONFIRMED": "Participation confirmée",
+      "SCHEDULED": "Planifiée",
+      "DECLINED_BY_SPEAKER": "Refusée par l'orateur",
+      "PROGRAMMED": "Programmée",
+      "CANCELLED": "Annulée"
     }
   }
 }

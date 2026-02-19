@@ -302,6 +302,7 @@
     "EDIT": {
       "TITLE": "Edit Session",
       "LOADING": "Loading session...",
+      "STATUS": "Status",
       "TITLE_FIELD": "Title",
       "ABSTRACT": "Abstract",
       "SPEAKER_1": "Speaker 1",
@@ -314,6 +315,19 @@
       "ERROR_NOT_FOUND": "Session not found",
       "ERROR_LOAD": "Unable to load session",
       "ERROR_SAVE": "Unable to save session"
+    },
+    "STATUS": {
+      "UNKNOWN": "Unknown",
+      "DRAFT": "Draft",
+      "SUBMITTED": "Submitted",
+      "REJECTED": "Rejected",
+      "WAITLISTED": "Waitlisted",
+      "ACCEPTED": "Accepted",
+      "SPEAKER_CONFIRMED": "Speaker confirmed",
+      "SCHEDULED": "Scheduled",
+      "DECLINED_BY_SPEAKER": "Declined by speaker",
+      "PROGRAMMED": "Programmed",
+      "CANCELLED": "Cancelled"
     }
   }
 }
