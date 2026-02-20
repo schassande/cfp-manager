@@ -372,6 +372,8 @@
       "SESSION_TYPE": "Type de session",
       "TRACK": "Catégorie",
       "LEVEL": "Niveau",
+      "ALLOCATED_SLOT": "Créneau alloué",
+      "SLOT_NOT_ALLOCATED": "Non allouée",
       "SELECT_VALUE": "Selectionner une valeur",
       "ERROR_NOT_FOUND": "Session introuvable",
       "ERROR_LOAD": "Impossible de charger la session",

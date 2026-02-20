@@ -374,6 +374,8 @@
       "SESSION_TYPE": "Session type",
       "TRACK": "Track",
       "LEVEL": "Level",
+      "ALLOCATED_SLOT": "Allocated slot",
+      "SLOT_NOT_ALLOCATED": "Not allocated",
       "SELECT_VALUE": "Select a value",
       "ERROR_NOT_FOUND": "Session not found",
       "ERROR_LOAD": "Unable to load session",

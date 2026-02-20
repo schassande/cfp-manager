@@ -11,11 +11,12 @@ import { TextareaModule } from 'primeng/textarea';
 import { forkJoin, Observable, of, switchMap, take } from 'rxjs';
 import { Conference, SessionType, Track } from '../../../model/conference.model';
 import { Person } from '../../../model/person.model';
-import { OverriddenField, Session, SessionLevel, SessionStatus } from '../../../model/session.model';
+import { OverriddenField, Session, SessionAllocation, SessionLevel, SessionStatus } from '../../../model/session.model';
 import { SessionStatusBadgeComponent } from '../../../components/session-status-badge/session-status-badge.component';
 import { ConferenceService } from '../../../services/conference.service';
 import { ConferenceSpeakerService } from '../../../services/conference-speaker.service';
 import { PersonService } from '../../../services/person.service';
+import { SessionAllocationService } from '../../../services/session-allocation.service';
 import { SessionService } from '../../../services/session.service';
 
 /**
@@ -87,12 +88,14 @@ export class SessionEdit implements OnInit {
   private readonly conferenceSpeakerService = inject(ConferenceSpeakerService);
   private readonly conferenceService = inject(ConferenceService);
   private readonly personService = inject(PersonService);
+  private readonly sessionAllocationService = inject(SessionAllocationService);
 
   readonly loading = signal(true);
   readonly saving = signal(false);
   readonly errorMessage = signal('');
   readonly conference = signal<Conference | undefined>(undefined);
   readonly initialSession = signal<Session | undefined>(undefined);
+  readonly sessionAllocations = signal<SessionAllocation[]>([]);
   readonly selectedStatus = signal<SessionStatus | ''>('');
   readonly speaker1Suggestions = signal<SpeakerOption[]>([]);
   readonly speaker2Suggestions = signal<SpeakerOption[]>([]);
@@ -137,6 +140,33 @@ export class SessionEdit implements OnInit {
     return SESSION_STATUS_TRANSITIONS[current] ?? [];
   });
 
+  readonly allocatedSlotLabel = computed(() => {
+    const session = this.initialSession();
+    const conference = this.conference();
+    if (!session?.id || !conference) {
+      return '';
+    }
+
+    const allocation = this.sessionAllocations().find(
+      (candidate) => String(candidate.sessionId ?? '').trim() === session.id
+    );
+    if (!allocation) {
+      return '';
+    }
+
+    const day = (conference.days ?? []).find((candidate) => candidate.id === allocation.dayId);
+    if (!day) {
+      return '';
+    }
+
+    const slot = (day.slots ?? []).find((candidate) => candidate.id === allocation.slotId);
+    if (!slot) {
+      return '';
+    }
+
+    return `${day.date} ${slot.startTime} - ${slot.endTime}`;
+  });
+
   ngOnInit(): void {
     const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
     const sessionId = this.route.snapshot.paramMap.get('sessionId');
@@ -149,8 +179,9 @@ export class SessionEdit implements OnInit {
     forkJoin({
       conference: this.conferenceService.byId(conferenceId).pipe(take(1)),
       session: this.sessionService.byId(sessionId).pipe(take(1)),
+      sessionAllocations: this.sessionAllocationService.byConferenceId(conferenceId).pipe(take(1)),
     }).subscribe({
-      next: ({ conference, session }) => {
+      next: ({ conference, session, sessionAllocations }) => {
         if (!conference || !session || session.conference?.conferenceId !== conferenceId) {
           this.errorMessage.set('SESSION.EDIT.ERROR_NOT_FOUND');
           this.loading.set(false);
@@ -159,6 +190,7 @@ export class SessionEdit implements OnInit {
 
         this.conference.set(conference);
         this.initialSession.set(session);
+        this.sessionAllocations.set(sessionAllocations ?? []);
         this.populateForm(session);
       },
       error: () => {

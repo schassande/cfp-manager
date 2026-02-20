@@ -40,6 +40,16 @@ h2 {
   margin-top: 0.5rem;
 }
 
+.allocation-field .allocation-value {
+  min-height: 2.25rem;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  background: #f8fafc;
+}
+
 :host ::ng-deep .p-autocomplete,
 :host ::ng-deep .p-inputtext,
 :host ::ng-deep .p-select {
