@@ -5,6 +5,7 @@ import { ConferenceViewComponent } from './pages/conference/conference-view/conf
 import { ConferenceConfigComponent } from './pages/conference/conference-config/conference-config.component';
 import { ConferenceManage } from './pages/conference/conference-manage/conference-manage';
 import { ConferenceSpeakers } from './pages/conference/conference-speakers/conference-speakers';
+import { ConferenceSpeakerEdit } from './pages/conference/conference-speaker-edit/conference-speaker-edit';
 
 import { SignupComponent } from './pages/person/signup/signup.component';
 import { LoginComponent } from './pages/person/login/login.component';
@@ -25,6 +26,8 @@ export const routes: Routes = [
 	{ path: 'conference/:conferenceId/edit', component: ConferenceConfigComponent, canActivate: [AuthGuard, ConferenceManageContextGuard] },
 	{ path: 'conference/:conferenceId/manage', component: ConferenceManage, canActivate: [AuthGuard, ConferenceOrganizerGuard, ConferenceManageContextGuard] },
 	{ path: 'conference/:conferenceId/speakers', component: ConferenceSpeakers, canActivate: [AuthGuard, ConferenceOrganizerGuard, ConferenceManageContextGuard] },
+	{ path: 'conference/:conferenceId/speakers/create', component: ConferenceSpeakerEdit, canActivate: [AuthGuard, ConferenceOrganizerGuard, ConferenceManageContextGuard], data: { mode: 'create' } },
+	{ path: 'conference/:conferenceId/speakers/:conferenceSpeakerId', component: ConferenceSpeakerEdit, canActivate: [AuthGuard, ConferenceOrganizerGuard, ConferenceManageContextGuard], data: { mode: 'edit' } },
 	{ path: 'conference/:conferenceId/sessions', component: SessionList, canActivate: [AuthGuard, ConferenceOrganizerGuard, ConferenceManageContextGuard] },
 	{ path: 'conference/:conferenceId/allocation', component: SessionAllocation, canActivate: [AuthGuard, ConferenceOrganizerGuard, ConferenceManageContextGuard] },
 	{ path: 'conference/:conferenceId/sessions/import', component: SessionImportComponent, canActivate: [AuthGuard, ConferenceOrganizerGuard, ConferenceManageContextGuard] },
