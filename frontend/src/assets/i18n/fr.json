@@ -97,14 +97,19 @@
       "TITLE": "Gestion de la conférence",
       "SUBTITLE": "Choisissez l'action à effectuer.",
       "DELETE_BUTTON": "Supprimer la conference",
-      "DELETE_CONFIRM": "Confirmez-vous la suppression definitive de cette conference et de toutes les donnees associees ?",
-      "DELETE_ERROR": "La suppression de la conference a echoue.",
+      "DELETE_CONFIRM": "Confirmez-vous la suppression definitive de cette conference et de toutes les donnees associees (sessions, speakers, activités) ?",
+      "DELETE_ERROR": "La suppression de la conference a echoué.",
       "ACTIONS": {
+        "CATEGORY_GENERAL": "Général",
+        "CATEGORY_SESSIONS": "Sessions",
+        "CATEGORY_ACTIVITIES": "Activités",
         "CONFIG": "Configuration générale",
         "IMPORT": "Importer les sessions",
         "ALLOCATION": "Allouer les sessions",
         "SESSIONS": "Gérer les sessions",
-        "SPEAKERS": "Gérer les speakers"
+        "SPEAKERS": "Gérer les speakers",
+        "CONFIG_ACTIVITIES": "Configurer les activités",
+        "PUBLISH": "Publier le programme"
       }
     },
     "SPEAKERS": {
@@ -128,10 +133,10 @@
         "LAST_NAME": "Nom",
         "COMPANY": "Entreprise",
         "REFERENCE": "Reference",
-        "PHOTO_URL": "Photo URL",
+        "PHOTO_URL": "URL de la photo",
         "BIO": "Bio",
-        "SOCIAL_LINKS": "Social links",
-        "SOCIAL_NETWORK": "Reseau",
+        "SOCIAL_LINKS": "Liens sociaux",
+        "SOCIAL_NETWORK": "Réseau",
         "SOCIAL_URL": "URL",
         "ADD": "Ajouter",
         "CALCULATED_UNAVAILABLE": "Slots indisponibles calcules"
@@ -162,7 +167,7 @@
         "NO_DESCRIPTION": "Aucune",
         "DURATION": "Durée",
         "MINUTES": "minutes",
-        "MAX_SPEAKERS": "Nombre max de conférenciers",
+        "MAX_SPEAKERS": "Nombre max d'orateurs",
         "COLOR": "Couleur",
         "ICON": "Icône",
         "ADD_SESSION_TYPE": "Ajouter un type de session",
@@ -226,7 +231,7 @@
         "ADD_DAY_BEFORE": "Ajouter un jour avant",
         "ADD_DAY_AFTER": "Ajouter un jour après",
         "REMOVE_DAY": "Supprimer ce jour",
-        "CONFIRM_REMOVE_DAY": "Êtes-vous sûr de vouloir supprimer ce jour ? Toutes les slots planifiés pour ce jour seront également supprimés.",
+        "CONFIRM_REMOVE_DAY": "Êtes-vous sûr de vouloir supprimer ce jour ? Toutes les slots planifiés pour ce jour seront également supprimés. Les sessions allouées à ces slots seront désallouées mais ne seront pas supprimées de la conférence.",
         "DAY_DATE_CONFLICT": "Une autre journée a déjà été définie à cette date.",
         "BEGIN_DAY_TIME": "Début du jour",
         "END_DAY_TIME": "Fin du jour",
@@ -244,7 +249,7 @@
         "COPY_DAY": "Copier",
         "ROOM_SELECTOR": "Activation de salles",
         "X_SLOTS": "{{nb}} créneaux",
-        "ROOM_DISABLING_WARNING": "Attention, si vous désactivez une salle, les créneaux alloués à cette salle pour ce jour seront supprimés définitivement."
+        "ROOM_DISABLING_WARNING": "Attention, si vous désactivez une salle, les créneaux alloués à cette salle pour ce jour seront supprimés définitivement. Les sessions allouées à cette salleseront désallouées mais ne seront pas supprimées de la conférence."
       },
       "SLOT_EDITOR": {
         "TITLE": "Editeur de créneau",
@@ -272,19 +277,19 @@
         "WRONG_SESSION_TYPE'": "Le type de session n'existe pas dans la conférence"
       },
       "SESSION_SOURCE": {
-        "TAB": "Session Source",
-        "TITLE": "Session Source Configuration",
-        "DESCRIPTION": "Manage the session source for your conference here.",
+        "TAB": "Source de session",
+        "TITLE": "Configuration de la source de session",
+        "DESCRIPTION": "Gérez la source des sessions pour votre conférence ici.",
         "TYPE": "Type",
         "CONFIG": "Configuration",
-        "MANUAL": "Manual",
-        "EXTERNAL_API": "External API",
+        "MANUAL": "Manuel",
+        "EXTERNAL_API": "API Externe",
         "EXTERNAL_API_URL": "API URL",
         "EXTERNAL_API_KEY": "API Key",
-        "EXTERNAL_API_LAST_FETCHED": "Last fetched: {{date}}",
-        "FETCH_SESSIONS": "Fetch sessions from API",
-        "FETCH_SUCCESS": "{{count}} sessions fetched successfully",
-        "FETCH_ERROR": "Error fetching sessions from API"
+        "EXTERNAL_API_LAST_FETCHED": "Dernière récupération: {{date}}",
+        "FETCH_SESSIONS": "Récupérer les sessions depuis l'API",
+        "FETCH_SUCCESS": "{{count}} sessions récupérées avec succès",
+        "FETCH_ERROR": "Erreur lors de la récupération des sessions depuis l'API"
       },
       "CONFERENCEHALL": {
         "TITLE": "Configuration Conference Hall",
@@ -303,14 +308,14 @@
           "UPDATED": "Modifié",
           "UNCHANGED": "Non modifié",
           "SESSION": "Session",
-          "SPEAKER": "Speaker",
+          "SPEAKER": "Orateur",
           "TRACK": "Track",
           "RESET_BUTTON": "Reinitialiser les donnees importees",
           "CONFIRM_RESET": "Confirmez-vous la suppression de toutes les sessions de la conference et des speakers Conference Hall orphelins sans compte ?",
           "RESET_REPORT": "Rapport de reinitialisation",
-          "RESET_AT": "Reinitialisation effectuee le",
-          "SESSION_DELETED": "Sessions supprimees",
-          "SPEAKER_DELETED": "Speakers supprimes"
+          "RESET_AT": "Réinitialisation effectuée le",
+          "SESSION_DELETED": "Sessions supprimées",
+          "SPEAKER_DELETED": "orateurs supprimés"
         }
       },
       "PUBLISH": {
@@ -343,9 +348,9 @@
       "FILTER_SESSION_TYPE": "Types de session",
       "FILTER_TRACK": "Tracks",
       "COUNT": "{{filtered}} sessions (sur {{total}})",
-      "EMPTY": "Aucune session trouvee",
-      "UNKNOWN_SPEAKER": "Speaker inconnu",
-      "UNKNOWN_TRACK": "Track inconnu",
+      "EMPTY": "Aucune session trouvée",
+      "UNKNOWN_SPEAKER": "Orateur inconnu",
+      "UNKNOWN_TRACK": "Catégorie inconnue",
       "UNKNOWN_SESSION_TYPE": "Type de session inconnu"
     },
     "EDIT": {
@@ -359,7 +364,7 @@
       "SPEAKER_2": "Orateur 2",
       "SPEAKER_3": "Orateur 3",
       "SESSION_TYPE": "Type de session",
-      "TRACK": "Track",
+      "TRACK": "Catégorie",
       "LEVEL": "Niveau",
       "SELECT_VALUE": "Selectionner une valeur",
       "ERROR_NOT_FOUND": "Session introuvable",

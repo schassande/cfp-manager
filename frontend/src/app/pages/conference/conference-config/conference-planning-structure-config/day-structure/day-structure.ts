@@ -120,10 +120,14 @@ export class DayStructure implements OnInit {
   private lastEditedSlotId: string|undefined;
 
   menuItems: MenuItem[] = [
-    { label: 'New Slot', icon: 'pi pi-plus', command: () => this.onSlotAdd() },
-    { label: 'Select rooms', icon: 'pi pi-clone', command: () => this.roomSelectorVisible.set(true) },
-    { label: 'Copy Room to Room', icon: 'pi pi-clone', command: () => this.copyRoomVisible.set(true) },
-    { label: 'Copy Day to Day', icon: 'pi pi-clone', command: () => this.copyDayVisible.set(true) },
+    { label: this.translateService.instant('CONFERENCE.CONFIG.PLANNING_STRUCTURE.NEW_SLOT'), 
+      icon: 'pi pi-plus', command: () => this.onSlotAdd() },
+    { label: this.translateService.instant('CONFERENCE.CONFIG.PLANNING_STRUCTURE.SELECT_ROOMS'), 
+      icon: 'pi pi-clone', command: () => this.roomSelectorVisible.set(true) },
+    { label: this.translateService.instant('CONFERENCE.CONFIG.PLANNING_STRUCTURE.COPY_ROOM_TO_ROOM'), 
+      icon: 'pi pi-clone', command: () => this.copyRoomVisible.set(true) },
+    { label: this.translateService.instant('CONFERENCE.CONFIG.PLANNING_STRUCTURE.COPY_DAY_TO_DAY'), 
+      icon: 'pi pi-clone', command: () => this.copyDayVisible.set(true) }
   ];
   copyRoomVisible = signal<boolean>(false);
   copyDayVisible = signal<boolean>(false);

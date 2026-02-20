@@ -11,7 +11,6 @@ import { ToastModule } from 'primeng/toast';
 import { TranslateModule } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 import { ConferenceGeneralConfigComponent } from './conference-general-config/conference-general-config.component';
-import { ConferenceVoxxrinConfigComponent } from './conference-voxxrin-config/conference-voxxrin-config.component';
 import { ConferenceTracksConfigComponent } from './conference-tracks-config/conference-tracks-config.component';
 import { ConferenceSessionTypesConfigComponent } from './conference-session-types-config/conference-session-types-config.component';
 import { ConferencePlanningStructureConfigComponent } from './conference-planning-structure-config/conference-planning-structure-config.component';
@@ -28,7 +27,6 @@ import { ConferenceRoomsConfigComponent } from './conference-rooms-config/confer
     TranslateModule,
     ConferenceGeneralConfigComponent,
     ConferenceRoomsConfigComponent,
-    ConferenceVoxxrinConfigComponent,
     ConferenceTracksConfigComponent,
     ConferenceSessionTypesConfigComponent,
     ConferencePlanningStructureConfigComponent,

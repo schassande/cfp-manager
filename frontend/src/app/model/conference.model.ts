@@ -32,6 +32,12 @@ export interface Conference extends PersistentData {
     endDate: string;   // ISO 8601
     status: string;
   };
+  sponsoring?: {
+    sponsorTypes: SponsorType[];
+    sponsors: Sponsor[];
+    /** URLs of the sponsor booth maps */
+    sponsorBoothMaps: string[]; 
+  };
 }
 
 /** Track of the conference (e.g., a theme or topic). */
@@ -94,3 +100,27 @@ export type SlotError = 'BEFORE_DAY_BEGIN'
   | 'UNEXISTING_ROOM'
   | 'WRONG_SLOT_TYPE'
   | 'WRONG_SESSION_TYPE';
+
+export interface Sponsor extends WithId {
+  name: string;
+  description: { [lang: string]: string };
+  type: SponsorType;
+  logo: string;
+  website: string;
+  booth: string;
+  emails: string[];
+}
+
+export interface SponsorType extends WithId {
+  name: string;
+  description: { [lang: string]: string };
+  maxNumber: number;
+  boothValues: string[];
+}
+
+export interface SponsorBoothChoice extends PersistentData {
+  conferenceId: string;
+  sponsorId: string;
+  booth: string;
+  choiceDate: string; // ISO 8601
+}

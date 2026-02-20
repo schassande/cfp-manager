@@ -19,8 +19,15 @@ export interface Activity extends PersistentData {
   specificAttributes: ActivityAttribute[];
   /** List of organizer person IDs */
   organizers: string[];
+  /** List of participant types that can participate in this activity. This is a list of strings representing the types of participants (e.g., "SPEAKER", "ATTENDEE", "SPONSOR", "ORGANIZER"). The actual meaning of these types is defined by the conference organizers and can be used to categorize participants in the context of this activity. */
+  participantTypes: ParticipantType[];
+  /** Limited number of participants for this activity. */
+  limitedParticipationNumber: {
+    total: number;
+    perParticipantType: { [participantType: string]: number };
+  };
 }
-
+export type ParticipantType = 'SPEAKER' | 'ATTENDEE' | 'SPONSOR' | 'ORGANIZER';
 /**
  * Represents a specific attribute for an activity.
  */

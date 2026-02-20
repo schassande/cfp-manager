@@ -1,6 +1,6 @@
 import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Conference } from '../../../../model/conference.model';
+import { Conference } from '../../../model/conference.model';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
@@ -11,9 +11,13 @@ import { TranslateModule } from '@ngx-translate/core';
       <p>{{ 'CONFERENCE.CONFIG.VOXXRIN' | translate }} - {{ conference().name }}</p>
     </div>
   `,
-  styleUrls: ['./conference-voxxrin-config.component.scss'],
+  styles: [ `.voxxrin-config {
+  padding: 1.5rem;
+  min-height: 300px;
+}`],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConferenceVoxxrinConfigComponent {
   readonly conference = input.required<Conference>();
 }
+  

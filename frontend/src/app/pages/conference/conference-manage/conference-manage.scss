@@ -19,27 +19,41 @@
 
 .actions {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 12px;
   margin-top: 20px;
 }
 
+.action-category {
+  text-align: center;
+  margin-top: 20px;
+}
+.action-category-title {
+  padding: 10px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+} 
+.action-category-list {
+
+}
+
+
 .action-link {
+  margin-top: 20px;
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 12px 14px;
   border: 1px solid #d7d7d7;
-  border-radius: 8px;
+  border-radius: 30px;
   color: #1f2937;
   text-decoration: none;
   transition: all 0.15s ease;
 }
 
 .action-link i {
-  font-size: 1rem;
+  font-size: 2rem;
 }
-
 .action-link:hover {
   border-color: #1976d2;
   background: #f4f9ff;

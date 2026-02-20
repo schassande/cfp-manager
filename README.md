@@ -125,10 +125,7 @@ stateDiagram-v2
     PROGRAMMED --> CANCELLED: Speaker cancels
 
 ```
-
-
 TODO list :
-- Home plus joli
 - ajout speaker,
 - Ajout session
 - Afficher dans l'édition d'une session le slot ou il est alloué
@@ -150,7 +147,7 @@ TODO list :
 - Publication voxxrin
 - Theme dark
 - soumission de session par les speakers
+- Gestion des sponsors
 - Evaluation des sessions (abandon conferencehall)
   - Envoie emails
 - Mode mono conference
-- 
