@@ -6,6 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { catchError, firstValueFrom, forkJoin, map, of, take } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
+import { CheckboxModule } from 'primeng/checkbox';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
@@ -18,7 +19,9 @@ import {
 import { Conference, Day, Room, SessionType, Slot, Track } from '../../../model/conference.model';
 import { SlotType } from '../../../model/slot-type.model';
 import { Session, SessionAllocation as SessionAllocationModel, SessionStatus } from '../../../model/session.model';
+import { ConferenceSpeaker } from '../../../model/speaker.model';
 import { ConferenceService } from '../../../services/conference.service';
+import { ConferenceSpeakerService } from '../../../services/conference-speaker.service';
 import { PersonService } from '../../../services/person.service';
 import { SessionAllocationService } from '../../../services/session-allocation.service';
 import { SessionDeallocationService } from '../../../services/session-deallocation.service';
@@ -62,10 +65,16 @@ interface DragPayload {
   sourceSlotKey?: string;
 }
 
+interface SpeakerAvailabilityConflict {
+  speakerLabel: string;
+  availableTimeRanges: string[];
+}
+
 @Component({
   selector: 'app-session-allocation',
   imports: [
     ButtonModule,
+    CheckboxModule,
     CommonModule,
     ConfirmDialogModule,
     DialogModule,
@@ -85,6 +94,7 @@ export class SessionAllocation implements OnInit {
   private readonly translateService = inject(TranslateService);
   private readonly conferenceService = inject(ConferenceService);
   private readonly confirmationService = inject(ConfirmationService);
+  private readonly conferenceSpeakerService = inject(ConferenceSpeakerService);
   private readonly personService = inject(PersonService);
   private readonly sessionService = inject(SessionService);
   private readonly sessionAllocationService = inject(SessionAllocationService);
@@ -97,11 +107,13 @@ export class SessionAllocation implements OnInit {
   readonly errorMessage = signal('');
   readonly conference = signal<Conference | undefined>(undefined);
   readonly sessions = signal<Session[]>([]);
+  readonly conferenceSpeakers = signal<ConferenceSpeaker[]>([]);
   readonly speakerDisplayById = signal<Map<string, string>>(new Map());
   readonly allocations = signal<SessionAllocationModel[]>([]);
   readonly slotTypes = signal<SlotType[]>([]);
   readonly selectedSessionTypeIds = signal<string[]>([]);
   readonly selectedTrackIds = signal<string[]>([]);
+  readonly hasUnavailabilityFilter = signal(false);
   readonly unallocatedSearchText = signal('');
   readonly draggingPayload = signal<DragPayload | null>(null);
   readonly dropTargetSlotKey = signal('');
@@ -109,6 +121,8 @@ export class SessionAllocation implements OnInit {
   readonly selectedSlotForPicker = signal<SlotView | undefined>(undefined);
   readonly selectedPickerTrackIds = signal<string[]>([]);
   readonly pickerSearchText = signal('');
+  readonly allocationConflictVisible = signal(false);
+  readonly allocationConflictMessage = signal('');
 
   readonly days = computed(() => this.conference()?.days ?? []);
 
@@ -145,6 +159,17 @@ export class SessionAllocation implements OnInit {
   private readonly trackById = computed(() => {
     const map = new Map<string, Track>();
     (this.conference()?.tracks ?? []).forEach((track) => map.set(this.normalizeKey(track.id), track));
+    return map;
+  });
+
+  private readonly conferenceSpeakerByPersonId = computed(() => {
+    const map = new Map<string, ConferenceSpeaker>();
+    this.conferenceSpeakers().forEach((conferenceSpeaker) => {
+      const personId = String(conferenceSpeaker.personId ?? '').trim();
+      if (personId && !map.has(personId)) {
+        map.set(personId, conferenceSpeaker);
+      }
+    });
     return map;
   });
 
@@ -196,6 +221,7 @@ export class SessionAllocation implements OnInit {
     const allocatedSessionIds = new Set(this.allocations().map((allocation) => allocation.sessionId));
     const filteredSessionTypeIds = this.selectedSessionTypeIds();
     const filteredTrackIds = this.selectedTrackIds();
+    const filterHasUnavailability = this.hasUnavailabilityFilter();
     const allowedStatuses = new Set<SessionStatus>(['ACCEPTED', 'SPEAKER_CONFIRMED']);
     const statusAndTypeFiltered = this.sessions()
       .filter((session) => {
@@ -212,6 +238,9 @@ export class SessionAllocation implements OnInit {
           return false;
         }
         if (filteredTrackIds.length > 0 && !filteredTrackIds.includes(trackId)) {
+          return false;
+        }
+        if (filterHasUnavailability && !this.sessionHasSpeakerWithUnavailability(session)) {
           return false;
         }
         return true;
@@ -250,29 +279,7 @@ export class SessionAllocation implements OnInit {
       backgroundColor: this.sessionTrackColor(session),
       textColor: this.sessionTrackTextColor(session),
     }));
-    if (!slot) return items;
-
-    const current = this.selectedSession(slot);
-    if (!current || !current.id) {
-      return items;
-    }
-    if (!this.isSessionTypeCompatible(current, slot)) {
-      return items;
-    }
-    if (items.some((item) => item.sessionId === current.id)) {
-      return items;
-    }
-    return [
-      {
-        sessionId: current.id,
-        title: current.title,
-        speakersLabel: this.sessionSpeakersLabel(current),
-        sessionTypeLabel: this.sessionTypeLabel(current),
-        backgroundColor: this.sessionTrackColor(current),
-        textColor: this.sessionTrackTextColor(current),
-      },
-      ...items,
-    ];
+    return items;
   });
 
   ngOnInit(): void {
@@ -297,6 +304,13 @@ export class SessionAllocation implements OnInit {
         const validSessions = sessions.filter((session) => !!session.id);
         this.sessions.set(validSessions);
         this.loadSpeakerDisplay(validSessions);
+      });
+
+    this.conferenceSpeakerService
+      .byConferenceId(conferenceId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((conferenceSpeakers) => {
+        this.conferenceSpeakers.set(conferenceSpeakers ?? []);
       });
 
     this.sessionAllocationService
@@ -404,6 +418,11 @@ export class SessionAllocation implements OnInit {
     this.sessionPickerVisible.set(false);
   }
 
+  closeAllocationConflictDialog(): void {
+    this.allocationConflictVisible.set(false);
+    this.allocationConflictMessage.set('');
+  }
+
   async onPickerSessionSelected(sessionId: string): Promise<void> {
     const slot = this.selectedSlotForPicker();
     if (!slot) {
@@ -412,8 +431,10 @@ export class SessionAllocation implements OnInit {
     if (!this.isSessionTypeCompatibleById(sessionId, slot)) {
       return;
     }
-    await this.assignSessionToSlot(sessionId, slot);
-    this.closeSessionPicker();
+    const assigned = await this.assignSessionToSlot(sessionId, slot);
+    if (assigned) {
+      this.closeSessionPicker();
+    }
   }
 
   async onPickerClearSlot(): Promise<void> {
@@ -593,13 +614,13 @@ export class SessionAllocation implements OnInit {
     }
   }
 
-  private async assignSessionToSlot(sessionId: string, slotView: SlotView): Promise<void> {
+  private async assignSessionToSlot(sessionId: string, slotView: SlotView): Promise<boolean> {
     const conferenceId = this.conferenceId();
     if (!conferenceId) {
-      return;
+      return false;
     }
     if (!this.isSessionTypeCompatibleById(sessionId, slotView)) {
-      return;
+      return false;
     }
 
     const currentTargetAllocation = this.allocationBySlotKey().get(slotView.key);
@@ -607,7 +628,13 @@ export class SessionAllocation implements OnInit {
     const replacedSessionId = currentTargetAllocation?.sessionId;
 
     if (currentTargetAllocation?.sessionId === sessionId) {
-      return;
+      return true;
+    }
+
+    const conflicts = this.findSpeakerAvailabilityConflicts(sessionId, slotView);
+    if (conflicts.length > 0) {
+      this.showAvailabilityConflict(conflicts);
+      return false;
     }
 
     this.saving.set(true);
@@ -651,6 +678,7 @@ export class SessionAllocation implements OnInit {
 
       const saved = await firstValueFrom(this.sessionAllocationService.save(allocationToSave));
       this.updateLocalAllocationsAfterSave(saved, slotView.key);
+      return true;
     } finally {
       this.saving.set(false);
     }
@@ -723,6 +751,69 @@ export class SessionAllocation implements OnInit {
   private isSessionTypeCompatible(session: Session, slotView: SlotView): boolean {
     const sessionTypeId = session.conference?.sessionTypeId ?? '';
     return sessionTypeId === (slotView.slot.sessionTypeId ?? '');
+  }
+
+  private sessionHasSpeakerWithUnavailability(session: Session): boolean {
+    const conferenceSpeakerByPersonId = this.conferenceSpeakerByPersonId();
+    return [session.speaker1Id, session.speaker2Id, session.speaker3Id]
+      .filter((speakerId): speakerId is string => !!speakerId)
+      .some((speakerId) => {
+        const unavailableSlots = conferenceSpeakerByPersonId.get(speakerId)?.unavailableSlotsId ?? [];
+        return unavailableSlots.length > 0;
+      });
+  }
+
+  private findSpeakerAvailabilityConflicts(sessionId: string, slotView: SlotView): SpeakerAvailabilityConflict[] {
+    const session = this.sessionById().get(sessionId);
+    if (!session) {
+      return [];
+    }
+
+    const conferenceSpeakerByPersonId = this.conferenceSpeakerByPersonId();
+    const speakerDisplayById = this.speakerDisplayById();
+    return [session.speaker1Id, session.speaker2Id, session.speaker3Id]
+      .filter((speakerId): speakerId is string => !!speakerId)
+      .map((speakerId) => {
+        const conferenceSpeaker = conferenceSpeakerByPersonId.get(speakerId);
+        const unavailableSlots = new Set(
+          (conferenceSpeaker?.unavailableSlotsId ?? [])
+            .map((slotId) => String(slotId ?? '').trim())
+            .filter((slotId) => !!slotId)
+        );
+        if (!unavailableSlots.has(slotView.slot.id)) {
+          return undefined;
+        }
+
+        const availableTimeRanges = this.availableTimeRangesForSpeakerOnDay(slotView.day, unavailableSlots);
+        return {
+          speakerLabel: speakerDisplayById.get(speakerId) ?? speakerId,
+          availableTimeRanges,
+        } as SpeakerAvailabilityConflict;
+      })
+      .filter((conflict): conflict is SpeakerAvailabilityConflict => !!conflict);
+  }
+
+  private availableTimeRangesForSpeakerOnDay(day: Day, unavailableSlots: Set<string>): string[] {
+    const slotTypeById = this.slotTypeById();
+    const availableRanges = (day.slots ?? [])
+      .filter((slot) => !!slotTypeById.get(slot.slotTypeId)?.isSession)
+      .filter((slot) => !unavailableSlots.has(slot.id))
+      .map((slot) => `${slot.startTime}-${slot.endTime}`);
+    return Array.from(new Set(availableRanges)).sort((a, b) => a.localeCompare(b));
+  }
+
+  private showAvailabilityConflict(conflicts: SpeakerAvailabilityConflict[]): void {
+    const intro = this.translateService.instant('SESSION.ALLOCATION.UNAVAILABLE_CONFLICT_INTRO');
+    const noAvailableSlots = this.translateService.instant('SESSION.ALLOCATION.UNAVAILABLE_NO_SLOT');
+    const lines = conflicts.map((conflict) => {
+      const availableSlotsLabel = conflict.availableTimeRanges.length > 0
+        ? conflict.availableTimeRanges.join(', ')
+        : noAvailableSlots;
+      return `${conflict.speakerLabel}: ${availableSlotsLabel}`;
+    });
+
+    this.allocationConflictMessage.set([intro, ...lines].join('\n'));
+    this.allocationConflictVisible.set(true);
   }
 
   private computeTimeOfDay(day: Day, timeStr: string): number {

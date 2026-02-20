@@ -395,6 +395,7 @@
       "NO_SESSION_SLOTS": "No session slots found for this day.",
       "FILTER_SESSION_TYPE": "Session types",
       "FILTER_TRACK": "Tracks",
+      "FILTER_HAS_UNAVAILABILITY": "Has unavailability",
       "FILTER_KEYWORD": "Keyword (min 3 chars)",
       "COUNT": "{{count}} session(s) available",
       "PICKER_COUNT": "{{count}} session(s) available for this slot",
@@ -403,6 +404,10 @@
       "NONE": "No session",
       "PICKER_TITLE": "Choose a session for slot",
       "CLEAR_SLOT": "Clear slot",
+      "UNAVAILABLE_CONFLICT_TITLE": "Allocation refus",
+      "UNAVAILABLE_CONFLICT_INTRO": "One or more speakers are unavailable on this slot. <br>Available time ranges:<br>",
+      "UNAVAILABLE_NO_SLOT": "No available slot on this day",
+      "CONFLICT_OK": "OK",
       "RESET_DAY": "Reset",
       "CONFIRM_RESET_DAY": "Are you sure you want to remove all allocations for this day?",
       "ERROR_NOT_FOUND": "Conference not found"

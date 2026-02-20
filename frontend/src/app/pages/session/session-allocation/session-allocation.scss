@@ -98,6 +98,16 @@ $header-height: 40px;
   gap: 0.7rem;
 }
 
+.filter-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.filter-checkbox label {
+  cursor: pointer;
+}
+
 .error {
   color: #b91c1c;
 }
@@ -121,6 +131,10 @@ $header-height: 40px;
 
 .picker-actions {
   margin-bottom: 0.7rem;
+}
+
+.conflict-message {
+  white-space: pre-line;
 }
 
 .planning-parent {

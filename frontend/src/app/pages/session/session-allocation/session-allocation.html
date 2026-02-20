@@ -43,6 +43,18 @@
             [showToggleAll]="false"
             [placeholder]="'SESSION.ALLOCATION.FILTER_TRACK' | translate"
           ></p-multiselect>
+
+          <div class="filter-checkbox">
+            <p-checkbox
+              inputId="has-unavailability-filter"
+              [binary]="true"
+              [ngModel]="hasUnavailabilityFilter()"
+              (ngModelChange)="hasUnavailabilityFilter.set(!!$event)"
+            ></p-checkbox>
+            <label for="has-unavailability-filter">
+              {{ 'SESSION.ALLOCATION.FILTER_HAS_UNAVAILABILITY' | translate }}
+            </label>
+          </div>
         </div>
 
         <app-unallocated-session-list
@@ -174,6 +186,25 @@
           [countKey]="'SESSION.ALLOCATION.PICKER_COUNT'"
         ></app-unallocated-session-list>
       }
+    </p-dialog>
+
+    <p-dialog
+      [modal]="true"
+      [closable]="false"
+      [visible]="allocationConflictVisible()"
+      [style]="{ width: '36rem' }"
+      [header]="'SESSION.ALLOCATION.UNAVAILABLE_CONFLICT_TITLE' | translate"
+      (onHide)="closeAllocationConflictDialog()"
+    >
+      <p class="conflict-message" innerHtml="{{ allocationConflictMessage() }}"></p>
+      <div class="picker-actions">
+        <button
+          pButton
+          type="button"
+          [label]="'SESSION.ALLOCATION.CONFLICT_OK' | translate"
+          (click)="closeAllocationConflictDialog()"
+        ></button>
+      </div>
     </p-dialog>
   }
 </section>

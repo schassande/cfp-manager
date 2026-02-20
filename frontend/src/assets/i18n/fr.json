@@ -393,6 +393,7 @@
       "NO_SESSION_SLOTS": "Aucun slot de session pour cette journee.",
       "FILTER_SESSION_TYPE": "Types de session",
       "FILTER_TRACK": "Tracks",
+      "FILTER_HAS_UNAVAILABILITY": "a des indisponibilités",
       "FILTER_KEYWORD": "Mot-cle (min 3 caracteres)",
       "COUNT": "{{count}} session(s) disponible(s)",
       "PICKER_COUNT": "{{count}} session(s) disponible(s) pour ce slot",
@@ -401,6 +402,10 @@
       "NONE": "Aucune session",
       "PICKER_TITLE": "Choisir une session pour le slot",
       "CLEAR_SLOT": "Vider le slot",
+      "UNAVAILABLE_CONFLICT_TITLE": "Allocation impossible",
+      "UNAVAILABLE_CONFLICT_INTRO": "Un ou plusieurs speakers sont indisponibles sur ce slot. <br>Disponibilites:<br>",
+      "UNAVAILABLE_NO_SLOT": "Aucun slot disponible sur cette journee",
+      "CONFLICT_OK": "OK",
       "RESET_DAY": "Reset",
       "CONFIRM_RESET_DAY": "Confirmez-vous la suppression de toutes les allocations de la journee ?",
       "ERROR_NOT_FOUND": "Conference introuvable"

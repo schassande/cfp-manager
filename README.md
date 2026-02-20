@@ -126,21 +126,29 @@ stateDiagram-v2
 
 ```
 TODO list :
-- Cancel session
 - Cancel speaker
-- Prendre en compte les contraintes d'indispo des speakers dans l'allocation
-- Allocation : combo pour afficher les sessions d'un speaker donné. ça ne laisse visible que ses sessions + affichage de la liste des slots/session sous la combo
+- Speaker Edit: lors de la modification de l'indispo d'un speaker il faut désallouer les sessions sur les slots ou le speaker est indispo
+- Conference-Manager: afficher un tableau bord avec des stats :
+  - nb sessions en fonction du statut
+  - nb speaker
+  - Statut de l'allocation 
+- Publication voxxrin
+- Duplication conference
+- Allocation : combo pour afficher les sessions d'un speaker donné. ça ne laisse visible que ses sessions - affichage de la liste des slots/session sous la combo
 - Allocation : mode d'affichage spéciale pour voir les langs
 - Allocation automatique des sessions
   - choisir des critères stratégies 
     - variété des tracks
 - Activités 
 - Intendance
-- Export excel
 - Impression planning
   - jour
   - salle par jour
-- Publication voxxrin
+- Admin only create conference
+- Export excel: Speaker, session
+
+Bonus
+- Liste de couleur par défaut pour les track et les types de session
 - Theme dark
 - soumission de session par les speakers
 - Gestion des sponsors
