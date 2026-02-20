@@ -77,6 +77,14 @@ service cloud.firestore {
       allow create: if isConferenceOrganizer(request.resource.data.conferenceId);
       allow read, update, delete: if isConferenceOrganizer(resource.data.conferenceId);
     }
+    match /conference-dashboard/{dashboardId} {
+      allow read: if isConferenceOrganizer(resource.data.conferenceId);
+      allow write: if false;
+    }
+    match /conference-dashboard/{dashboardId}/history/{historyId} {
+      allow read: if isConferenceOrganizer(resource.data.conferenceId);
+      allow write: if false;
+    }
 
 
     match /session/{document=**} {

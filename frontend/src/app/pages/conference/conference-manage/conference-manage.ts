@@ -8,10 +8,11 @@ import { ConfirmationService } from 'primeng/api';
 import { ConferenceAdminService } from '../../../services/conference-admin.service';
 import { ConferenceService } from '../../../services/conference.service';
 import { Conference } from '../../../model/conference.model';
+import { ConferenceManageDashboard } from './conference-manage-dashboard/conference-manage-dashboard';
 
 @Component({
   selector: 'app-conference-manage',
-  imports: [CommonModule, RouterModule, TranslateModule, ButtonModule, ConfirmDialogModule],
+  imports: [CommonModule, RouterModule, TranslateModule, ButtonModule, ConfirmDialogModule, ConferenceManageDashboard],
   providers: [ConfirmationService],
   templateUrl: './conference-manage.html',
   styleUrl: './conference-manage.scss',
@@ -24,7 +25,7 @@ export class ConferenceManage {
   private readonly translateService = inject(TranslateService);
   private readonly conferenceAdminService = inject(ConferenceAdminService);
   private readonly conferenceService = inject(ConferenceService);
-  private readonly conference = signal<Conference | undefined>(undefined);
+  readonly conference = signal<Conference | undefined>(undefined);
 
   conferenceId = computed(() => this.route.snapshot.paramMap.get('conferenceId') ?? '');
   conferenceTitle = computed(() => {

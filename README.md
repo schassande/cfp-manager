@@ -126,13 +126,9 @@ stateDiagram-v2
 
 ```
 TODO list :
+- Publication voxxrin
 - Cancel speaker
 - Speaker Edit: lors de la modification de l'indispo d'un speaker il faut désallouer les sessions sur les slots ou le speaker est indispo
-- Conference-Manager: afficher un tableau bord avec des stats :
-  - nb sessions en fonction du statut
-  - nb speaker
-  - Statut de l'allocation 
-- Publication voxxrin
 - Duplication conference
 - Allocation : combo pour afficher les sessions d'un speaker donné. ça ne laisse visible que ses sessions - affichage de la liste des slots/session sous la combo
 - Allocation : mode d'affichage spéciale pour voir les langs

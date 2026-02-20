@@ -1,0 +1,104 @@
+<div class="dashboard" *ngIf="conferenceId()">
+  <div class="dashboard-header">
+    <h2 class="dashboard-title">{{ 'CONFERENCE.MANAGE.DASHBOARD.TITLE' | translate }}</h2>
+    <button
+      pButton
+      type="button"
+      icon="pi pi-refresh"
+      severity="secondary"
+      [text]="true"
+      class="dashboard-refresh-icon"
+      [loading]="refreshingDashboard()"
+      [attr.aria-label]="'CONFERENCE.MANAGE.REFRESH_DASHBOARD' | translate"
+      (click)="refreshConferenceDashboard()"
+    ></button>
+  </div>
+  @if (dashboardRefreshedAt()) {
+    <p class="dashboard-refresh-success">
+      {{ 'CONFERENCE.MANAGE.REFRESH_DASHBOARD_SUCCESS' | translate:{ date: (dashboardRefreshedAt() | date : 'dd/MM/yyyy HH:mm:ss') } }}
+    </p>
+  }
+  @if (dashboardRefreshError()) {
+    <p class="dashboard-refresh-error">{{ dashboardRefreshError() }}</p>
+  }
+  @if (!dashboardLoaded()) {
+    <p class="dashboard-empty">{{ 'CONFERENCE.LOADING' | translate }}</p>
+  } @else if (!dashboard()) {
+    <p class="dashboard-empty">{{ 'CONFERENCE.MANAGE.DASHBOARD.EMPTY' | translate }}</p>
+  } @else {
+    <p class="dashboard-meta">
+      {{ 'CONFERENCE.MANAGE.DASHBOARD.LAST_COMPUTED' | translate:{ date: (dashboard()!.computedAt | date : 'dd/MM/yyyy HH:mm:ss') } }}
+    </p>
+    <div class="dashboard-table-wrapper">
+      <table class="dashboard-table">
+        <thead>
+          <tr>
+            <th>{{ 'CONFERENCE.MANAGE.DASHBOARD.TABLE.METRIC' | translate }}</th>
+            @for (column of sessionTypeColumns(); track column.id) {
+              <th>{{ column.label }}</th>
+            }
+            <th>{{ 'CONFERENCE.MANAGE.DASHBOARD.TABLE.TOTAL' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{ 'CONFERENCE.MANAGE.DASHBOARD.TABLE.SUBMITTED' | translate }}</td>
+            @for (column of sessionTypeColumns(); track column.id) {
+              <td>{{ getDashboardCount('submitted', column.id) }}</td>
+            }
+            <td>{{ dashboard()!.submitted.total }}</td>
+          </tr>
+          <tr>
+            <td>{{ 'CONFERENCE.MANAGE.DASHBOARD.TABLE.CONFIRMED' | translate }}</td>
+            @for (column of sessionTypeColumns(); track column.id) {
+              <td>{{ getDashboardCount('confirmed', column.id) }}</td>
+            }
+            <td>{{ dashboard()!.confirmed.total }}</td>
+          </tr>
+          <tr>
+            <td>{{ 'CONFERENCE.MANAGE.DASHBOARD.TABLE.ALLOCATED' | translate }}</td>
+            @for (column of sessionTypeColumns(); track column.id) {
+              <td>{{ getDashboardCount('allocated', column.id) }}</td>
+            }
+            <td>{{ dashboard()!.allocated.total }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="dashboard-kpis">
+      <div class="dashboard-kpi">
+        <div class="dashboard-kpi-label">{{ 'CONFERENCE.MANAGE.DASHBOARD.KPIS.SPEAKERS' | translate }}</div>
+        <div class="dashboard-kpi-value">{{ dashboard()!.speakers.total }}</div>
+      </div>
+      <div class="dashboard-kpi">
+        <div class="dashboard-kpi-label">{{ 'CONFERENCE.MANAGE.DASHBOARD.KPIS.SESSIONS_2_SPEAKERS' | translate }}</div>
+        <div class="dashboard-kpi-value">{{ dashboard()!.speakers.sessionsWith2Speakers }}</div>
+      </div>
+      <div class="dashboard-kpi">
+        <div class="dashboard-kpi-label">{{ 'CONFERENCE.MANAGE.DASHBOARD.KPIS.SESSIONS_3_SPEAKERS' | translate }}</div>
+        <div class="dashboard-kpi-value">{{ dashboard()!.speakers.sessionsWith3Speakers }}</div>
+      </div>
+      <div class="dashboard-kpi">
+        <div class="dashboard-kpi-label">{{ 'CONFERENCE.MANAGE.DASHBOARD.KPIS.SLOTS_ALLOCATION' | translate }}</div>
+        <div class="dashboard-kpi-value">
+          {{ dashboard()!.slots.allocated }} / {{ dashboard()!.slots.total }}
+          ({{ dashboard()!.slots.ratio | percent:'1.0-1' }})
+        </div>
+      </div>
+      <div class="dashboard-kpi">
+        <div class="dashboard-kpi-label">{{ 'CONFERENCE.MANAGE.DASHBOARD.KPIS.LAST_IMPORT' | translate }}</div>
+        <div class="dashboard-kpi-value">
+          @if (dashboard()!.conferenceHall.lastImportAt) {
+            {{ dashboard()!.conferenceHall.lastImportAt | date : 'dd/MM/yyyy HH:mm:ss' }}
+          } @else {
+            {{ 'CONFERENCE.MANAGE.DASHBOARD.NOT_AVAILABLE' | translate }}
+          }
+        </div>
+      </div>
+      <div class="dashboard-kpi">
+        <div class="dashboard-kpi-label">{{ 'CONFERENCE.MANAGE.DASHBOARD.KPIS.DAYS_BEFORE_CONFERENCE' | translate }}</div>
+        <div class="dashboard-kpi-value">{{ dashboard()!.schedule.daysBeforeConference }}</div>
+      </div>
+    </div>
+  }
+</div>

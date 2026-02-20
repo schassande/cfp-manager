@@ -17,6 +17,44 @@ export interface DeleteConferenceReport {
   deletedAt: string;
 }
 
+export interface RefreshConferenceDashboardReport {
+  historyId: string;
+  dashboard: {
+    conferenceId: string;
+    computedAt: string;
+    trigger: 'MANUAL_REFRESH' | 'SCHEDULED_DAILY' | 'AUTO_EVENT';
+    submitted: {
+      total: number;
+      bySessionTypeId: Record<string, number>;
+    };
+    confirmed: {
+      total: number;
+      bySessionTypeId: Record<string, number>;
+    };
+    allocated: {
+      total: number;
+      bySessionTypeId: Record<string, number>;
+    };
+    speakers: {
+      total: number;
+      sessionsWith2Speakers: number;
+      sessionsWith3Speakers: number;
+    };
+    slots: {
+      allocated: number;
+      total: number;
+      ratio: number;
+    };
+    conferenceHall: {
+      lastImportAt: string;
+    };
+    schedule: {
+      conferenceStartDate: string;
+      daysBeforeConference: number;
+    };
+  };
+}
+
 @Injectable({ providedIn: 'root' })
 export class ConferenceAdminService {
   private readonly http = inject(HttpClient);
@@ -27,6 +65,22 @@ export class ConferenceAdminService {
     const response = await firstValueFrom(
       this.http.post<{ report: DeleteConferenceReport }>(
         `${functionBaseUrl}deleteConference`,
+        { conferenceId },
+        {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        }
+      )
+    );
+    return response.report;
+  }
+
+  async refreshConferenceDashboard(conferenceId: string): Promise<RefreshConferenceDashboardReport> {
+    const idToken = await this.getIdTokenOrThrow();
+    const response = await firstValueFrom(
+      this.http.post<{ report: RefreshConferenceDashboardReport }>(
+        `${functionBaseUrl}refreshConferenceDashboard`,
         { conferenceId },
         {
           headers: {

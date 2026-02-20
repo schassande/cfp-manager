@@ -96,6 +96,30 @@
     "MANAGE": {
       "TITLE": "Gestion de la conférence",
       "SUBTITLE": "Choisissez l'action à effectuer.",
+      "REFRESH_DASHBOARD": "Rafraichir les statistiques",
+      "REFRESH_DASHBOARD_SUCCESS": "Statistiques rafraichies le {{date}}",
+      "DASHBOARD": {
+        "TITLE": "Tableau de bord",
+        "LAST_COMPUTED": "Dernier calcul : {{date}}",
+        "EMPTY": "Aucune statistique calculÃ©e pour le moment.",
+        "NOT_AVAILABLE": "Non disponible",
+        "UNKNOWN_SESSION_TYPE": "Type inconnu",
+        "TABLE": {
+          "METRIC": "Indicateur",
+          "SUBMITTED": "Sessions soumises",
+          "CONFIRMED": "Sessions confirmées",
+          "ALLOCATED": "Sessions allouées",
+          "TOTAL": "Total"
+        },
+        "KPIS": {
+          "SPEAKERS": "Nombre de speakers",
+          "SESSIONS_2_SPEAKERS": "Sessions avec 2 speakers",
+          "SESSIONS_3_SPEAKERS": "Sessions avec 3 speakers",
+          "SLOTS_ALLOCATION": "Slots alloués / total",
+          "LAST_IMPORT": "Dernier import Conference Hall",
+          "DAYS_BEFORE_CONFERENCE": "Jours avant la conférence"
+        }
+      },
       "DELETE_BUTTON": "Supprimer la conference",
       "DELETE_CONFIRM": "Confirmez-vous la suppression definitive de cette conference et de toutes les donnees associees (sessions, speakers, activités) ?",
       "DELETE_ERROR": "La suppression de la conference a echoué.",
@@ -145,7 +169,7 @@
         "ADD": "Ajouter",
         "CALCULATED_UNAVAILABLE": "Slots indisponibles calcules",
         "SESSIONS_EMPTY": "Aucune session",
-        "SESSION_NOT_ALLOCATED": "Non allouee"
+        "SESSION_NOT_ALLOCATED": "Non allouée"
       }
     },
     "CONFIG": {
@@ -388,7 +412,7 @@
     "ALLOCATION": {
       "TITLE": "Allocation des sessions",
       "PLANNING": "Planning",
-      "UNALLOCATED": "Sessions non allouees",
+      "UNALLOCATED": "Sessions non allouées",
       "NO_DAYS": "Aucun jour de planning defini.",
       "NO_SESSION_SLOTS": "Aucun slot de session pour cette journee.",
       "FILTER_SESSION_TYPE": "Types de session",
@@ -397,7 +421,7 @@
       "FILTER_KEYWORD": "Mot-cle (min 3 caracteres)",
       "COUNT": "{{count}} session(s) disponible(s)",
       "PICKER_COUNT": "{{count}} session(s) disponible(s) pour ce slot",
-      "NO_UNALLOCATED": "Aucune session non allouee.",
+      "NO_UNALLOCATED": "Aucune session non allouée.",
       "SELECT_PLACEHOLDER": "Selectionner une session",
       "NONE": "Aucune session",
       "PICKER_TITLE": "Choisir une session pour le slot",
