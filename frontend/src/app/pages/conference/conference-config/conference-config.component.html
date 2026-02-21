@@ -29,7 +29,7 @@
     </div>
   </div>
 
-  <p-tabs [value]="activeTab()" (activeIndexChange)="onActiveTabChange($event)">
+  <p-tabs [value]="activeTab()" (valueChange)="onActiveTabChange($event)">
     <p-tablist>
       <p-tab [value]="0">{{'CONFERENCE.CONFIG.GENERAL.TAB' | translate}}</p-tab>
       <p-tab [value]="1">{{'CONFERENCE.CONFIG.SESSION_TYPES.TAB' | translate}}</p-tab>
