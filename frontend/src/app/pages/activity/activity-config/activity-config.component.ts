@@ -15,7 +15,7 @@ import { TagModule } from 'primeng/tag';
 import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { Activity, ActivityAttribute, AttributeType, ParticipantType } from '../../../model/activity.model';
-import { Conference } from '../../../model/conference.model';
+import { Conference, Day, Slot } from '../../../model/conference.model';
 import { ActivityService } from '../../../services/activity.service';
 import { ConferenceService } from '../../../services/conference.service';
 import { take } from 'rxjs';
@@ -23,6 +23,13 @@ import { take } from 'rxjs';
 interface SelectOption {
   label: string;
   value: string;
+}
+
+interface ActivitySlotInfo {
+  id: string;
+  label: string;
+  start: string;
+  end: string;
 }
 
 @Component({
@@ -91,6 +98,10 @@ export class ActivityConfigComponent {
     { label: this.translateService.instant('CONFERENCE.ACTIVITIES.ATTRIBUTE_TYPE_DATE'), value: 'DATE' },
     { label: this.translateService.instant('CONFERENCE.ACTIVITIES.ATTRIBUTE_TYPE_BOOLEAN'), value: 'BOOLEAN' },
   ];
+  protected readonly activitySlotInfos = computed<ActivitySlotInfo[]>(() => this.computeActivitySlotInfos(this.conference()));
+  protected readonly activitySlotOptions = computed<SelectOption[]>(() =>
+    this.activitySlotInfos().map((slot) => ({ label: slot.label, value: slot.id }))
+  );
 
   ngOnInit(): void {
     const conferenceId = this.conferenceId();
@@ -184,15 +195,32 @@ export class ActivityConfigComponent {
       return;
     }
 
-    const startIso = this.fromDateTimeInput(String(currentForm.value.start ?? ''));
-    const endIso = this.fromDateTimeInput(String(currentForm.value.end ?? ''));
-    if (!startIso || !endIso || new Date(startIso).getTime() >= new Date(endIso).getTime()) {
-      this.messageService.add({
-        severity: 'error',
-        summary: this.translateService.instant('COMMON.ERROR'),
-        detail: this.translateService.instant('CONFERENCE.ACTIVITIES.INVALID_DATES'),
-      });
-      return;
+    const selectedSlotId = String(currentForm.get('slotId')?.value ?? '').trim();
+    let startIso = '';
+    let endIso = '';
+    if (selectedSlotId) {
+      const linkedSlot = this.getActivitySlotInfoById(selectedSlotId);
+      if (!linkedSlot) {
+        this.messageService.add({
+          severity: 'error',
+          summary: this.translateService.instant('COMMON.ERROR'),
+          detail: this.translateService.instant('CONFERENCE.ACTIVITIES.INVALID_SLOT'),
+        });
+        return;
+      }
+      startIso = linkedSlot.start;
+      endIso = linkedSlot.end;
+    } else {
+      startIso = this.fromDateTimeInput(String(currentForm.get('start')?.value ?? ''));
+      endIso = this.fromDateTimeInput(String(currentForm.get('end')?.value ?? ''));
+      if (!startIso || !endIso || new Date(startIso).getTime() >= new Date(endIso).getTime()) {
+        this.messageService.add({
+          severity: 'error',
+          summary: this.translateService.instant('COMMON.ERROR'),
+          detail: this.translateService.instant('CONFERENCE.ACTIVITIES.INVALID_DATES'),
+        });
+        return;
+      }
     }
 
     const selectedParticipantTypes = (currentForm.value.participantTypes ?? []) as ParticipantType[];
@@ -217,6 +245,7 @@ export class ActivityConfigComponent {
       lastUpdated: previous?.lastUpdated ?? '',
       conferenceId: this.conferenceId(),
       name: String(currentForm.value.name ?? '').trim(),
+      slotId: selectedSlotId || undefined,
       start: startIso,
       end: endIso,
       description: {
@@ -309,6 +338,11 @@ export class ActivityConfigComponent {
     }).format(date);
   }
 
+  activityPeriod(activity: Activity): string {
+    const schedule = this.activitySchedule(activity);
+    return `${this.formatActivityDate(schedule.start)} - ${this.formatActivityDate(schedule.end)}`;
+  }
+
   activityDescription(activity: Activity): string {
     const lang = (this.translateService.currentLang || this.translateService.getDefaultLang() || 'en').toUpperCase();
     const normalizedDescription = activity.description ?? {};
@@ -327,10 +361,12 @@ export class ActivityConfigComponent {
   }
 
   private createForm(activity?: Activity): void {
+    const linkedSlot = this.getActivitySlotInfoById(activity?.slotId);
     const formGroup = this.fb.group({
       name: [activity?.name ?? '', [Validators.required, Validators.minLength(2)]],
-      start: [this.toDateTimeInput(activity?.start), [Validators.required]],
-      end: [this.toDateTimeInput(activity?.end), [Validators.required]],
+      slotId: [activity?.slotId ?? '', []],
+      start: [this.toDateTimeInput(linkedSlot?.start ?? activity?.start), [Validators.required]],
+      end: [this.toDateTimeInput(linkedSlot?.end ?? activity?.end), [Validators.required]],
       description_en: [activity?.description?.['EN'] ?? activity?.description?.['en'] ?? '', []],
       description_fr: [activity?.description?.['FR'] ?? activity?.description?.['fr'] ?? '', []],
       participantTypes: [activity?.participantTypes ?? [], []],
@@ -343,6 +379,7 @@ export class ActivityConfigComponent {
         (activity?.specificAttributes ?? []).map((attribute) => this.createAttributeGroup(attribute))
       ),
     });
+    this.syncDateInputsState(formGroup);
     this.form.set(formGroup);
   }
 
@@ -446,5 +483,84 @@ export class ActivityConfigComponent {
       return normalized;
     }
     return date.toISOString();
+  }
+
+  private activitySchedule(activity: Activity): { start: string; end: string } {
+    const linked = this.getActivitySlotInfoById(activity.slotId);
+    if (linked) {
+      return { start: linked.start, end: linked.end };
+    }
+    return { start: activity.start, end: activity.end };
+  }
+
+  private syncDateInputsState(formGroup: FormGroup): void {
+    const slotIdControl = formGroup.get('slotId');
+    const startControl = formGroup.get('start');
+    const endControl = formGroup.get('end');
+    const apply = (rawSlotId: unknown) => {
+      const slotId = String(rawSlotId ?? '').trim();
+      const hasLinkedSlot = !!slotId;
+      if (hasLinkedSlot) {
+        const linked = this.getActivitySlotInfoById(slotId);
+        if (linked) {
+          startControl?.setValue(this.toDateTimeInput(linked.start), { emitEvent: false });
+          endControl?.setValue(this.toDateTimeInput(linked.end), { emitEvent: false });
+        }
+        startControl?.disable({ emitEvent: false });
+        endControl?.disable({ emitEvent: false });
+      } else {
+        startControl?.enable({ emitEvent: false });
+        endControl?.enable({ emitEvent: false });
+      }
+    };
+    apply(slotIdControl?.value);
+    slotIdControl?.valueChanges.subscribe((value) => apply(value));
+  }
+
+  private getActivitySlotInfoById(slotId: string | undefined): ActivitySlotInfo | undefined {
+    const normalized = String(slotId ?? '').trim();
+    if (!normalized) {
+      return undefined;
+    }
+    return this.activitySlotInfos().find((slot) => slot.id === normalized);
+  }
+
+  private computeActivitySlotInfos(conference: Conference | undefined): ActivitySlotInfo[] {
+    if (!conference) {
+      return [];
+    }
+    const roomById = new Map((conference.rooms ?? []).map((room) => [room.id, room.name]));
+    const slots = (conference.days ?? [])
+      .flatMap((day) =>
+        (day.slots ?? [])
+          .filter((slot) => this.isActivitySlotType(slot.slotTypeId))
+          .map((slot) => this.toActivitySlotInfo(day, slot, roomById.get(slot.roomId) ?? slot.roomId))
+      )
+      .filter((value): value is ActivitySlotInfo => !!value);
+    slots.sort((a, b) => a.start.localeCompare(b.start) || a.end.localeCompare(b.end));
+    return slots;
+  }
+
+  private toActivitySlotInfo(day: Day, slot: Slot, roomName: string): ActivitySlotInfo | undefined {
+    const slotId = String(slot.id ?? '').trim();
+    const dayDate = String(day.date ?? '').trim();
+    const startTime = String(slot.startTime ?? '').trim();
+    const endTime = String(slot.endTime ?? '').trim();
+    if (!slotId || !dayDate || !startTime || !endTime) {
+      return undefined;
+    }
+    const start = `${dayDate}T${startTime}:00`;
+    const end = `${dayDate}T${endTime}:00`;
+    const label = `${dayDate} ${startTime}-${endTime} | ${roomName}`;
+    return {
+      id: slotId,
+      label,
+      start,
+      end,
+    };
+  }
+
+  private isActivitySlotType(slotTypeId: string | undefined): boolean {
+    return String(slotTypeId ?? '').trim().toLowerCase() === 'activity';
   }
 }

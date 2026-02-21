@@ -7,6 +7,8 @@ import { PersistentData } from "./persistant.model";
 export interface Activity extends PersistentData {
   /** Name of the activity */
   name: string;
+  /** Linked activity slot id (optional) */
+  slotId?: string;
   /** Start date and time (ISO 8601 string) */
   start: string;
   /** End date and time (ISO 8601 string) */

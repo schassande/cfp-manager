@@ -44,7 +44,7 @@
             <div class="activity-line">
               <div class="activity-main">
                 <h3>{{ activity.name }}</h3>
-                <p>{{ formatActivityDate(activity.start) }} - {{ formatActivityDate(activity.end) }}</p>
+                <p>{{ activityPeriod(activity) }}</p>
               </div>
               <div class="activity-tags">
                 @for (participantType of activity.participantTypes; track participantType) {
@@ -87,6 +87,23 @@
           @if (form.get('name')?.invalid && form.get('name')?.touched) {
           <small class="error-message">{{ 'VALIDATION.REQUIRED' | translate }}</small>
           }
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-section">
+          <label for="slotId" class="form-label">{{ 'CONFERENCE.ACTIVITIES.SLOT' | translate }}</label>
+          <p-select
+            inputId="slotId"
+            [options]="activitySlotOptions()"
+            formControlName="slotId"
+            optionLabel="label"
+            optionValue="value"
+            [placeholder]="'CONFERENCE.ACTIVITIES.SLOT_PLACEHOLDER' | translate"
+            [showClear]="true"
+            class="w-full"
+          ></p-select>
+          <small>{{ 'CONFERENCE.ACTIVITIES.SLOT_HELP' | translate }}</small>
         </div>
       </div>
 

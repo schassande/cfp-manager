@@ -181,6 +181,9 @@
       "ADD_ACTIVITY": "Ajouter une activite",
       "EDIT": "Modifier l activite",
       "NAME": "Nom de l activite",
+      "SLOT": "Slot d activite lie",
+      "SLOT_PLACEHOLDER": "Aucun slot lie",
+      "SLOT_HELP": "Quand un slot est lie, les heures debut/fin viennent du slot.",
       "START": "Debut",
       "END": "Fin",
       "DESCRIPTION_EN": "Description (Anglais)",
@@ -221,7 +224,8 @@
       "CONFIRM_DELETE": "Etes-vous sur de vouloir supprimer cette activité ?",
       "ACTIVITY_DELETED": "Activité supprimée avec succès",
       "ACTIVITY_DELETE_ERROR": "Erreur lors de la suppression de l activité",
-      "INVALID_DATES": "La date de debut doit etre avant la date de fin"
+      "INVALID_DATES": "La date de debut doit etre avant la date de fin",
+      "INVALID_SLOT": "Le slot d activite selectionne est invalide."
     },
     "SPEAKERS": {
       "TITLE": "Orateurs",

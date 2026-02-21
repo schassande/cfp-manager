@@ -11,6 +11,8 @@ import { SessionAllocationService } from './session-allocation.service';
 import { SessionService } from './session.service';
 import { SlotType } from '../model/slot-type.model';
 import { SlotTypeService } from './slot-type.service';
+import { Activity } from '../model/activity.model';
+import { ActivityService } from './activity.service';
 
 interface ExportData {
   sessionsById: Map<string, Session>;
@@ -18,6 +20,7 @@ interface ExportData {
   allocationsBySlotId: Map<string, SessionAllocation>;
   slotTypeById: Map<string, SlotType>;
   speakerNameById: Map<string, string>;
+  activityBySlotId: Map<string, Activity>;
 }
 
 interface AllocatedSlotView {
@@ -37,6 +40,7 @@ export class PlanningPdfService {
   private readonly sessionAllocationService = inject(SessionAllocationService);
   private readonly personService = inject(PersonService);
   private readonly slotTypeService = inject(SlotTypeService);
+  private readonly activityService = inject(ActivityService);
   private readonly translateService = inject(TranslateService);
   private readonly baseRowStepMinutes = 15;
 
@@ -96,9 +100,10 @@ export class PlanningPdfService {
   }
 
   private async loadExportData(conferenceId: string, dayId: string): Promise<ExportData> {
-    const [sessions, allocations] = await Promise.all([
+    const [sessions, allocations, activities] = await Promise.all([
       firstValueFrom(this.sessionService.byConferenceId(conferenceId)),
       firstValueFrom(this.sessionAllocationService.byConferenceId(conferenceId)),
+      firstValueFrom(this.activityService.byConferenceId(conferenceId)),
     ]);
     const slotTypes = await firstValueFrom(this.slotTypeService.all());
 
@@ -113,6 +118,11 @@ export class PlanningPdfService {
     const slotTypeById = new Map<string, SlotType>(
       slotTypes.filter((slotType) => !!slotType.id).map((slotType) => [String(slotType.id).trim(), slotType])
     );
+    const activityBySlotId = new Map<string, Activity>(
+      (activities ?? [])
+        .filter((activity) => !!String(activity.slotId ?? '').trim())
+        .map((activity) => [String(activity.slotId ?? '').trim(), activity])
+    );
 
     const sessionIds = Array.from(new Set(dayAllocations.map((allocation) => allocation.sessionId)));
     const speakerIds = Array.from(
@@ -126,7 +136,7 @@ export class PlanningPdfService {
     );
 
     const speakerNameById = await this.loadSpeakerNames(speakerIds);
-    return { sessionsById, allocationsByRoomAndSlot, allocationsBySlotId, slotTypeById, speakerNameById };
+    return { sessionsById, allocationsByRoomAndSlot, allocationsBySlotId, slotTypeById, speakerNameById, activityBySlotId };
   }
 
   private async loadSpeakerNames(speakerIds: string[]): Promise<Map<string, string>> {
@@ -383,7 +393,21 @@ export class PlanningPdfService {
 
       const session = slot.session;
       if (!session) {
-        row.push({ text: '' });
+        const fillColor = slot.fillColor;
+        const rowSpan = this.computeRowSpan(slot.duration, totalRows, rowIndex, rowStepMinutes);
+        skip = rowSpan - 1;
+        row.push({
+          rowSpan,
+          fillColor,
+          color: this.textColorFor(fillColor),
+          margin: [2, this.verticalTextOffset(rowSpan * rowHeight, 10), 2, 0],
+          alignment: 'center',
+          border: [true, true, true, true],
+          borderColor: ['#9CA3AF', '#9CA3AF', '#9CA3AF', '#9CA3AF'],
+          stack: [
+            { text: slot.title, style: 'slotTitle' },
+          ],
+        });
         body.push(row);
         continue;
       }
@@ -490,9 +514,10 @@ export class PlanningPdfService {
           ?? data.allocationsBySlotId.get(slot.id);
         const slotType = data.slotTypeById.get(String(slot.slotTypeId ?? '').trim());
         const isSessionSlot = !!slotType?.isSession;
+        const isActivitySlot = this.isActivitySlotType(slotType, slot.slotTypeId);
 
-        if (!isSessionSlot && includeNonSessionSlots) {
-          const nonSessionTitle = this.slotTypeLabel(slotType, slot.slotTypeId);
+        if (!isSessionSlot && (includeNonSessionSlots || isActivitySlot)) {
+          const nonSessionTitle = this.nonSessionSlotTitle(slot.id, slotType, slot.slotTypeId, data.activityBySlotId);
           result.get(slot.roomId)?.push({
             slotId: slot.id,
             startMinute: this.toMinutes(slot.startTime),
@@ -544,6 +569,27 @@ export class PlanningPdfService {
       ?? slotType.name?.['EN']
       ?? Object.values(slotType.name ?? {}).find((value) => !!value)
       ?? fallbackId;
+  }
+
+  private nonSessionSlotTitle(
+    slotId: string,
+    slotType: SlotType | undefined,
+    fallbackId: string,
+    activityBySlotId: Map<string, Activity>
+  ): string {
+    if (this.isActivitySlotType(slotType, fallbackId)) {
+      const activity = activityBySlotId.get(String(slotId ?? '').trim());
+      const activityName = String(activity?.name ?? '').trim();
+      if (activityName) {
+        return activityName;
+      }
+    }
+    return this.slotTypeLabel(slotType, fallbackId);
+  }
+
+  private isActivitySlotType(slotType: SlotType | undefined, fallbackId: string): boolean {
+    const id = String(slotType?.id ?? fallbackId ?? '').trim().toLowerCase();
+    return id === 'activity';
   }
 
   private trackById(conference: Conference): Map<string, Track> {
