@@ -58,7 +58,7 @@ export class ConferencePlanningStructureConfigComponent implements OnInit {
     });    
   }
   ngOnInit(): void {
-    this.slotTypeService.init().subscribe(slotTypes => this.slotTypes.set(slotTypes));
+    this.slotTypeService.all().subscribe(slotTypes => this.slotTypes.set(slotTypes));
     // Initialize current day based on conference planning
     this.days.set(this.conference().days || []);
     if (this.days().length > 0) {

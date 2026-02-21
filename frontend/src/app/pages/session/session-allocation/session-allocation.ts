@@ -338,8 +338,7 @@ export class SessionAllocation implements OnInit {
       });
 
     this.slotTypeService
-      .init()
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .all().pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((slotTypes) => {
         this.slotTypes.set(slotTypes);
       });

@@ -1,9 +1,55 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { FirestoreGenericService } from './firestore-generic.service';
-import { Session } from '../model/session.model';
 import { SlotType } from '../model/slot-type.model';
-import { forkJoin, mergeMap, Observable, of } from 'rxjs';
+import { forkJoin, map, mergeMap, Observable, of, take } from 'rxjs';
+
+const SLOT_TYPES: SlotType[] = [
+  {
+    id: 'welcome',
+    isSession: false,
+    lastUpdated: new Date().toISOString(),
+    name: { 'EN': 'Welcome', 'FR': 'Accueil' },
+    icon: 'home',
+    color: '#cfe9ff',
+    description: { 'EN': 'Welcome session', 'FR': 'Session d\'accueil' }
+  },
+  {
+    id: 'Session',
+    isSession: true,
+    lastUpdated: new Date().toISOString(),
+    name: { 'EN': 'Session', 'FR': 'Session' },
+    icon: 'mic',
+    color: '#cfe9ff',
+    description: { 'EN': 'A presentation session', 'FR': 'Une session de présentation ou d\'atelier' }
+  },
+  {
+    id: 'break',
+    isSession: false,
+    lastUpdated: new Date().toISOString(),
+    name: { 'EN': 'Break', 'FR': 'Pause' },
+    icon: 'coffee',
+    color: '#e0e0e0',
+    description: { 'EN': 'A break session', 'FR': 'Une pause' }
+  },
+  {
+    id: 'lunch',
+    isSession: false,
+    lastUpdated: new Date().toISOString(),
+    name: { 'EN': 'Lunch', 'FR': 'Déjeuner' },
+    icon: 'utensils',
+    color: '#f0f8ff',
+    description: { 'EN': 'A lunch break', 'FR': 'Une pause déjeuner' }
+  },
+  {
+    id: 'activity',
+    isSession: false,
+    lastUpdated: new Date().toISOString(),
+    name: { 'EN': 'Activity', 'FR': 'Activité' },
+    icon: 'utensils',
+    color: '#f0f8ff',
+    description: { 'EN': 'A conference activity ', 'FR': 'Une activité de conférence' }
+  }
+];
 
 /**
  * Service for Session persistent documents in Firestore.
@@ -14,54 +60,29 @@ export class SlotTypeService extends FirestoreGenericService<SlotType> {
     return 'slot-type';
   }
 
-  init(): Observable<SlotType[]> {
-    // Initialize with some default slot types if collection is empty
-    const SLOT_TYPES: SlotType[] = [
-      {
-        id: 'session',
-        isSession: true,
-        lastUpdated: new Date().toISOString(),
-        name: { 'EN': 'Session', 'FR': 'Session' },
-        icon: 'mic',
-        color: '#cfe9ff',
-        description: { 'EN': 'A presentation session', 'FR': 'Une session de présentation ou d\'atelier' }
-      },
-      {
-        id: 'break',
-        isSession: false,
-        lastUpdated: new Date().toISOString(),
-        name: { 'EN': 'Break', 'FR': 'Pause' },
-        icon: 'coffee',
-        color: '#e0e0e0',
-        description: { 'EN': 'A break session', 'FR': 'Une pause' }
-      },
-      {
-        id: 'lunch',
-        isSession: false,
-        lastUpdated: new Date().toISOString(),
-        name: { 'EN': 'Lunch', 'FR': 'Déjeuner' },
-        icon: 'utensils',
-        color: '#f0f8ff',
-        description: { 'EN': 'A lunch break', 'FR': 'Une pause déjeuner' }
-      },
-      {
-        id: 'activity',
-        isSession: false,
-        lastUpdated: new Date().toISOString(),
-        name: { 'EN': 'Activity', 'FR': 'Activité' },
-        icon: 'utensils',
-        color: '#f0f8ff',
-        description: { 'EN': 'A conference activity ', 'FR': 'Une activité de conférence' }
-      }
-    ];
+  init(): Observable<void> {
+    // Initialize slot types once, then complete.
     return this.all().pipe(
+      take(1),
       mergeMap(slotTypes => {
-        if (slotTypes.length !== SLOT_TYPES.length) {
-          return forkJoin(SLOT_TYPES.map(slotType => this.save(slotType)));
+        const existingIds = new Set(slotTypes.map(slotType => slotType.id));
+        const isInitialized =
+          slotTypes.length === SLOT_TYPES.length
+          && SLOT_TYPES.every(slotType => existingIds.has(slotType.id));
+
+        if (!isInitialized) {
+          console.log('Initializing slot types collection', SLOT_TYPES.length, slotTypes.length);
+          return this.deleteAll().pipe(
+            mergeMap(() => forkJoin(
+              SLOT_TYPES.map(slotType => this.save({ ...slotType }))
+            )),
+            map(() => void 0)
+          );
         } else {
-          return of(slotTypes);
+          console.log('Slot types collection already initialized');
+          return of(void 0);
         }
       })
-    )
+    );
   }
 }

@@ -126,6 +126,7 @@ stateDiagram-v2
 
 ```
 TODO list :
+- Ajout de l'activité dans le planning
 - Allocation automatique des sessions
   - choisir des critères stratégies 
     - variété des tracks

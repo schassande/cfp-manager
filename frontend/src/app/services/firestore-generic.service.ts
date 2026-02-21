@@ -1,5 +1,4 @@
-import { EnvironmentInjector, inject, Injectable, runInInjectionContext } from '@angular/core';
-import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
+import { EnvironmentInjector, inject, runInInjectionContext } from '@angular/core';
 import { Firestore, collectionData, docData } from '@angular/fire/firestore';
 import { from, map, Observable } from 'rxjs';
 import { PersistentData } from '../model/persistant.model';
@@ -16,6 +15,7 @@ import {
   QueryDocumentSnapshot,
   QuerySnapshot,
   setDoc,
+  writeBatch,
 } from 'firebase/firestore';
 
 /**
@@ -80,7 +80,22 @@ export abstract class FirestoreGenericService<T extends PersistentData> {
     const itemDoc = doc(this.firestore, `${this.getCollectionName()}/${id}`);
     return deleteDoc(itemDoc);
   }
+  public deleteAll(): Observable<void> {
+    return from(
+      (async () => {
+        const snapshot = await getDocs(this.itemsCollection());
+        const batchSize = 500;
 
+        for (let i = 0; i < snapshot.docs.length; i += batchSize) {
+          const batch = writeBatch(this.firestore);
+          snapshot.docs.slice(i, i + batchSize).forEach((itemDoc) => {
+            batch.delete(itemDoc.ref);
+          });
+          await batch.commit();
+        }
+      })()
+    );
+  }
   public queryOne(q: Query): Observable<T|null> {
     return from(getDocs(query(q, limit(1))) as Promise<QuerySnapshot<T>>).pipe(
       map(this.snapshotOneToObs.bind(this))

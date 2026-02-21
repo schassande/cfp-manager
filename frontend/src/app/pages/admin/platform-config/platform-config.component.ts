@@ -6,6 +6,7 @@ import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { TranslateModule } from '@ngx-translate/core';
 import { PlatformConfigService } from '../../../services/platform-config.service';
+import { SlotTypeService } from '../../../services/slot-type.service';
 
 @Component({
   selector: 'app-platform-config',
@@ -16,6 +17,7 @@ import { PlatformConfigService } from '../../../services/platform-config.service
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlatformConfigComponent {
+  private readonly slotTypeService = inject(SlotTypeService);
   private readonly platformConfigService = inject(PlatformConfigService);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -31,6 +33,8 @@ export class PlatformConfigComponent {
   onlyPlatformAdminCanCreateConference = false;
 
   constructor() {
+    // Ensure slot types are initialized 
+    this.slotTypeService.init().subscribe(); 
     this.platformConfigService
       .getPlatformConfig()
       .pipe(takeUntilDestroyed(this.destroyRef))

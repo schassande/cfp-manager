@@ -140,7 +140,7 @@ service cloud.firestore {
     }
     match /slot-type/{document=**} {
       allow read;
-      allow write: if false;
+      allow write: if isPlatformAdmin();
     }
     match /voxxrin-config/{document=**} {
       allow create: if isConferenceOrganizer(request.resource.data.conferenceId);

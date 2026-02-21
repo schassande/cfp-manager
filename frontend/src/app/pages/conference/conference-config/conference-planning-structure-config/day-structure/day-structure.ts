@@ -165,7 +165,7 @@ export class DayStructure implements OnInit {
   }
 
   ngOnInit() {
-    this.slotTypeService.init().subscribe(slotTypes => {
+    this.slotTypeService.all().subscribe(slotTypes => {
       this.slotTypes.set(slotTypes);
     });
     if (this.conferenceId()) {
