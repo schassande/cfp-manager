@@ -9,14 +9,14 @@
         [showTime]="true" [timeOnly]="true" hourFormat="24" size="small"
         (ngModelChange)="changeBeginTime($event)"></p-datepicker>
     </div>
-    <div class="form-section" style="padding-left:10px;">
+    <div class="form-section form-section-spaced">
       <label for="endTime" class="form-label">{{ 'CONFERENCE.CONFIG.PLANNING_STRUCTURE.END_DAY_TIME' | translate }}</label>
       <p-datepicker class="time-picker-small"
         [ngModel]="endTimeDate()" stepMinute="5"
         [showTime]="true" [timeOnly]="true" hourFormat="24" size="small"
         (ngModelChange)="changeEndTime($event)"></p-datepicker>
     </div>
-    <div class="form-section" style="padding-left:10px;">
+    <div class="form-section form-section-spaced form-section-reset">
       <button
         pButton
         size="small"

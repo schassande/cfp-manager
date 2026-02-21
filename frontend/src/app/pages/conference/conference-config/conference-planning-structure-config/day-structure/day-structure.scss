@@ -24,6 +24,14 @@
       box-shadow: none !important;
     }
   }
+
+  .form-section-spaced {
+    padding-left: 10px;
+  }
+
+  .form-section-reset {
+    white-space: nowrap;
+  }
 }
 :host ::ng-deep .time-picker-small {
   width: 90px;
@@ -159,4 +167,29 @@ $header-height: 50px;
 .room-warning {
   color: red;
   width: 300px;
+}
+
+@media (max-width: 768px) {
+  .form-panel {
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .form-panel .form-section {
+    justify-content: center;
+    gap: 0.25rem;
+  }
+
+  .form-panel .form-section-spaced {
+    padding-left: 0;
+  }
+
+  .form-panel .form-section-reset {
+    flex-basis: 100%;
+    justify-content: center;
+    margin-top: 0.15rem;
+    margin-bottom: 0.5rem;
+  }
 }

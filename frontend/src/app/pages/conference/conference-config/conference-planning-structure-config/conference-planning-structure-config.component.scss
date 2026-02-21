@@ -35,6 +35,26 @@
   .delete-day {
     margin-right: 0;
   }
+
+  @media (max-width: 768px) {
+    .nav-bar {
+      flex-wrap: wrap;
+      justify-content: center;
+      row-gap: 0.5rem;
+    }
+
+    .nav-bar-center {
+      order: 1;
+      width: 100%;
+      margin: 0;
+      justify-content: center;
+    }
+
+    .nav-bar-left,
+    .nav-bar-right {
+      order: 2;
+    }
+  }
 }
 
   :host ::ng-deep .p-datepicker input {
