@@ -1,6 +1,5 @@
 $tick-width: 75px;
 $slot-row-height: 70px;
-$room-width: 250px;
 $header-height: 40px;
 
 .session-allocation-page {
@@ -14,7 +13,7 @@ $header-height: 40px;
 
 .allocation-layout {
   display: grid;
-  grid-template-columns: 360px 1fr;
+  grid-template-columns: minmax(220px, clamp(220px, 28vw, 250px)) minmax(0, 1fr);
   gap: 1rem;
   align-items: start;
 }
@@ -23,6 +22,10 @@ $header-height: 40px;
 .available-panel {
   padding: 0.9rem;
   background: #ffffff;
+}
+
+.planning-panel {
+  min-width: 0;
 }
 
 .planning-filters {
@@ -91,10 +94,10 @@ $header-height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: calc(#{$room-width} - 4px);
+  width: calc(((100% / var(--nb-rooms, 1)) - 4px));
   top: calc((#{$slot-row-height} * var(--start-tick, 0)) + 2px);
   height: calc(#{$slot-row-height} - 4px);
-  left: calc((#{$room-width} * var(--room-col-idx, 0)) + 2px);
+  left: calc(((100% / var(--nb-rooms, 1)) * var(--room-col-idx, 0)) + 2px);
   overflow: hidden;
   z-index: 2;
   cursor: pointer;
@@ -166,7 +169,8 @@ $header-height: 40px;
 }
 
 .planning-parent {
-  overflow-x: auto;
+  width: 100%;
+  overflow-x: hidden;
   overflow-y: hidden;
   border: none;
   border-radius: 0;
@@ -175,7 +179,7 @@ $header-height: 40px;
 
 .planning {
   position: relative;
-  width: calc($tick-width + ($room-width * var(--nb-rooms, 1)));
+  width: 100%;
   height: calc($header-height + ($slot-row-height * var(--nb-ticks, 1)));
 }
 
@@ -188,7 +192,8 @@ $header-height: 40px;
   top: 0;
   left: 0;
   display: grid;
-  grid-template-columns: $tick-width repeat(var(--nb-rooms, 1), $room-width);
+  width: 100%;
+  grid-template-columns: $tick-width repeat(var(--nb-rooms, 1), minmax(0, 1fr));
   border: 1px solid #cbd5e1;
   background: #ffffff;
 }
@@ -196,6 +201,7 @@ $header-height: 40px;
 .slots-layer {
   top: $header-height;
   left: $tick-width;
+  width: calc(100% - #{$tick-width});
   z-index: 1;
 }
 
@@ -243,21 +249,7 @@ $header-height: 40px;
   }
 
   .available-panel {
-    position: static;
-    max-height: none;
-    overflow: visible;
+    display: none;
   }
 
-  .planning {
-    width: calc($tick-width + (220px * var(--nb-rooms, 1)));
-  }
-
-  .slot-card {
-    width: calc(220px - 4px);
-    left: calc((220px * var(--room-col-idx, 0)) + 2px);
-  }
-
-  .room-grid {
-    grid-template-columns: $tick-width repeat(var(--nb-rooms, 1), 220px);
-  }
 }
