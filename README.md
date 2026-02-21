@@ -126,7 +126,6 @@ stateDiagram-v2
 
 ```
 TODO list :
-- feature: Admin only create conference
 - Activités 
 - Impression planning
   - jour

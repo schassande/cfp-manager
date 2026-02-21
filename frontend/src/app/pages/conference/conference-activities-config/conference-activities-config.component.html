@@ -1,0 +1,270 @@
+<section class="activities-config-container">
+  <p-toast></p-toast>
+
+  <div class="header-row">
+    <h1>
+      {{ conference()?.name }} {{ conference()?.edition }} - {{ 'CONFERENCE.ACTIVITIES.TITLE' | translate }}
+    </h1>
+    <div class="header-actions">
+      <button
+        pButton
+        type="button"
+        icon="pi pi-arrow-left"
+        class="p-button-secondary"
+        [label]="'CONFERENCE.ACTIVITIES.BACK_TO_MANAGE' | translate"
+        [routerLink]="['/conference', conferenceId(), 'manage']"
+      ></button>
+      <button
+        pButton
+        type="button"
+        icon="pi pi-plus"
+        class="p-button-success"
+        [label]="'CONFERENCE.ACTIVITIES.ADD_ACTIVITY' | translate"
+        (click)="onAddNew()"
+      ></button>
+    </div>
+  </div>
+
+  @if (loading()) {
+  <div class="loading-state">{{ 'CONFERENCE.LOADING' | translate }}</div>
+  } @else {
+  <div class="activities-list">
+    <p-dataview [value]="currentActivities()" layout="list">
+      <ng-template #list let-items>
+        <div class="activities-grid">
+          @for (activity of items; track activity.id) {
+          <article
+            class="activity-card"
+            role="button"
+            tabindex="0"
+            (click)="onActivityClick(activity)"
+            (keydown.enter)="onActivityClick(activity)"
+            (keydown.space)="onActivityClick(activity); $event.preventDefault()"
+          >
+            <div class="activity-line">
+              <div class="activity-main">
+                <h3>{{ activity.name }}</h3>
+                <p>{{ formatActivityDate(activity.start) }} - {{ formatActivityDate(activity.end) }}</p>
+              </div>
+              <div class="activity-tags">
+                @for (participantType of activity.participantTypes; track participantType) {
+                <p-tag [value]="participantTypeLabel(participantType)" severity="secondary"></p-tag>
+                }
+              </div>
+            </div>
+            <p class="activity-description">{{ activityDescription(activity) }}</p>
+          </article>
+          }
+        </div>
+      </ng-template>
+
+      <ng-template #emptymessage>
+        <div class="empty-state">
+          <p>{{ 'CONFERENCE.ACTIVITIES.NO_ACTIVITIES' | translate }}</p>
+        </div>
+      </ng-template>
+    </p-dataview>
+  </div>
+  }
+
+  <p-dialog
+    [modal]="true"
+    [visible]="dialogVisible()"
+    [header]="(isEditing() ? 'CONFERENCE.ACTIVITIES.EDIT' : 'CONFERENCE.ACTIVITIES.ADD_ACTIVITY') | translate"
+    [style]="{ width: 'min(1100px, 96vw)' }"
+    [draggable]="false"
+    [resizable]="false"
+    (onHide)="onDialogHide()"
+  >
+    @if (currentForm(); as form) {
+    <form [formGroup]="form" class="activity-form">
+      <div class="form-row">
+        <div class="form-section">
+          <label for="name" class="form-label">
+            {{ 'CONFERENCE.ACTIVITIES.NAME' | translate }} <span class="required">*</span>
+          </label>
+          <input id="name" pInputText formControlName="name" type="text" class="w-full" />
+          @if (form.get('name')?.invalid && form.get('name')?.touched) {
+          <small class="error-message">{{ 'VALIDATION.REQUIRED' | translate }}</small>
+          }
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-section">
+          <label for="start" class="form-label">
+            {{ 'CONFERENCE.ACTIVITIES.START' | translate }} <span class="required">*</span>
+          </label>
+          <input id="start" pInputText type="datetime-local" formControlName="start" class="w-full" />
+        </div>
+        <div class="form-section">
+          <label for="end" class="form-label">
+            {{ 'CONFERENCE.ACTIVITIES.END' | translate }} <span class="required">*</span>
+          </label>
+          <input id="end" pInputText type="datetime-local" formControlName="end" class="w-full" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-section">
+          <label for="description_en" class="form-label">
+            {{ 'CONFERENCE.ACTIVITIES.DESCRIPTION_EN' | translate }}
+          </label>
+          <textarea id="description_en" pTextarea formControlName="description_en" rows="3" class="w-full"></textarea>
+        </div>
+        <div class="form-section">
+          <label for="description_fr" class="form-label">
+            {{ 'CONFERENCE.ACTIVITIES.DESCRIPTION_FR' | translate }}
+          </label>
+          <textarea id="description_fr" pTextarea formControlName="description_fr" rows="3" class="w-full"></textarea>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <label for="participantTypes" class="form-label">{{ 'CONFERENCE.ACTIVITIES.PARTICIPANT_TYPES' | translate }}</label>
+        <p-multiselect
+          inputId="participantTypes"
+          [options]="participantTypeOptions()"
+          formControlName="participantTypes"
+          optionLabel="label"
+          optionValue="value"
+          [placeholder]="'CONFERENCE.ACTIVITIES.PARTICIPANT_TYPES_PLACEHOLDER' | translate"
+          [showClear]="true"
+          class="w-full"
+        ></p-multiselect>
+      </div>
+
+      <fieldset class="limit-fieldset">
+        <legend>{{ 'CONFERENCE.ACTIVITIES.LIMITS' | translate }}</legend>
+        <div class="form-row">
+          <div class="form-section">
+            <label for="limitedTotal" class="form-label">{{ 'CONFERENCE.ACTIVITIES.LIMIT_TOTAL' | translate }}</label>
+            <p-inputNumber id="limitedTotal" [showButtons]="true" [step]="1" [min]="0" formControlName="limitedTotal"></p-inputNumber>
+          </div>
+          <div class="form-section">
+            <label for="limitSpeaker" class="form-label">{{ 'CONFERENCE.ACTIVITIES.LIMIT_SPEAKER' | translate }}</label>
+            <p-inputNumber id="limitSpeaker" [showButtons]="true" [step]="1" [min]="0" formControlName="limitSpeaker"></p-inputNumber>
+          </div>
+          <div class="form-section">
+            <label for="limitAttendee" class="form-label">{{ 'CONFERENCE.ACTIVITIES.LIMIT_ATTENDEE' | translate }}</label>
+            <p-inputNumber id="limitAttendee" [showButtons]="true" [step]="1" [min]="0" formControlName="limitAttendee"></p-inputNumber>
+          </div>
+          <div class="form-section">
+            <label for="limitSponsor" class="form-label">{{ 'CONFERENCE.ACTIVITIES.LIMIT_SPONSOR' | translate }}</label>
+            <p-inputNumber id="limitSponsor" [showButtons]="true" [step]="1" [min]="0" formControlName="limitSponsor"></p-inputNumber>
+          </div>
+          <div class="form-section">
+            <label for="limitOrganizer" class="form-label">{{ 'CONFERENCE.ACTIVITIES.LIMIT_ORGANIZER' | translate }}</label>
+            <p-inputNumber id="limitOrganizer" [showButtons]="true" [step]="1" [min]="0" formControlName="limitOrganizer"></p-inputNumber>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="attributes-fieldset">
+        <legend>{{ 'CONFERENCE.ACTIVITIES.ATTRIBUTES_TITLE' | translate }}</legend>
+        <div class="attributes-actions">
+          <button
+            pButton
+            type="button"
+            icon="pi pi-plus"
+            class="p-button-sm p-button-secondary"
+            [label]="'CONFERENCE.ACTIVITIES.ADD_ATTRIBUTE' | translate"
+            (click)="addAttribute()"
+          ></button>
+        </div>
+        <div class="attributes-list">
+          @for (attributeForm of attributeControls(); track $index) {
+          <div class="attribute-card" [formGroup]="attributeForm">
+            <div class="form-row">
+              <div class="form-section">
+                <label class="form-label">{{ 'CONFERENCE.ACTIVITIES.ATTRIBUTE_NAME' | translate }}</label>
+                <input pInputText type="text" formControlName="attributeName" class="w-full" />
+              </div>
+              <div class="form-section">
+                <label class="form-label">{{ 'CONFERENCE.ACTIVITIES.ATTRIBUTE_TYPE' | translate }}</label>
+                <p-select
+                  [options]="attributeTypeOptions"
+                  optionLabel="label"
+                  optionValue="value"
+                  formControlName="attributeType"
+                  class="w-full"
+                ></p-select>
+              </div>
+              <div class="form-section">
+                <label class="form-label">{{ 'CONFERENCE.ACTIVITIES.ATTRIBUTE_REQUIRED' | translate }}</label>
+                <p-select
+                  [options]="[{label: ('PERSON.LIST.YES' | translate), value: true}, {label: ('PERSON.LIST.NO' | translate), value: false}]"
+                  optionLabel="label"
+                  optionValue="value"
+                  formControlName="attributeRequired"
+                  class="w-full"
+                ></p-select>
+              </div>
+            </div>
+            @if (shouldShowNumberRange(attributeForm)) {
+            <div class="form-row">
+              <div class="form-section">
+                <label class="form-label">{{ 'CONFERENCE.ACTIVITIES.ATTRIBUTE_MIN' | translate }}</label>
+                <p-inputNumber [showButtons]="true" [step]="1" formControlName="attributeMinValue"></p-inputNumber>
+              </div>
+              <div class="form-section">
+                <label class="form-label">{{ 'CONFERENCE.ACTIVITIES.ATTRIBUTE_MAX' | translate }}</label>
+                <p-inputNumber [showButtons]="true" [step]="1" formControlName="attributeMaxValue"></p-inputNumber>
+              </div>
+            </div>
+            }
+            @if (shouldShowAllowedValues(attributeForm)) {
+            <div class="form-row">
+              <div class="form-section">
+                <label class="form-label">{{ 'CONFERENCE.ACTIVITIES.ATTRIBUTE_ALLOWED_VALUES' | translate }}</label>
+                <textarea pTextarea rows="4" formControlName="attributeAllowedValuesText" class="w-full"></textarea>
+                <small>{{ 'CONFERENCE.ACTIVITIES.ATTRIBUTE_ALLOWED_VALUES_HELP' | translate }}</small>
+              </div>
+            </div>
+            }
+            <div class="attribute-actions">
+              <button
+                pButton
+                type="button"
+                icon="pi pi-trash"
+                class="p-button-sm p-button-danger"
+                [label]="'CONFERENCE.ACTIVITIES.REMOVE_ATTRIBUTE' | translate"
+                (click)="removeAttribute($index)"
+              ></button>
+            </div>
+          </div>
+          }
+        </div>
+      </fieldset>
+
+      <div class="form-actions">
+        @if (currentEditingActivity(); as editingActivity) {
+        <button
+          pButton
+          type="button"
+          icon="pi pi-trash"
+          class="p-button-danger"
+          [label]="'CONFERENCE.ACTIVITIES.DELETE' | translate"
+          (click)="onDelete(editingActivity)"
+        ></button>
+        }
+        <button
+          pButton
+          type="button"
+          class="p-button-secondary"
+          [label]="'CONFERENCE.ACTIVITIES.CANCEL' | translate"
+          (click)="onCancel()"
+        ></button>
+        <button
+          pButton
+          type="button"
+          class="p-button-success"
+          [label]="'CONFERENCE.ACTIVITIES.SAVE' | translate"
+          [disabled]="form.invalid"
+          (click)="onSave()"
+        ></button>
+      </div>
+    </form>
+    }
+  </p-dialog>
+</section>

@@ -17,13 +17,13 @@ export interface Activity extends PersistentData {
   conferenceId: string;
   /** List of specific attributes for this activity */
   specificAttributes: ActivityAttribute[];
-  /** List of organizer person IDs */
-  organizers: string[];
   /** List of participant types that can participate in this activity. This is a list of strings representing the types of participants (e.g., "SPEAKER", "ATTENDEE", "SPONSOR", "ORGANIZER"). The actual meaning of these types is defined by the conference organizers and can be used to categorize participants in the context of this activity. */
   participantTypes: ParticipantType[];
   /** Limited number of participants for this activity. */
   limitedParticipationNumber: {
+    /** Global limit */
     total: number;
+    /** Per participant type  */
     perParticipantType: { [participantType: string]: number };
   };
 }
@@ -35,7 +35,9 @@ export interface ActivityAttribute {
   /** Name of the attribute */
   attributeName: string;
   /** Type of the attribute (e.g., string, number, boolean) */
-  attributeType: string;
+  attributeType: AttributeType;
+  /** For LIST type, the allowed values */
+  attributeAllowedValues?: string[]; 
   /** Minimum value (if applicable) */
   attributeMinValue?: number;
   /** Maximum value (if applicable) */
@@ -43,6 +45,7 @@ export interface ActivityAttribute {
   /** Whether the attribute is required */
   attributeRequired: boolean;
 }
+export type AttributeType = 'TEXT' | 'INTEGER' | 'LIST' | 'DATE' | 'BOOLEAN';
 
 /**
  * Represents a participation record for an activity in a conference.

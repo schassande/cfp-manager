@@ -23,6 +23,7 @@ import { ConferenceOrganizerGuard } from './guards/conference-organizer.guard';
 import { ConferenceManageContextGuard } from './guards/conference-manage-context.guard';
 import { PlatformConfigComponent } from './pages/admin/platform-config/platform-config.component';
 import { ConferenceCreateGuard } from './guards/conference-create.guard';
+import { ConferenceActivitiesConfigComponent } from './pages/conference/conference-activities-config/conference-activities-config.component';
 
 export const routes: Routes = [
 	{ path: '', component: HomeComponent, pathMatch: 'full' },
@@ -35,6 +36,7 @@ export const routes: Routes = [
 	{ path: 'conference/:conferenceId/sessions', component: SessionList, canActivate: [AuthGuard, ConferenceOrganizerGuard, ConferenceManageContextGuard] },
 	{ path: 'conference/:conferenceId/allocation', component: SessionAllocation, canActivate: [AuthGuard, ConferenceOrganizerGuard, ConferenceManageContextGuard] },
 	{ path: 'conference/:conferenceId/sessions/import', component: SessionImportComponent, canActivate: [AuthGuard, ConferenceOrganizerGuard, ConferenceManageContextGuard] },
+	{ path: 'conference/:conferenceId/activities', component: ConferenceActivitiesConfigComponent, canActivate: [AuthGuard, ConferenceOrganizerGuard, ConferenceManageContextGuard] },
 	{ path: 'conference/:conferenceId/publish', component: SessionPublishComponent, canActivate: [AuthGuard, ConferenceOrganizerGuard, ConferenceManageContextGuard] },
 	{ path: 'conference/:conferenceId/publish/voxxrin-config', component: VoxxrinConfigComponent, canActivate: [AuthGuard, ConferenceOrganizerGuard, ConferenceManageContextGuard] },
 	{ path: 'conference/:conferenceId/sessions/create', component: SessionEdit, canActivate: [AuthGuard, ConferenceManageContextGuard], data: { mode: 'create' } },

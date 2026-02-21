@@ -126,7 +126,7 @@ service cloud.firestore {
       allow read;
     }
 
-    match /activityParticipation/{document=**} {
+    match /activity-participation/{document=**} {
 		  allow create: if isConferenceOrganizer(request.resource.data.conferenceId)
         || isSamePerson(request.resource.data.personId);
       allow read, update, delete: if isConferenceOrganizer(resource.data.conferenceId)
