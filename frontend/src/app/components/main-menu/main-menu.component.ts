@@ -169,7 +169,7 @@ export class MainMenuComponent {
     }
 
     const section = segments[2];
-    if (section === 'manage' || section === 'edit' || section === 'speakers' || section === 'allocation') {
+    if (section === 'manage' || section === 'edit' || section === 'speakers' || section === 'allocation' || section === 'publish') {
       return true;
     }
 

@@ -65,13 +65,15 @@ export abstract class FirestoreGenericService<T extends PersistentData> {
     item.lastUpdated = new Date().getTime().toString();
     const itemDoc = doc(this.firestore, `${this.getCollectionName()}/${item.id}`);
     console.log(`Document ID: ${itemDoc.id}`);
-    return from(setDoc(itemDoc, item).then(() => item));
+    const sanitized = this.removeUndefinedDeep(item) as T;
+    return from(setDoc(itemDoc, sanitized).then(() => sanitized));
   }
 
   private update(item: T): Observable<T> {
     item.lastUpdated = new Date().getTime().toString();
     const itemDoc = doc(this.firestore, `${this.getCollectionName()}/${item.id}`);
-    return from(setDoc(itemDoc, item).then(() => item));
+    const sanitized = this.removeUndefinedDeep(item) as T;
+    return from(setDoc(itemDoc, sanitized).then(() => sanitized));
   }
 
   public delete(id: string): Promise<void> {
@@ -127,6 +129,27 @@ export abstract class FirestoreGenericService<T extends PersistentData> {
   }
   public stringContains(elem: string, text: string): boolean {
     return elem !== undefined && text !== undefined && text.toLowerCase().indexOf(elem.toLowerCase()) >= 0;
+  }
+
+  private removeUndefinedDeep(value: unknown): unknown {
+    if (value === undefined) {
+      return undefined;
+    }
+    if (value === null) {
+      return null;
+    }
+    if (Array.isArray(value)) {
+      return value
+        .map((item) => this.removeUndefinedDeep(item))
+        .filter((item) => item !== undefined);
+    }
+    if (typeof value === 'object') {
+      const sanitizedEntries = Object.entries(value as Record<string, unknown>)
+        .map(([key, entryValue]) => [key, this.removeUndefinedDeep(entryValue)] as const)
+        .filter(([, entryValue]) => entryValue !== undefined);
+      return Object.fromEntries(sanitizedEntries);
+    }
+    return value;
   }
 }
 export interface PersistentDataFilter<T extends PersistentData> {

@@ -5,6 +5,7 @@ import { Observable, from, map, switchMap } from 'rxjs';
 import { getDocs, query as fbQuery, where as fbWhere } from 'firebase/firestore';
 
 export const CONFERENCE_HALL_TOKEN_SECRET_NAME = 'CONFERENCE_HALL_TOKEN';
+export const VOXXRIN_SECRET_TOKEN_SECRET_NAME = 'VOXXRIN_SECRET_TOKEN';
 
 @Injectable({ providedIn: 'root' })
 export class ConferenceSecretService extends FirestoreGenericService<ConferenceSecret> {

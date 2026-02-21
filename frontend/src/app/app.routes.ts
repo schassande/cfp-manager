@@ -17,6 +17,8 @@ import { SessionList } from './pages/session/session-list/session-list';
 import { SessionEdit } from './pages/session/session-edit/session-edit';
 import { SessionImportComponent } from './pages/session/session-import/session-import.component';
 import { SessionAllocation } from './pages/session/session-allocation/session-allocation';
+import { SessionPublishComponent } from './pages/session/session-publish/session-publish.component';
+import { VoxxrinConfigComponent } from './pages/session/session-publish/voxxrin-config/voxxrin-config.component';
 import { ConferenceOrganizerGuard } from './guards/conference-organizer.guard';
 import { ConferenceManageContextGuard } from './guards/conference-manage-context.guard';
 
@@ -31,6 +33,8 @@ export const routes: Routes = [
 	{ path: 'conference/:conferenceId/sessions', component: SessionList, canActivate: [AuthGuard, ConferenceOrganizerGuard, ConferenceManageContextGuard] },
 	{ path: 'conference/:conferenceId/allocation', component: SessionAllocation, canActivate: [AuthGuard, ConferenceOrganizerGuard, ConferenceManageContextGuard] },
 	{ path: 'conference/:conferenceId/sessions/import', component: SessionImportComponent, canActivate: [AuthGuard, ConferenceOrganizerGuard, ConferenceManageContextGuard] },
+	{ path: 'conference/:conferenceId/publish', component: SessionPublishComponent, canActivate: [AuthGuard, ConferenceOrganizerGuard, ConferenceManageContextGuard] },
+	{ path: 'conference/:conferenceId/publish/voxxrin-config', component: VoxxrinConfigComponent, canActivate: [AuthGuard, ConferenceOrganizerGuard, ConferenceManageContextGuard] },
 	{ path: 'conference/:conferenceId/sessions/create', component: SessionEdit, canActivate: [AuthGuard, ConferenceManageContextGuard], data: { mode: 'create' } },
 	{ path: 'conference/:conferenceId/sessions/:sessionId/edit', component: SessionEdit, canActivate: [AuthGuard, ConferenceManageContextGuard], data: { mode: 'edit' } },
 	{ path: 'conference/:conferenceId', component: ConferenceViewComponent },

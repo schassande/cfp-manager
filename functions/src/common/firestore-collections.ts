@@ -2,6 +2,7 @@ export const FIRESTORE_COLLECTIONS = {
   CONFERENCE: 'conference',
   CONFERENCE_DASHBOARD: 'conference-dashboard',
   CONFERENCE_HALL_CONFIG: 'conference-hall-config',
+  VOXXRIN_CONFIG: 'voxxrin-config',
   CONFERENCE_SECRET: 'conferenceSecret',
   SESSION: 'session',
   PERSON: 'person',

@@ -1,0 +1,40 @@
+<section class="session-publish">
+  <h1 class="page-title">{{ 'CONFERENCE.CONFIG.PUBLISH.TITLE' | translate }}</h1>
+  <p class="page-description">{{ 'CONFERENCE.CONFIG.PUBLISH.DESCRIPTION' | translate }}</p>
+
+  @if (conference(); as conf) {
+    <div class="publish-actions">
+      <a
+        class="action-link"
+        [routerLink]="['/conference', conf.id, 'publish', 'voxxrin-config']"
+      >
+        <div class="action-icon"><i class="pi pi-sliders-h"></i></div>
+        <div class="action-content">
+          <div class="action-title">{{ 'CONFERENCE.CONFIG.VOXXRIN.TITLE' | translate }}</div>
+          <div class="action-subtitle">{{ conf.name }} {{ conf.edition }}</div>
+        </div>
+      </a>
+
+      <button
+        type="button"
+        class="action-link action-button"
+        (click)="downloadVoxxrinDescriptor()"
+        [disabled]="downloading()"
+      >
+        <div class="action-icon"><i class="pi pi-download"></i></div>
+        <div class="action-content">
+          <div class="action-title">{{ 'CONFERENCE.CONFIG.PUBLISH.DOWNLOAD_VOXXRIN_JSON' | translate }}</div>
+          <div class="action-subtitle">{{ conf.name }} {{ conf.edition }}</div>
+        </div>
+      </button>
+    </div>
+
+    @if (downloadError()) {
+      <p class="error-text">{{ 'CONFERENCE.CONFIG.PUBLISH.DOWNLOAD_VOXXRIN_JSON_ERROR' | translate }}</p>
+    }
+  } @else if (loading()) {
+    <p>{{ 'CONFERENCE.LOADING' | translate }}</p>
+  } @else {
+    <p>{{ 'CONFERENCE.NOT_FOUND' | translate }}</p>
+  }
+</section>

@@ -1,0 +1,524 @@
+<div class="voxxrin-config">
+  <h3>{{ 'CONFERENCE.CONFIG.VOXXRIN.TITLE' | translate }}</h3>
+
+  @if (loading()) {
+    <p>{{ 'CONFERENCE.LOADING' | translate }}</p>
+  } @else if (conferenceNotFound()) {
+    <p>{{ 'CONFERENCE.NOT_FOUND' | translate }}</p>
+  } @else if (currentForm(); as form) {
+    <form [formGroup]="form" class="config-form">
+      <p-accordion [multiple]="false" [value]="['connection']">
+        <p-accordion-panel value="connection">
+          <p-accordion-header>{{ 'CONFERENCE.CONFIG.VOXXRIN.SECTIONS.CONNECTION' | translate }}</p-accordion-header>
+          <p-accordion-content>
+            <div class="panel-content">
+              <div class="row">
+                <label for="connectionBaseUrl">{{ 'CONFERENCE.CONFIG.VOXXRIN.BASE_URL' | translate }}</label>
+                <input id="connectionBaseUrl" pInputText formControlName="connectionBaseUrl" type="text" class="w-full" />
+              </div>
+
+              <div class="row">
+                <label for="connectionEventId">{{ 'CONFERENCE.CONFIG.VOXXRIN.EVENT_ID' | translate }}</label>
+                <input id="connectionEventId" pInputText formControlName="connectionEventId" type="text" class="w-full" />
+              </div>
+
+              <div class="row">
+                <label for="connectionSecretToken">{{ 'CONFERENCE.CONFIG.VOXXRIN.SECRET_TOKEN' | translate }}</label>
+                <input id="connectionSecretToken" pInputText formControlName="connectionSecretToken" type="text" class="w-full" autocomplete="off" />
+              </div>
+            </div>
+          </p-accordion-content>
+        </p-accordion-panel>
+
+        <p-accordion-panel value="general">
+          <p-accordion-header>{{ 'CONFERENCE.CONFIG.VOXXRIN.SECTIONS.GENERAL' | translate }}</p-accordion-header>
+          <p-accordion-content>
+            <div class="panel-content">
+              <div class="row">
+                <label for="eventFamily">{{ 'CONFERENCE.CONFIG.VOXXRIN.EVENT_FAMILY' | translate }}</label>
+                <input id="eventFamily" pInputText formControlName="eventFamily" type="text" class="w-full" />
+              </div>
+
+              <div class="row">
+                <label for="timezone">{{ 'CONFERENCE.CONFIG.VOXXRIN.TIMEZONE' | translate }}</label>
+                <input id="timezone" pInputText formControlName="timezone" type="text" class="w-full" />
+              </div>
+
+              <div class="row">
+                <label for="websiteUrl">{{ 'CONFERENCE.CONFIG.VOXXRIN.WEBSITE_URL' | translate }}</label>
+                <input id="websiteUrl" pInputText formControlName="websiteUrl" type="text" class="w-full" />
+              </div>
+
+              <div class="row">
+                <label for="ticketsUrl">{{ 'CONFERENCE.CONFIG.VOXXRIN.TICKETS_URL' | translate }}</label>
+                <input id="ticketsUrl" pInputText formControlName="ticketsUrl" type="text" class="w-full" />
+              </div>
+
+              <div class="row">
+                <label for="keywords">{{ 'CONFERENCE.CONFIG.VOXXRIN.KEYWORDS' | translate }}</label>
+                <input id="keywords" pInputText formControlName="keywords" type="text" class="w-full" />
+              </div>
+
+              <div class="row row-top">
+                <label for="peopleDescription">{{ 'CONFERENCE.CONFIG.VOXXRIN.PEOPLE_DESCRIPTION' | translate }}</label>
+                <textarea id="peopleDescription" pTextarea formControlName="peopleDescription" rows="3" class="w-full"></textarea>
+              </div>
+            </div>
+          </p-accordion-content>
+        </p-accordion-panel>
+
+        <p-accordion-panel value="headerVisuals">
+          <p-accordion-header>{{ 'CONFERENCE.CONFIG.VOXXRIN.SECTIONS.HEADER_VISUALS' | translate }}</p-accordion-header>
+          <p-accordion-content>
+            <div class="panel-content">
+              <div class="row">
+                <label for="headingSubTitle">{{ 'CONFERENCE.CONFIG.VOXXRIN.HEADING_SUBTITLE' | translate }}</label>
+                <input id="headingSubTitle" pInputText formControlName="headingSubTitle" type="text" class="w-full" />
+              </div>
+
+              <div class="row">
+                <label for="headingBackground">{{ 'CONFERENCE.CONFIG.VOXXRIN.HEADING_BACKGROUND' | translate }}</label>
+                <input id="headingBackground" pInputText formControlName="headingBackground" type="text" class="w-full" />
+              </div>
+
+              <div class="row">
+                <label for="backgroundUrl">{{ 'CONFERENCE.CONFIG.VOXXRIN.BACKGROUND_URL' | translate }}</label>
+                <input id="backgroundUrl" pInputText formControlName="backgroundUrl" type="text" class="w-full" />
+              </div>
+            </div>
+          </p-accordion-content>
+        </p-accordion-panel>
+
+        <p-accordion-panel value="location">
+          <p-accordion-header>{{ 'CONFERENCE.CONFIG.VOXXRIN.SECTIONS.LOCATION' | translate }}</p-accordion-header>
+          <p-accordion-content>
+            <div class="panel-content">
+              <div class="row">
+                <label for="locationCountry">{{ 'CONFERENCE.CONFIG.VOXXRIN.COUNTRY' | translate }}</label>
+                <input id="locationCountry" pInputText formControlName="locationCountry" type="text" class="w-full" />
+              </div>
+
+              <div class="row">
+                <label for="locationCity">{{ 'CONFERENCE.CONFIG.VOXXRIN.CITY' | translate }}</label>
+                <input id="locationCity" pInputText formControlName="locationCity" type="text" class="w-full" />
+              </div>
+
+              <div class="row">
+                <label for="locationAddress">{{ 'CONFERENCE.CONFIG.VOXXRIN.ADDRESS' | translate }}</label>
+                <input id="locationAddress" pInputText formControlName="locationAddress" type="text" class="w-full" />
+              </div>
+
+              <div class="row">
+                <label for="locationLatitude">{{ 'CONFERENCE.CONFIG.VOXXRIN.LATITUDE' | translate }}</label>
+                <p-inputnumber
+                  inputId="locationLatitude"
+                  formControlName="locationLatitude"
+                  [min]="-90"
+                  [max]="90"
+                  [minFractionDigits]="4"
+                  [maxFractionDigits]="8"
+                  class="w-full"
+                ></p-inputnumber>
+              </div>
+
+              <div class="row">
+                <label for="locationLongitude">{{ 'CONFERENCE.CONFIG.VOXXRIN.LONGITUDE' | translate }}</label>
+                <p-inputnumber
+                  inputId="locationLongitude"
+                  formControlName="locationLongitude"
+                  [min]="-180"
+                  [max]="180"
+                  [minFractionDigits]="4"
+                  [maxFractionDigits]="8"
+                  class="w-full"
+                ></p-inputnumber>
+              </div>
+            </div>
+          </p-accordion-content>
+        </p-accordion-panel>
+
+        <p-accordion-panel value="infoTab">
+          <p-accordion-header>{{ 'CONFERENCE.CONFIG.VOXXRIN.SECTIONS.INFO_TAB' | translate }}</p-accordion-header>
+          <p-accordion-content>
+            <div class="panel-content">
+              <div class="row row-top">
+                <label for="infosEventDescription">{{ 'CONFERENCE.CONFIG.VOXXRIN.INFO_EVENT_DESCRIPTION' | translate }}</label>
+                <textarea id="infosEventDescription" pTextarea formControlName="infosEventDescription" rows="3" class="w-full"></textarea>
+              </div>
+
+              <div class="row">
+                <label for="infosVenuePicture">{{ 'CONFERENCE.CONFIG.VOXXRIN.INFO_VENUE_PICTURE' | translate }}</label>
+                <div class="venue-picture-field">
+                  <input id="infosVenuePicture" pInputText formControlName="infosVenuePicture" type="text" class="w-full" />
+                  @if (venuePicturePreviewUrl()) {
+                    <div class="venue-picture-preview">
+                      <img [src]="venuePicturePreviewUrl()" alt="" />
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <div class="row">
+                <label for="infosAddress">{{ 'CONFERENCE.CONFIG.VOXXRIN.INFO_ADDRESS' | translate }}</label>
+                <input id="infosAddress" pInputText formControlName="infosAddress" type="text" class="w-full" />
+              </div>
+
+              <div class="row row-top">
+                <label>{{ 'CONFERENCE.CONFIG.VOXXRIN.INFO_FLOOR_PLANS' | translate }}</label>
+                <div class="floor-plan-editor">
+                  <div class="floor-plan-form">
+                    <input
+                      pInputText
+                      formControlName="infosFloorPlanLabel"
+                      type="text"
+                      class="w-full"
+                      [placeholder]="'CONFERENCE.CONFIG.VOXXRIN.INFO_FLOOR_PLAN_LABEL' | translate"
+                    />
+                    <input
+                      pInputText
+                      formControlName="infosFloorPlanUrl"
+                      type="text"
+                      class="w-full"
+                      [placeholder]="'CONFERENCE.CONFIG.VOXXRIN.INFO_FLOOR_PLAN_URL' | translate"
+                    />
+                    <button
+                      pButton
+                      type="button"
+                      icon="pi pi-plus"
+                      [label]="'CONFERENCE.CONFIG.VOXXRIN.INFO_FLOOR_PLAN_ADD' | translate"
+                      (click)="addFloorPlan()"
+                    ></button>
+                  </div>
+
+                  @if (floorPlanPreviewUrl()) {
+                    <div class="floor-plan-preview">
+                      <img [src]="floorPlanPreviewUrl()" alt="" />
+                    </div>
+                  }
+
+                  <div class="floor-plan-list">
+                    @for (floorPlan of floorPlans(); track $index) {
+                      <div class="floor-plan-item">
+                        <div class="floor-plan-thumb">
+                          <img [src]="floorPlan.pictureUrl" [alt]="floorPlan.label" />
+                        </div>
+                        <div class="floor-plan-meta">
+                          <div class="floor-plan-label">{{ floorPlan.label }}</div>
+                          <div class="floor-plan-url">{{ floorPlan.pictureUrl }}</div>
+                        </div>
+                        <button
+                          pButton
+                          type="button"
+                          icon="pi pi-times"
+                          severity="danger"
+                          [text]="true"
+                          [rounded]="true"
+                          [ariaLabel]="'COMMON.REMOVE' | translate"
+                          (click)="removeFloorPlan($index)"
+                        ></button>
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+          </p-accordion-content>
+        </p-accordion-panel>
+
+        <p-accordion-panel value="theme">
+          <p-accordion-header>{{ 'CONFERENCE.CONFIG.VOXXRIN.SECTIONS.THEME' | translate }}</p-accordion-header>
+          <p-accordion-content>
+            <div class="panel-content">
+              <div class="row">
+                <label for="primaryHex">{{ 'CONFERENCE.CONFIG.VOXXRIN.PRIMARY_HEX' | translate }}</label>
+                <div class="color-field">
+                  <p-colorpicker
+                    inputId="primaryHex"
+                    formControlName="primaryHex"
+                    format="hex"
+                    [appendTo]="'body'"
+                  ></p-colorpicker>
+                  <input
+                    pInputText
+                    type="text"
+                    [value]="colorTextValue('primaryHex')"
+                    (input)="onColorTextInput('primaryHex', $event)"
+                    placeholder="#000000"
+                    class="w-full"
+                  />
+                </div>
+              </div>
+
+              <div class="row">
+                <label for="primaryContrastHex">{{ 'CONFERENCE.CONFIG.VOXXRIN.PRIMARY_CONTRAST_HEX' | translate }}</label>
+                <div class="color-field">
+                  <p-colorpicker
+                    inputId="primaryContrastHex"
+                    formControlName="primaryContrastHex"
+                    format="hex"
+                    [appendTo]="'body'"
+                  ></p-colorpicker>
+                  <input
+                    pInputText
+                    type="text"
+                    [value]="colorTextValue('primaryContrastHex')"
+                    (input)="onColorTextInput('primaryContrastHex', $event)"
+                    placeholder="#000000"
+                    class="w-full"
+                  />
+                </div>
+              </div>
+
+              <div class="row">
+                <label for="secondaryHex">{{ 'CONFERENCE.CONFIG.VOXXRIN.SECONDARY_HEX' | translate }}</label>
+                <div class="color-field">
+                  <p-colorpicker
+                    inputId="secondaryHex"
+                    formControlName="secondaryHex"
+                    format="hex"
+                    [appendTo]="'body'"
+                  ></p-colorpicker>
+                  <input
+                    pInputText
+                    type="text"
+                    [value]="colorTextValue('secondaryHex')"
+                    (input)="onColorTextInput('secondaryHex', $event)"
+                    placeholder="#000000"
+                    class="w-full"
+                  />
+                </div>
+              </div>
+
+              <div class="row">
+                <label for="secondaryContrastHex">{{ 'CONFERENCE.CONFIG.VOXXRIN.SECONDARY_CONTRAST_HEX' | translate }}</label>
+                <div class="color-field">
+                  <p-colorpicker
+                    inputId="secondaryContrastHex"
+                    formControlName="secondaryContrastHex"
+                    format="hex"
+                    [appendTo]="'body'"
+                  ></p-colorpicker>
+                  <input
+                    pInputText
+                    type="text"
+                    [value]="colorTextValue('secondaryContrastHex')"
+                    (input)="onColorTextInput('secondaryContrastHex', $event)"
+                    placeholder="#000000"
+                    class="w-full"
+                  />
+                </div>
+              </div>
+
+              <div class="row">
+                <label for="tertiaryHex">{{ 'CONFERENCE.CONFIG.VOXXRIN.TERTIARY_HEX' | translate }}</label>
+                <div class="color-field">
+                  <p-colorpicker
+                    inputId="tertiaryHex"
+                    formControlName="tertiaryHex"
+                    format="hex"
+                    [appendTo]="'body'"
+                  ></p-colorpicker>
+                  <input
+                    pInputText
+                    type="text"
+                    [value]="colorTextValue('tertiaryHex')"
+                    (input)="onColorTextInput('tertiaryHex', $event)"
+                    placeholder="#000000"
+                    class="w-full"
+                  />
+                </div>
+              </div>
+
+              <div class="row">
+                <label for="tertiaryContrastHex">{{ 'CONFERENCE.CONFIG.VOXXRIN.TERTIARY_CONTRAST_HEX' | translate }}</label>
+                <div class="color-field">
+                  <p-colorpicker
+                    inputId="tertiaryContrastHex"
+                    formControlName="tertiaryContrastHex"
+                    format="hex"
+                    [appendTo]="'body'"
+                  ></p-colorpicker>
+                  <input
+                    pInputText
+                    type="text"
+                    [value]="colorTextValue('tertiaryContrastHex')"
+                    (input)="onColorTextInput('tertiaryContrastHex', $event)"
+                    placeholder="#000000"
+                    class="w-full"
+                  />
+                </div>
+              </div>
+            </div>
+          </p-accordion-content>
+        </p-accordion-panel>
+
+        <p-accordion-panel value="features">
+          <p-accordion-header>{{ 'CONFERENCE.CONFIG.VOXXRIN.SECTIONS.FEATURES' | translate }}</p-accordion-header>
+          <p-accordion-content>
+            <div class="panel-content">
+              <div class="row checkbox-row">
+                <label for="favoritesEnabled">{{ 'CONFERENCE.CONFIG.VOXXRIN.FAVORITES_ENABLED' | translate }}</label>
+                <p-checkbox inputId="favoritesEnabled" formControlName="favoritesEnabled" [binary]="true"></p-checkbox>
+              </div>
+
+              <div class="row checkbox-row">
+                <label for="roomsDisplayed">{{ 'CONFERENCE.CONFIG.VOXXRIN.ROOMS_DISPLAYED' | translate }}</label>
+                <p-checkbox inputId="roomsDisplayed" formControlName="roomsDisplayed" [binary]="true"></p-checkbox>
+              </div>
+
+              <div class="row checkbox-row">
+                <label for="showInfosTab">{{ 'CONFERENCE.CONFIG.VOXXRIN.SHOW_INFOS_TAB' | translate }}</label>
+                <p-checkbox inputId="showInfosTab" formControlName="showInfosTab" [binary]="true"></p-checkbox>
+              </div>
+
+              <div class="row checkbox-row">
+                <label for="showRoomCapacityIndicator">{{ 'CONFERENCE.CONFIG.VOXXRIN.SHOW_ROOM_CAPACITY' | translate }}</label>
+                <p-checkbox inputId="showRoomCapacityIndicator" formControlName="showRoomCapacityIndicator" [binary]="true"></p-checkbox>
+              </div>
+
+              <div class="row checkbox-row">
+                <label for="remindMeOnceVideosAreAvailableEnabled">{{ 'CONFERENCE.CONFIG.VOXXRIN.REMIND_VIDEOS_ENABLED' | translate }}</label>
+                <p-checkbox inputId="remindMeOnceVideosAreAvailableEnabled" formControlName="remindMeOnceVideosAreAvailableEnabled" [binary]="true"></p-checkbox>
+              </div>
+
+              <div class="row">
+                <label for="hideLanguages">{{ 'CONFERENCE.CONFIG.VOXXRIN.HIDE_LANGUAGES' | translate }}</label>
+                <input id="hideLanguages" pInputText formControlName="hideLanguages" type="text" class="w-full" />
+              </div>
+            </div>
+          </p-accordion-content>
+        </p-accordion-panel>
+
+        <p-accordion-panel value="ratings">
+          <p-accordion-header>{{ 'CONFERENCE.CONFIG.VOXXRIN.SECTIONS.RATINGS' | translate }}</p-accordion-header>
+          <p-accordion-content>
+            <div class="panel-content">
+              <h5>{{ 'CONFERENCE.CONFIG.VOXXRIN.RATING_SUBSECTIONS.SCALE' | translate }}</h5>
+
+              <div class="row checkbox-row">
+                <label for="ratingsScaleEnabled">{{ 'CONFERENCE.CONFIG.VOXXRIN.RATINGS_SCALE_ENABLED' | translate }}</label>
+                <p-checkbox inputId="ratingsScaleEnabled" formControlName="ratingsScaleEnabled" [binary]="true"></p-checkbox>
+              </div>
+
+              <div class="row">
+                <label for="ratingsScaleIcon">{{ 'CONFERENCE.CONFIG.VOXXRIN.RATINGS_SCALE_ICON' | translate }}</label>
+                <input id="ratingsScaleIcon" pInputText formControlName="ratingsScaleIcon" type="text" class="w-full" />
+              </div>
+
+              <div class="row row-top">
+                <label for="ratingsScaleLabels">{{ 'CONFERENCE.CONFIG.VOXXRIN.RATINGS_SCALE_LABELS' | translate }}</label>
+                <textarea id="ratingsScaleLabels" pTextarea formControlName="ratingsScaleLabels" rows="4" class="w-full"></textarea>
+              </div>
+
+              <h5>{{ 'CONFERENCE.CONFIG.VOXXRIN.RATING_SUBSECTIONS.BINGO' | translate }}</h5>
+              <div class="row checkbox-row">
+                <label for="ratingsBingoEnabled">{{ 'CONFERENCE.CONFIG.VOXXRIN.RATINGS_BINGO_ENABLED' | translate }}</label>
+                <p-checkbox inputId="ratingsBingoEnabled" formControlName="ratingsBingoEnabled" [binary]="true"></p-checkbox>
+              </div>
+
+              <div class="row checkbox-row">
+                <label for="ratingsBingoIsPublic">{{ 'CONFERENCE.CONFIG.VOXXRIN.RATINGS_BINGO_IS_PUBLIC' | translate }}</label>
+                <p-checkbox inputId="ratingsBingoIsPublic" formControlName="ratingsBingoIsPublic" [binary]="true"></p-checkbox>
+              </div>
+
+              <div class="row row-top">
+                <label for="ratingsBingoChoices">{{ 'CONFERENCE.CONFIG.VOXXRIN.RATINGS_BINGO_CHOICES' | translate }}</label>
+                <textarea id="ratingsBingoChoices" pTextarea formControlName="ratingsBingoChoices" rows="4" class="w-full"></textarea>
+              </div>
+
+              <h5>{{ 'CONFERENCE.CONFIG.VOXXRIN.RATING_SUBSECTIONS.FREE_TEXT' | translate }}</h5>
+              <div class="row checkbox-row">
+                <label for="ratingsFreeTextEnabled">{{ 'CONFERENCE.CONFIG.VOXXRIN.RATINGS_FREE_TEXT_ENABLED' | translate }}</label>
+                <p-checkbox inputId="ratingsFreeTextEnabled" formControlName="ratingsFreeTextEnabled" [binary]="true"></p-checkbox>
+              </div>
+
+              <div class="row">
+                <label for="ratingsFreeTextMaxLength">{{ 'CONFERENCE.CONFIG.VOXXRIN.RATINGS_FREE_TEXT_MAX_LENGTH' | translate }}</label>
+                <p-inputnumber
+                  inputId="ratingsFreeTextMaxLength"
+                  formControlName="ratingsFreeTextMaxLength"
+                  [min]="1"
+                  [showButtons]="true"
+                  class="w-full"
+                ></p-inputnumber>
+              </div>
+            </div>
+          </p-accordion-content>
+        </p-accordion-panel>
+
+        <p-accordion-panel value="topRated">
+          <p-accordion-header>{{ 'CONFERENCE.CONFIG.VOXXRIN.SECTIONS.TOP_RATED' | translate }}</p-accordion-header>
+          <p-accordion-content>
+            <div class="panel-content">
+              <div class="row">
+                <label for="topRatedMinRatings">{{ 'CONFERENCE.CONFIG.VOXXRIN.TOP_RATED_MIN_RATINGS' | translate }}</label>
+                <p-inputnumber inputId="topRatedMinRatings" formControlName="topRatedMinRatings" [min]="0" class="w-full"></p-inputnumber>
+              </div>
+
+              <div class="row">
+                <label for="topRatedMinAverage">{{ 'CONFERENCE.CONFIG.VOXXRIN.TOP_RATED_MIN_AVERAGE' | translate }}</label>
+                <p-inputnumber inputId="topRatedMinAverage" formControlName="topRatedMinAverage" [min]="0" class="w-full"></p-inputnumber>
+              </div>
+
+              <div class="row">
+                <label for="topRatedDailyCount">{{ 'CONFERENCE.CONFIG.VOXXRIN.TOP_RATED_DAILY_COUNT' | translate }}</label>
+                <p-inputnumber inputId="topRatedDailyCount" formControlName="topRatedDailyCount" [min]="0" class="w-full"></p-inputnumber>
+              </div>
+            </div>
+          </p-accordion-content>
+        </p-accordion-panel>
+
+        <p-accordion-panel value="recording">
+          <p-accordion-header>{{ 'CONFERENCE.CONFIG.VOXXRIN.SECTIONS.RECORDING' | translate }}</p-accordion-header>
+          <p-accordion-content>
+            <div class="panel-content">
+              <div class="row">
+                <label for="recordingPlatform">{{ 'CONFERENCE.CONFIG.VOXXRIN.RECORDING_PLATFORM' | translate }}</label>
+                <input id="recordingPlatform" pInputText formControlName="recordingPlatform" type="text" class="w-full" />
+              </div>
+
+              <div class="row">
+                <label for="recordingYoutubeHandle">{{ 'CONFERENCE.CONFIG.VOXXRIN.RECORDING_YOUTUBE_HANDLE' | translate }}</label>
+                <input id="recordingYoutubeHandle" pInputText formControlName="recordingYoutubeHandle" type="text" class="w-full" />
+              </div>
+
+              <div class="row">
+                <label for="recordingIgnoreAfter">{{ 'CONFERENCE.CONFIG.VOXXRIN.RECORDING_IGNORE_AFTER' | translate }}</label>
+                <input id="recordingIgnoreAfter" pInputText formControlName="recordingIgnoreAfter" type="text" class="w-full" />
+              </div>
+
+              <div class="row">
+                <label for="recordedFormatIds">{{ 'CONFERENCE.CONFIG.VOXXRIN.RECORDED_FORMAT_IDS' | translate }}</label>
+                <input id="recordedFormatIds" pInputText formControlName="recordedFormatIds" type="text" class="w-full" />
+              </div>
+
+              <div class="row">
+                <label for="notRecordedFormatIds">{{ 'CONFERENCE.CONFIG.VOXXRIN.NOT_RECORDED_FORMAT_IDS' | translate }}</label>
+                <input id="notRecordedFormatIds" pInputText formControlName="notRecordedFormatIds" type="text" class="w-full" />
+              </div>
+
+              <div class="row">
+                <label for="recordedRoomIds">{{ 'CONFERENCE.CONFIG.VOXXRIN.RECORDED_ROOM_IDS' | translate }}</label>
+                <input id="recordedRoomIds" pInputText formControlName="recordedRoomIds" type="text" class="w-full" />
+              </div>
+
+              <div class="row">
+                <label for="notRecordedRoomIds">{{ 'CONFERENCE.CONFIG.VOXXRIN.NOT_RECORDED_ROOM_IDS' | translate }}</label>
+                <input id="notRecordedRoomIds" pInputText formControlName="notRecordedRoomIds" type="text" class="w-full" />
+              </div>
+
+              <div class="row">
+                <label for="excludeTitleWords">{{ 'CONFERENCE.CONFIG.VOXXRIN.EXCLUDE_TITLE_WORDS' | translate }}</label>
+                <input id="excludeTitleWords" pInputText formControlName="excludeTitleWords" type="text" class="w-full" />
+              </div>
+            </div>
+          </p-accordion-content>
+        </p-accordion-panel>
+      </p-accordion>
+
+      <div class="actions">
+        <button pButton type="button" [label]="'COMMON.SAVE' | translate" icon="pi pi-save" (click)="save()" [loading]="saving()"></button>
+      </div>
+    </form>
+  }
+</div>
