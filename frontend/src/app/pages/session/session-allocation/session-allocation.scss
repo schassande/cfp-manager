@@ -25,6 +25,24 @@ $header-height: 40px;
   background: #ffffff;
 }
 
+.planning-filters {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 0.8rem;
+}
+
+.speaker-select-label {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.speaker-select {
+  width: 18rem;
+  max-width: 100%;
+}
+
 .available-panel {
   position: sticky;
   top: 1rem;

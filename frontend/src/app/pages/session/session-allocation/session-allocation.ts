@@ -12,6 +12,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { SelectModule } from 'primeng/select';
 import {
   UnallocatedSessionListComponent,
   UnallocatedSessionListItem,
@@ -81,6 +82,7 @@ interface SpeakerAvailabilityConflict {
     FormsModule,
     InputTextModule,
     MultiSelectModule,
+    SelectModule,
     UnallocatedSessionListComponent,
     TranslateModule,
   ],
@@ -113,6 +115,7 @@ export class SessionAllocation implements OnInit {
   readonly slotTypes = signal<SlotType[]>([]);
   readonly selectedSessionTypeIds = signal<string[]>([]);
   readonly selectedTrackIds = signal<string[]>([]);
+  readonly selectedSpeakerId = signal('');
   readonly hasUnavailabilityFilter = signal(false);
   readonly unallocatedSearchText = signal('');
   readonly draggingPayload = signal<DragPayload | null>(null);
@@ -139,6 +142,21 @@ export class SessionAllocation implements OnInit {
       value: track.id,
     }))
   );
+
+  readonly speakerOptions = computed<SelectOption[]>(() => {
+    const speakerIds = new Set<string>();
+    this.sessions().forEach((session) => {
+      this.sessionSpeakerIds(session).forEach((speakerId) => speakerIds.add(speakerId));
+    });
+
+    const namesById = this.speakerDisplayById();
+    return Array.from(speakerIds)
+      .map((speakerId) => ({
+        label: namesById.get(speakerId) ?? speakerId,
+        value: speakerId,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  });
 
   private readonly sessionById = computed(() => {
     const map = new Map<string, Session>();
@@ -350,8 +368,12 @@ export class SessionAllocation implements OnInit {
 
   slotStyle(slotView: SlotView): Record<string, string | number> {
     const session = this.selectedSession(slotView);
-    const backgroundColor = session ? this.sessionTrackColor(session) : '#FFFFFF';
-    const textColor = session ? this.sessionTrackTextColor(session) : '#0F172A';
+    const selectedSpeakerId = this.selectedSpeakerId().trim();
+    const shouldGrayOut = !!selectedSpeakerId && !!session && !this.sessionHasSpeaker(session, selectedSpeakerId);
+    const backgroundColor = session
+      ? (shouldGrayOut ? '#CBD5E1' : this.sessionTrackColor(session))
+      : '#FFFFFF';
+    const textColor = session ? this.computeTextColorForBackground(backgroundColor) : '#0F172A';
 
     return {
       '--start-tick': slotView.startTick,
@@ -371,8 +393,7 @@ export class SessionAllocation implements OnInit {
 
   sessionSpeakersLabel(session: Session): string {
     const namesById = this.speakerDisplayById();
-    const names = [session.speaker1Id, session.speaker2Id, session.speaker3Id]
-      .filter((speakerId): speakerId is string => !!speakerId)
+    const names = this.sessionSpeakerIds(session)
       .map((speakerId) => namesById.get(speakerId))
       .filter((value): value is string => !!value);
 
@@ -755,8 +776,7 @@ export class SessionAllocation implements OnInit {
 
   private sessionHasSpeakerWithUnavailability(session: Session): boolean {
     const conferenceSpeakerByPersonId = this.conferenceSpeakerByPersonId();
-    return [session.speaker1Id, session.speaker2Id, session.speaker3Id]
-      .filter((speakerId): speakerId is string => !!speakerId)
+    return this.sessionSpeakerIds(session)
       .some((speakerId) => {
         const unavailableSlots = conferenceSpeakerByPersonId.get(speakerId)?.unavailableSlotsId ?? [];
         return unavailableSlots.length > 0;
@@ -771,8 +791,7 @@ export class SessionAllocation implements OnInit {
 
     const conferenceSpeakerByPersonId = this.conferenceSpeakerByPersonId();
     const speakerDisplayById = this.speakerDisplayById();
-    return [session.speaker1Id, session.speaker2Id, session.speaker3Id]
-      .filter((speakerId): speakerId is string => !!speakerId)
+    return this.sessionSpeakerIds(session)
       .map((speakerId) => {
         const conferenceSpeaker = conferenceSpeakerByPersonId.get(speakerId);
         const unavailableSlots = new Set(
@@ -930,11 +949,7 @@ export class SessionAllocation implements OnInit {
   private loadSpeakerDisplay(sessions: Session[]): void {
     const speakerIds = Array.from(
       new Set(
-        sessions.flatMap((session) =>
-          [session.speaker1Id, session.speaker2Id, session.speaker3Id].filter(
-            (speakerId): speakerId is string => !!speakerId
-          )
-        )
+        sessions.flatMap((session) => this.sessionSpeakerIds(session))
       )
     );
 
@@ -988,6 +1003,15 @@ export class SessionAllocation implements OnInit {
       return sessions;
     }
     return sessions.filter((session) => (session.search ?? '').toLowerCase().includes(query));
+  }
+
+  private sessionHasSpeaker(session: Session, speakerId: string): boolean {
+    return this.sessionSpeakerIds(session).includes(speakerId);
+  }
+
+  private sessionSpeakerIds(session: Session): string[] {
+    return [session.speaker1Id, session.speaker2Id, session.speaker3Id]
+      .filter((speakerId): speakerId is string => !!speakerId);
   }
 
   private setDragPayload(event: DragEvent, payload: DragPayload): void {

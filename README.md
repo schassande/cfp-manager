@@ -126,12 +126,13 @@ stateDiagram-v2
 
 ```
 TODO list :
-- Publication voxxrin
+- Allocation : mode d'affichage spéciale pour voir les langs
 - Cancel speaker
 - Speaker Edit: lors de la modification de l'indispo d'un speaker il faut désallouer les sessions sur les slots ou le speaker est indispo
 - Duplication conference
-- Allocation : combo pour afficher les sessions d'un speaker donné. ça ne laisse visible que ses sessions - affichage de la liste des slots/session sous la combo
-- Allocation : mode d'affichage spéciale pour voir les langs
+- Publication voxxrin : fichier config produit. 
+  - Attente d'info Voxxrin pour intégrer 
+  - Produire les infos sur les sessions, speakers, sponsors et le schedule
 - Allocation automatique des sessions
   - choisir des critères stratégies 
     - variété des tracks

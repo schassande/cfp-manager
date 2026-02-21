@@ -494,6 +494,7 @@
       "NO_SESSION_SLOTS": "Aucun slot de session pour cette journee.",
       "FILTER_SESSION_TYPE": "Types de session",
       "FILTER_TRACK": "Tracks",
+      "FILTER_SPEAKER": "Speaker",
       "FILTER_HAS_UNAVAILABILITY": "a des indisponibilités",
       "FILTER_KEYWORD": "Mot-cle (min 3 caracteres)",
       "COUNT": "{{count}} session(s) disponible(s)",
