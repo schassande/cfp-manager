@@ -5,6 +5,7 @@
     <div class="form-section">
       <label for="name" class="form-label">
         {{ 'CONFERENCE.CONFIG.GENERAL.NAME' | translate }}
+        <span class="required">*</span>
       </label>
       <input
         id="name"
@@ -13,7 +14,6 @@
         type="text"
         placeholder="Nom de la conférence"
       />
-      <span class="required">*</span>
       @if (form.get('name')?.invalid && form.get('name')?.touched) {
       <small class="error-message">
         {{ 'VALIDATION.REQUIRED' | translate }}
@@ -25,15 +25,16 @@
     <div class="form-section">
       <label for="edition" class="form-label">
         {{ 'CONFERENCE.CONFIG.GENERAL.EDITION' | translate }}
+        <span class="required">*</span>
       </label>
       <input
         id="edition"
-        pInputNumber
+        pInputText
         formControlName="edition"
         type="number"
+        class="edition-input"
       />
-      <span class="required">*</span>
-      @if (form.get('year')?.invalid && form.get('year')?.touched) {
+      @if (form.get('edition')?.invalid && form.get('edition')?.touched) {
       <small class="error-message">
         {{ 'VALIDATION.REQUIRED' | translate }}
       </small>
@@ -44,6 +45,7 @@
     <div class="form-section">
       <label for="location" class="form-label">
         {{ 'CONFERENCE.CONFIG.GENERAL.LOCATION' | translate }}
+        <span class="required">*</span>
       </label>
       <input
         id="location"
@@ -52,7 +54,6 @@
         type="text"
         placeholder="Lieu de la conférence"
       />
-      <span class="required">*</span>
       @if (form.get('location')?.invalid && form.get('location')?.touched) {
       <small class="error-message">
         {{ 'VALIDATION.REQUIRED' | translate }}
@@ -63,6 +64,7 @@
     <div class="form-section">
       <label for="languages" class="form-label">
         {{ 'CONFERENCE.CONFIG.GENERAL.LANGUAGES' | translate }}
+        <span class="required">*</span>
       </label>
       <p-multiSelect
         id="languages"
@@ -74,7 +76,6 @@
         display="comma"
         placeholder="Sélectionnez les langues"
       ></p-multiSelect>
-      <span class="required">*</span>
       @if (form.get('languages')?.invalid && form.get('languages')?.touched) {
       <small class="error-message">
         {{ 'VALIDATION.REQUIRED' | translate }}
@@ -96,13 +97,13 @@
           class="w-full"
           placeholder="URL du logo"
         />
-        @if (form.get('logo')?.value) {
-        <div class="logo-preview">
-          <img [src]="form.get('logo')?.value" alt="Logo preview" />
-        </div>
-        }
       </div>
     </div>
+    @if (form.get('logo')?.value) {
+    <div class="logo-preview">
+      <img [src]="form.get('logo')?.value" alt="Logo preview" />
+    </div>
+    }
 
     <!-- Visible Toggle -->
     <div class="form-section">

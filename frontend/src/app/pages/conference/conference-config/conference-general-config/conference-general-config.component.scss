@@ -13,6 +13,7 @@
     display: flex;
     flex-direction: row;
     gap: 0.5rem;
+    align-items: center;
 
     .form-label {
       font-weight: 600;
@@ -33,6 +34,18 @@
       font-size: 0.95rem;
     }
 
+    .edition-input {
+      width: 8rem;
+      max-width: 100%;
+      -moz-appearance: textfield;
+    }
+
+    .edition-input::-webkit-outer-spin-button,
+    .edition-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
     .error-message {
       color: #e74c3c;
       font-size: 0.85rem;
@@ -40,20 +53,6 @@
       margin-top: 0.25rem;
     }
 
-    .logo-preview {
-      margin-top: 0.5rem;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      padding: 0.5rem;
-      display: inline-block;
-
-      img {
-        max-width: 200px;
-        max-height: 200px;
-        border-radius: 4px;
-        object-fit: cover;
-      }
-    }
 
     .email-input-group {
       display: flex;
@@ -89,7 +88,31 @@
     }
   }
 }
+    .logo-preview {
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+
+      img {
+        max-width: 100px;
+        max-height: 100px;
+        border-radius: 4px;
+        object-fit: cover;
+      }
+    }
 
 .w-full {
   width: 100%;
+}
+
+@media (max-width: 768px) {
+  .general-config {
+    .form-section {
+      flex-direction: column;
+      align-items: stretch;
+
+      .form-label {
+        text-align: left;
+      }
+    }
+  }
 }
