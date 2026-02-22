@@ -82,6 +82,7 @@ export class DayStructure implements OnInit {
 
   private readonly tickStep = 30;
   private readonly tickMainRatio = 2;
+  private readonly compactSlotHeightPx = 50;
 
   // ticks (every 60 minutes by default)
   ticks = computed(() => {
@@ -188,6 +189,10 @@ export class DayStructure implements OnInit {
   }
   getSessionType(sessionTypeId: string): SessionType | undefined {
     return this.sessionTypes().find(st => st.id === sessionTypeId);
+  }
+  isCompactSlot(slot: Slot): boolean {
+    // In this grid, rendered slot height is proportional to duration (about 1px/minute).
+    return slot.duration < this.compactSlotHeightPx;
   }
   // interactions
   onSlotEdit(s: Slot) { 

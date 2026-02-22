@@ -61,6 +61,7 @@
               @let slotType = getSlotType(slot.slotTypeId);
               @let sessionType = getSessionType(slot.sessionTypeId);
               <div class="slot" 
+                [class.slot-compact]="isCompactSlot(slot)"
                 [style.--duration]="position.durationtick" 
                 [style.--start-tick]="position.startTick"
                 [style.--room-col-idx]="position.roomColIdx"
