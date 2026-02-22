@@ -66,6 +66,10 @@ export class ConferenceGeneralConfigComponent implements OnInit {
       name:            [conf.name,            [Validators.required, Validators.minLength(3)]],
       edition:         [conf.edition,            [Validators.required]],
       location:        [conf.location,        [Validators.required]],
+      website:         [conf.website ?? '',   []],
+      cfpStartDate:    [this.toDateInput(conf.cfp?.startDate), []],
+      cfpEndDate:      [this.toDateInput(conf.cfp?.endDate), []],
+      cfpWebsite:      [conf.cfp?.website ?? '', []],
       logo:            [conf.logo,            []],
       languages:       [conf.languages,       [Validators.required]],
       visible:         [conf.visible,         [Validators.required]],
@@ -76,11 +80,30 @@ export class ConferenceGeneralConfigComponent implements OnInit {
       c.name = values.name;
       c.edition = values.edition;
       c.location = values.location;
+      c.website = values.website;
+      c.cfp = {
+        startDate: this.fromDateInput(values.cfpStartDate),
+        endDate: this.fromDateInput(values.cfpEndDate),
+        website: String(values.cfpWebsite ?? '').trim(),
+        status: c.cfp?.status || 'closed',
+      };
       c.logo = values.logo;
       c.languages = values.languages;
       c.visible = values.visible;
       c.organizerEmails = values.organizerEmails;
     })
+  }
+
+  private toDateInput(value: string | undefined): string {
+    const normalized = String(value ?? '').trim();
+    if (!normalized) {
+      return '';
+    }
+    return normalized.length >= 10 ? normalized.slice(0, 10) : normalized;
+  }
+
+  private fromDateInput(value: unknown): string {
+    return String(value ?? '').trim();
   }
 
   addOrganizerEmail(email: string) {

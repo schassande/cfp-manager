@@ -165,6 +165,7 @@ export class ConferenceConfigComponent implements OnInit {
       edition: new Date().getFullYear(),
       days: [],
       location: '',
+      website: '',
       logo: '',
       languages: [lang.toUpperCase()],
       description: { [lang]: 'New conference description' },
@@ -173,7 +174,7 @@ export class ConferenceConfigComponent implements OnInit {
       tracks: [],
       rooms: [],
       sessionTypes: [],
-      cfp: { startDate: '', endDate: '', status: 'closed' },
+      cfp: { startDate: '', endDate: '', website: '', status: 'closed' },
     };
 
     this.conferenceService.save(defaultConf).subscribe({

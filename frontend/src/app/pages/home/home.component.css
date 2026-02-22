@@ -11,13 +11,31 @@
 .home-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 12px;
   margin-bottom: 14px;
+  position: relative;
+  min-height: 2.25rem;
 }
 
 .home-header h1 {
   margin: 0;
+  text-align: center;
+}
+
+.home-header .add-button {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .conference-list {
@@ -95,6 +113,14 @@
 }
 
 @media (max-width: 640px) {
+  .home-container {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    margin: 0;
+    padding: 16px;
+  }
+
   .conference-card {
     align-items: flex-start;
   }
@@ -111,6 +137,16 @@
 
   .home-header {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+  }
+
+  .home-header .add-button {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    top: auto;
+    transform: none;
+    z-index: 1000;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
   }
 }

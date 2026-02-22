@@ -33,7 +33,9 @@ export class ConferenceManage {
   readonly conference = signal<Conference | undefined>(undefined);
   readonly activities = signal<Activity[]>([]);
   readonly managedActivities = computed(() =>
-    [...this.activities()].sort((a, b) => String(a.name ?? '').localeCompare(String(b.name ?? '')))
+    [...this.activities()]
+      .filter((activity) => activity.registerParticipant !== false)
+      .sort((a, b) => String(a.name ?? '').localeCompare(String(b.name ?? '')))
   );
 
   conferenceId = computed(() => this.route.snapshot.paramMap.get('conferenceId') ?? '');

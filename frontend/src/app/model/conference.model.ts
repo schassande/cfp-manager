@@ -9,6 +9,8 @@ export interface Conference extends PersistentData {
   edition: number;
   /** Location of the conference */
   location: string;
+  /** Conference website URL */
+  website: string;
   /** URL to the conference logo */
   logo: string;
   /** Supported languages (e.g., ["FR", "EN"]) */
@@ -30,6 +32,7 @@ export interface Conference extends PersistentData {
   cfp: {
     startDate: string; // ISO 8601
     endDate: string;   // ISO 8601
+    website: string;
     status: string;
   };
   sponsoring?: {

@@ -106,10 +106,10 @@
         "NOT_AVAILABLE": "Non disponible",
         "UNKNOWN_SESSION_TYPE": "Type inconnu",
         "TABLE": {
-          "METRIC": "Indicateur",
-          "SUBMITTED": "Sessions soumises",
-          "CONFIRMED": "Sessions confirmées",
-          "ALLOCATED": "Sessions allouées",
+          "METRIC": "Session",
+          "SUBMITTED": "Soumises",
+          "CONFIRMED": "Confirmées",
+          "ALLOCATED": "Allouées",
           "TOTAL": "Total"
         },
         "KPIS": {
@@ -121,25 +121,25 @@
           "DAYS_BEFORE_CONFERENCE": "Jours avant la conférence"
         }
       },
-      "DELETE_BUTTON": "Supprimer la conference",
+      "DELETE_BUTTON": "Supprimer",
       "DELETE_CONFIRM": "Confirmez-vous la suppression definitive de cette conference et de toutes les donnees associees (sessions, speakers, activités) ?",
       "DELETE_ERROR": "La suppression de la conference a echoué.",
       "EXCEL_EXPORT_GENERATING": "Generation du fichier Excel...",
       "EXCEL_EXPORT_ERROR": "La generation du fichier Excel a echoue.",
       "ACTIONS": {
-        "CATEGORY_GENERAL": "Général",
+        "CATEGORY_GENERAL": "Configuration",
         "CATEGORY_SESSIONS": "Sessions",
         "CATEGORY_ACTIVITIES": "Activités",
         "CONFIG": "Configuration générale",
-        "IMPORT": "Importer les sessions",
-        "ALLOCATION": "Allouer les sessions",
+        "IMPORT": "Importer",
+        "ALLOCATION": "Allouer",
         "SESSIONS": "Gérer les sessions",
         "SPEAKERS": "Gérer les speakers",
-        "CONFIG_ACTIVITIES": "Configurer les activites",
-        "ACTIVITY_PARTICIPATION": "Inscriptions aux activites",
+        "CONFIG_ACTIVITIES": "Configurer",
+        "ACTIVITY_PARTICIPATION": "Inscription",
         "ACTIVITY_ADMIN": "Gestion des activites",
-        "PUBLISH": "Publier le programme",
-        "EXPORT_EXCEL": "Exporter en Excel"
+        "PUBLISH": "Publier",
+        "EXPORT_EXCEL": "Export Excel"
       }
     },
     "ACTIVITY_PARTICIPATION": {
@@ -184,9 +184,11 @@
       "ADD_ACTIVITY": "Ajouter une activite",
       "EDIT": "Modifier l activite",
       "NAME": "Nom de l activite",
-      "SLOT": "Slot d activite lie",
-      "SLOT_PLACEHOLDER": "Aucun slot lie",
-      "SLOT_HELP": "Quand un slot est lie, les heures debut/fin viennent du slot.",
+      "ICON": "Icone",
+      "REGISTER_PARTICIPANT": "Activer l inscription des participants",
+      "SLOT": "Slot d'activite lié",
+      "SLOT_PLACEHOLDER": "Aucun slot lié",
+      "SLOT_HELP": "Quand un slot est lié, les heures debut/fin viennent du slot.",
       "START": "Debut",
       "END": "Fin",
       "DESCRIPTION_EN": "Description (Anglais)",
@@ -277,6 +279,10 @@
         "DATES": "Dates",
         "DATES_ADDED": "Dates ajoutées:",
         "LOCATION": "Lieu",
+        "WEBSITE": "Site web",
+        "CFP_START_DATE": "Date de debut du CFP",
+        "CFP_END_DATE": "Date de fin du CFP",
+        "CFP_WEBSITE": "Site web du CFP",
         "LOGO": "Logo",
         "LANGUAGES": "Langues",
         "VISIBLE": "Visible",
@@ -346,7 +352,7 @@
         "ROOM_DELETE_ERROR": "Erreur lors de la suppression de la salle"
       },
       "PLANNING_STRUCTURE": {
-        "TAB": "Structure de planification",
+        "TAB": "Structure plannning",
         "TITLE": "Configuration de la structure de planification",
         "DESCRIPTION": "Gérez la structure de planification pour votre conférence ici.",
         "NO_DAYS": "Aucun jour défini",

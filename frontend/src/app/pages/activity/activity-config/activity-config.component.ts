@@ -245,6 +245,8 @@ export class ActivityConfigComponent {
       lastUpdated: previous?.lastUpdated ?? '',
       conferenceId: this.conferenceId(),
       name: String(currentForm.value.name ?? '').trim(),
+      icon: String(currentForm.value.icon ?? '').trim(),
+      registerParticipant: Boolean(currentForm.value.registerParticipant),
       slotId: selectedSlotId || undefined,
       start: startIso,
       end: endIso,
@@ -364,6 +366,8 @@ export class ActivityConfigComponent {
     const linkedSlot = this.getActivitySlotInfoById(activity?.slotId);
     const formGroup = this.fb.group({
       name: [activity?.name ?? '', [Validators.required, Validators.minLength(2)]],
+      icon: [activity?.icon ?? '', []],
+      registerParticipant: [activity?.registerParticipant !== false, []],
       slotId: [activity?.slotId ?? '', []],
       start: [this.toDateTimeInput(linkedSlot?.start ?? activity?.start), [Validators.required]],
       end: [this.toDateTimeInput(linkedSlot?.end ?? activity?.end), [Validators.required]],

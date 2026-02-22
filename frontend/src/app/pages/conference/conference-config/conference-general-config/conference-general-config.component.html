@@ -60,6 +60,55 @@
       </small>
       }
     </div>
+    <div class="form-section">
+      <label for="website" class="form-label">
+        {{ 'CONFERENCE.CONFIG.GENERAL.WEBSITE' | translate }}
+      </label>
+      <input
+        id="website"
+        pInputText
+        formControlName="website"
+        type="text"
+        placeholder="https://..."
+      />
+    </div>
+
+    <!-- CFP Dates -->
+    <div class="form-section">
+      <label for="cfpStartDate" class="form-label">
+        {{ 'CONFERENCE.CONFIG.GENERAL.CFP_START_DATE' | translate }}
+      </label>
+      <input
+        id="cfpStartDate"
+        pInputText
+        formControlName="cfpStartDate"
+        type="date"
+      />
+    </div>
+    <div class="form-section">
+      <label for="cfpEndDate" class="form-label">
+        {{ 'CONFERENCE.CONFIG.GENERAL.CFP_END_DATE' | translate }}
+      </label>
+      <input
+        id="cfpEndDate"
+        pInputText
+        formControlName="cfpEndDate"
+        type="date"
+      />
+    </div>
+    <div class="form-section">
+      <label for="cfpWebsite" class="form-label">
+        {{ 'CONFERENCE.CONFIG.GENERAL.CFP_WEBSITE' | translate }}
+      </label>
+      <input
+        id="cfpWebsite"
+        pInputText
+        formControlName="cfpWebsite"
+        type="text"
+        placeholder="https://..."
+      />
+    </div>
+
     <!-- Languages Field -->
     <div class="form-section">
       <label for="languages" class="form-label">

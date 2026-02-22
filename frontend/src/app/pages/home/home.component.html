@@ -2,7 +2,7 @@
   <div class="home-header">
     <h1>{{ 'HOME.TITLE' | translate }}</h1>
     @if (canCreateConference()) {
-      <button pButton type="button" icon="pi pi-plus" [label]="'HOME.CREATE_CONF' | translate" (click)="createConference()"></button>
+      <button pButton type="button" icon="pi pi-plus" class="p-button-success add-button" (click)="createConference()"></button>
     }
   </div>
   @if (conferences() === undefined) {
@@ -10,7 +10,7 @@
   } @else if (conferences()?.length === 0) {
     <p>{{ 'HOME.NO_CONFS' | translate }}</p>
   } @else {
-    <p-dataview [value]="conferences() || []" [paginator]="true" [rows]="12" layout="list">
+    <p-dataview [value]="conferences() || []" [paginator]="(conferences()?.length || 0) > 12" [rows]="12" layout="list">
       <ng-template #list let-items>
         <div class="conference-list">
           @for (conf of items; track conf.id) {

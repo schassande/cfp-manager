@@ -39,6 +39,49 @@ export class ConferenceViewComponent {
   }
 
   conference = computed(() => this._conference());
+  conferenceDateRange(conf: Conference): { start?: string; end?: string } {
+    const sortedDates = [...(conf.days ?? [])]
+      .map((day) => day.date)
+      .filter((date): date is string => !!date)
+      .sort((a, b) => a.localeCompare(b));
+
+    if (!sortedDates.length) {
+      return {};
+    }
+
+    return { start: sortedDates[0], end: sortedDates[sortedDates.length - 1] };
+  }
+
+  cfpDateRange(conf: Conference): { start: string; end: string } | null {
+    const start = String(conf.cfp?.startDate ?? '').trim();
+    const end = String(conf.cfp?.endDate ?? '').trim();
+    if (!start || !end) {
+      return null;
+    }
+
+    const startTime = Date.parse(start);
+    const endTime = Date.parse(end);
+    if (Number.isNaN(startTime) || Number.isNaN(endTime)) {
+      return null;
+    }
+
+    return { start, end };
+  }
+
+  canManageConference = computed(() => {
+    const person = this.currentPerson();
+    const conference = this.conference();
+    if (!person || !conference) {
+      return false;
+    }
+    const email = String(person.email ?? '').trim().toLowerCase();
+    if (!email) {
+      return false;
+    }
+    return (conference.organizerEmails ?? [])
+      .map((organizerEmail) => String(organizerEmail ?? '').trim().toLowerCase())
+      .includes(email);
+  });
 
   private readonly userRoles = computed<ParticipantType[]>(() => {
     const person = this.currentPerson();

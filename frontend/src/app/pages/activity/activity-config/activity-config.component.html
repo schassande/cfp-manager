@@ -88,6 +88,25 @@
           <small class="error-message">{{ 'VALIDATION.REQUIRED' | translate }}</small>
           }
         </div>
+        <div class="form-section">
+          <label for="icon" class="form-label">
+            {{ 'CONFERENCE.ACTIVITIES.ICON' | translate }}
+          </label>
+          <input id="icon" pInputText formControlName="icon" type="text" class="w-full" placeholder="pi pi-calendar-plus" />
+        </div>
+        <div class="form-section">
+          <label for="registerParticipant" class="form-label">
+            {{ 'CONFERENCE.ACTIVITIES.REGISTER_PARTICIPANT' | translate }}
+          </label>
+          <p-select
+            inputId="registerParticipant"
+            [options]="[{label: ('PERSON.LIST.YES' | translate), value: true}, {label: ('PERSON.LIST.NO' | translate), value: false}]"
+            optionLabel="label"
+            optionValue="value"
+            formControlName="registerParticipant"
+            class="w-full"
+          ></p-select>
+        </div>
       </div>
 
       <div class="form-row">
@@ -137,6 +156,7 @@
         </div>
       </div>
 
+      @if (form.get('registerParticipant')?.value) {
       <div class="form-section">
         <label for="participantTypes" class="form-label">{{ 'CONFERENCE.ACTIVITIES.PARTICIPANT_TYPES' | translate }}</label>
         <p-multiselect
@@ -150,7 +170,9 @@
           class="w-full"
         ></p-multiselect>
       </div>
+      }
 
+      @if (form.get('registerParticipant')?.value) {
       <fieldset class="limit-fieldset">
         <legend>{{ 'CONFERENCE.ACTIVITIES.LIMITS' | translate }}</legend>
         <div class="form-row">
@@ -176,6 +198,7 @@
           </div>
         </div>
       </fieldset>
+      }
 
       <fieldset class="attributes-fieldset">
         <legend>{{ 'CONFERENCE.ACTIVITIES.ATTRIBUTES_TITLE' | translate }}</legend>

@@ -25,10 +25,6 @@
           <i class="pi pi-calendar"></i>
           <span>{{ 'CONFERENCE.CONFIG.PLANNING_STRUCTURE.TAB' | translate }}</span>
         </a>
-        <a class="action-link" href="" (click)="downloadExcel($event)">
-          <i class="pi pi-file-excel"></i>
-          <span>{{ 'CONFERENCE.MANAGE.ACTIONS.EXPORT_EXCEL' | translate }}</span>
-        </a>
         <a class="action-link" (click)="confirmDeleteConference()" style="background-color: #ffebee; border-color: #ffcdd2;">
           <i class="pi pi-trash"></i>
           <span>{{ 'CONFERENCE.MANAGE.DELETE_BUTTON' | translate }}</span>
@@ -73,12 +69,18 @@
         </a>
         @for (activity of managedActivities(); track activity.id) {
         <a class="action-link" [routerLink]="['/conference', id, 'activities', activity.id, 'admin']">
-          <i class="pi pi-chart-bar"></i>
+          <i [class]="activity.icon || 'pi pi-chart-bar'"></i>
           <span>{{ activity.name }}</span>
         </a>
         }
       </div>
     </div>
+  </div>
+  <div style="text-align: center;">
+    <a class="" href="" (click)="downloadExcel($event)">
+      <i class="pi pi-file-excel"></i>
+      <span>{{ 'CONFERENCE.MANAGE.ACTIONS.EXPORT_EXCEL' | translate }}</span>
+    </a>
   </div>
 
   @if (deleteError() && conferenceId()) {

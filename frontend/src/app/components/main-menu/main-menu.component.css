@@ -46,6 +46,16 @@
   align-items: center;
   gap: 1.5rem;
 }
+.desktop-auth-links {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.mobile-auth-links {
+  display: none;
+  align-items: center;
+  gap: 0.75rem;
+}
 .flag {
   display: inline-block;
   transform: translateY(1px);
@@ -67,6 +77,11 @@
 .menu-link:hover {
   color: #0d47a1;
 }
+.menu-link-icon {
+  margin-left: 0;
+  font-size: 1.2rem;
+  line-height: 1;
+}
 .avatar-btn {
   background: none;
   border: none;
@@ -81,4 +96,14 @@
 }
 .google-btn:hover {
   background: #f5f5f5;
+}
+
+@media (max-width: 640px) {
+  .desktop-auth-links {
+    display: none;
+  }
+
+  .mobile-auth-links {
+    display: flex;
+  }
 }
