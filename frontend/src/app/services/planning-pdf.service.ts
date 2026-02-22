@@ -1,7 +1,5 @@
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom, forkJoin, map, of, take, catchError } from 'rxjs';
-import * as pdfFonts from 'pdfmake/build/vfs_fonts';
-import * as pdfMake from 'pdfmake/build/pdfmake';
 import { Content, TableCell, TDocumentDefinitions } from 'pdfmake/interfaces';
 import { TranslateService } from '@ngx-translate/core';
 import { Conference, Day, Room, Track } from '../model/conference.model';
@@ -34,6 +32,12 @@ interface AllocatedSlotView {
   track: Track | undefined;
 }
 
+interface PdfMakeApi {
+  createPdf: (def: TDocumentDefinitions) => { download: (fileName?: string) => void };
+  vfs?: Record<string, string>;
+  addVirtualFileSystem?: (vfs: Record<string, string>) => void;
+}
+
 @Injectable({ providedIn: 'root' })
 export class PlanningPdfService {
   private readonly sessionService = inject(SessionService);
@@ -43,21 +47,7 @@ export class PlanningPdfService {
   private readonly activityService = inject(ActivityService);
   private readonly translateService = inject(TranslateService);
   private readonly baseRowStepMinutes = 15;
-
-  constructor() {
-    const api = this.pdfMakeApi();
-    const fontsModule = pdfFonts as unknown as {
-      default?: Record<string, string>;
-      vfs?: Record<string, string>;
-      pdfMake?: { vfs?: Record<string, string> };
-    };
-    const vfs = fontsModule.default ?? fontsModule.vfs ?? fontsModule.pdfMake?.vfs ?? {};
-    if (typeof api.addVirtualFileSystem === 'function') {
-      api.addVirtualFileSystem(vfs);
-    } else {
-      api.vfs = vfs;
-    }
-  }
+  private pdfMakeApiPromise?: Promise<PdfMakeApi>;
 
   async downloadDayPlanning(conference: Conference, day: Day): Promise<void> {
     const blob = await this.generateDayPlanningBlob(conference, day);
@@ -737,12 +727,20 @@ export class PlanningPdfService {
       .toLowerCase();
   }
 
-  private pdfMakeApi(): {
-    createPdf: (def: TDocumentDefinitions) => { download: (fileName?: string) => void };
-    vfs?: Record<string, string>;
-    addVirtualFileSystem?: (vfs: Record<string, string>) => void;
-  } {
-    const moduleAny = pdfMake as unknown as {
+  private async pdfMakeApi(): Promise<PdfMakeApi> {
+    if (!this.pdfMakeApiPromise) {
+      this.pdfMakeApiPromise = this.loadPdfMakeApi();
+    }
+    return this.pdfMakeApiPromise;
+  }
+
+  private async loadPdfMakeApi(): Promise<PdfMakeApi> {
+    const [pdfMakeModule, pdfFontsModule] = await Promise.all([
+      import('pdfmake/build/pdfmake'),
+      import('pdfmake/build/vfs_fonts'),
+    ]);
+
+    const moduleAny = pdfMakeModule as unknown as {
       default?: unknown;
       pdfMake?: unknown;
       createPdf?: unknown;
@@ -755,30 +753,42 @@ export class PlanningPdfService {
     if (typeof api.createPdf !== 'function') {
       throw new Error('PDF engine initialization error: createPdf is unavailable.');
     }
-    return api as {
-      createPdf: (def: TDocumentDefinitions) => { download: (fileName?: string) => void };
+
+    const fontsModuleAny = pdfFontsModule as unknown as {
+      default?: Record<string, string>;
       vfs?: Record<string, string>;
-      addVirtualFileSystem?: (vfs: Record<string, string>) => void;
+      pdfMake?: { vfs?: Record<string, string> };
     };
+    const vfs = fontsModuleAny.default ?? fontsModuleAny.vfs ?? fontsModuleAny.pdfMake?.vfs ?? {};
+    if (typeof api.addVirtualFileSystem === 'function') {
+      api.addVirtualFileSystem(vfs);
+    } else {
+      api.vfs = vfs;
+    }
+
+    return api as PdfMakeApi;
   }
 
   private createPdfBlob(def: TDocumentDefinitions): Promise<Blob> {
     return new Promise((resolve, reject) => {
-      try {
-        const pdf = this.pdfMakeApi().createPdf(def) as {
-          getBlob?: ((cb: (blob: Blob) => void) => void) | (() => Promise<Blob>);
-        };
-        if (!pdf.getBlob) {
-          reject(new Error('PDF blob API unavailable.'));
-          return;
+      void (async () => {
+        try {
+          const api = await this.pdfMakeApi();
+          const pdf = api.createPdf(def) as {
+            getBlob?: ((cb: (blob: Blob) => void) => void) | (() => Promise<Blob>);
+          };
+          if (!pdf.getBlob) {
+            reject(new Error('PDF blob API unavailable.'));
+            return;
+          }
+          const maybePromise = (pdf.getBlob as ((cb: (blob: Blob) => void) => unknown))(resolve);
+          if (maybePromise && typeof (maybePromise as { then?: unknown }).then === 'function') {
+            (maybePromise as Promise<Blob>).then(resolve).catch(reject);
+          }
+        } catch (error) {
+          reject(error);
         }
-        const maybePromise = (pdf.getBlob as ((cb: (blob: Blob) => void) => unknown))(resolve);
-        if (maybePromise && typeof (maybePromise as { then?: unknown }).then === 'function') {
-          (maybePromise as Promise<Blob>).then(resolve).catch(reject);
-        }
-      } catch (error) {
-        reject(error);
-      }
+      })();
     });
   }
 

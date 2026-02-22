@@ -124,6 +124,8 @@
       "DELETE_BUTTON": "Supprimer la conference",
       "DELETE_CONFIRM": "Confirmez-vous la suppression definitive de cette conference et de toutes les donnees associees (sessions, speakers, activités) ?",
       "DELETE_ERROR": "La suppression de la conference a echoué.",
+      "EXCEL_EXPORT_GENERATING": "Generation du fichier Excel...",
+      "EXCEL_EXPORT_ERROR": "La generation du fichier Excel a echoue.",
       "ACTIONS": {
         "CATEGORY_GENERAL": "Général",
         "CATEGORY_SESSIONS": "Sessions",
@@ -136,7 +138,8 @@
         "CONFIG_ACTIVITIES": "Configurer les activites",
         "ACTIVITY_PARTICIPATION": "Inscriptions aux activites",
         "ACTIVITY_ADMIN": "Gestion des activites",
-        "PUBLISH": "Publier le programme"
+        "PUBLISH": "Publier le programme",
+        "EXPORT_EXCEL": "Exporter en Excel"
       }
     },
     "ACTIVITY_PARTICIPATION": {

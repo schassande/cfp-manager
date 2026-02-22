@@ -126,15 +126,14 @@ stateDiagram-v2
 
 ```
 TODO list :
-- afficher note de review
+- Export excel: Speaker, session
+- Duplication conference
 - Cancel speaker
 - Speaker Edit: lors de la modification de l'indispo d'un speaker il faut désallouer les sessions sur les slots ou le speaker est indispo
-- Duplication conference
 - Publication voxxrin : fichier config produit. 
   - Attente d'info Voxxrin pour intégrer 
   - Produire les infos sur les sessions, speakers, sponsors et le schedule
 - Intendance
-- Export excel: Speaker, session
 
 Bonus
 - Liste de couleur par défaut pour les track et les types de session

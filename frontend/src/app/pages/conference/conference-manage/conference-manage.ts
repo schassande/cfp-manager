@@ -11,6 +11,7 @@ import { Conference } from '../../../model/conference.model';
 import { ConferenceManageDashboard } from './conference-manage-dashboard/conference-manage-dashboard';
 import { Activity } from '../../../model/activity.model';
 import { ActivityService } from '../../../services/activity.service';
+import { ConferenceExcelExportService } from '../../../services/conference-excel-export.service';
 
 @Component({
   selector: 'app-conference-manage',
@@ -28,6 +29,7 @@ export class ConferenceManage {
   private readonly conferenceAdminService = inject(ConferenceAdminService);
   private readonly conferenceService = inject(ConferenceService);
   private readonly activityService = inject(ActivityService);
+  private readonly conferenceExcelExportService = inject(ConferenceExcelExportService);
   readonly conference = signal<Conference | undefined>(undefined);
   readonly activities = signal<Activity[]>([]);
   readonly managedActivities = computed(() =>
@@ -45,6 +47,8 @@ export class ConferenceManage {
   });
   readonly deleting = signal(false);
   readonly deleteError = signal<string>('');
+  readonly excelExporting = signal(false);
+  readonly excelExportError = signal<string>('');
 
   constructor() {
     const conferenceId = this.conferenceId();
@@ -72,6 +76,25 @@ export class ConferenceManage {
         void this.executeDeleteConference();
       },
     });
+  }
+
+  async downloadExcel(event?: Event): Promise<void> {
+    event?.preventDefault();
+    const conference = this.conference();
+    if (!conference || this.excelExporting()) {
+      return;
+    }
+
+    this.excelExporting.set(true);
+    this.excelExportError.set('');
+    try {
+      await this.conferenceExcelExportService.downloadConferenceWorkbook(conference);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : this.translateService.instant('CONFERENCE.MANAGE.EXCEL_EXPORT_ERROR');
+      this.excelExportError.set(message || this.translateService.instant('CONFERENCE.MANAGE.EXCEL_EXPORT_ERROR'));
+    } finally {
+      this.excelExporting.set(false);
+    }
   }
 
   private async executeDeleteConference(): Promise<void> {
