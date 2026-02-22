@@ -50,6 +50,7 @@ $tick-width: 50px;
 $tick-height: 30px;
 $room-width: 150px;
 $header-height: 50px;
+$grid-border-width: 1px;
 
 .slots, .slot {
   z-index: 100;
@@ -57,7 +58,7 @@ $header-height: 50px;
 .planning {
   --room-width: #{$room-width};
   position: relative;
-  width: calc(#{$tick-width} + var(--nb-rooms, 1) * var(--room-width));
+  width: calc(#{$tick-width} + var(--nb-rooms, 1) * var(--room-width) + 2 * #{$grid-border-width});
   height: calc(#{$header-height} + var(--nb-ticks, 1) * #{$tick-height});
 }
 .planning-parent {
@@ -79,7 +80,7 @@ $header-height: 50px;
   display: grid;
   gap: 0;
   font-family: system-ui, Arial, sans-serif;
-  border: 1px solid #cccccc;
+  border: $grid-border-width solid #cccccc;
   grid-template-columns: $tick-width repeat(var(--nb-rooms, 1), var(--room-width));
 }
 
