@@ -3,8 +3,6 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ButtonModule } from 'primeng/button';
-import JSZip from 'jszip';
-import { saveAs } from 'file-saver';
 import { ConferenceService } from '../../../services/conference.service';
 import { Conference, Day, Room } from '../../../model/conference.model';
 import { ConferenceAdminService } from '../../../services/conference-admin.service';
@@ -38,6 +36,7 @@ export class SessionPublishComponent {
   readonly downloadError = computed(() => this._downloadError());
   readonly pdfDownloading = computed(() => this._pdfDownloading());
   readonly pdfDownloadError = computed(() => this._pdfDownloadError());
+  private jsZipModulePromise?: Promise<unknown>;
 
   constructor() {
     const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
@@ -133,7 +132,7 @@ export class SessionPublishComponent {
     this._pdfDownloading.set(true);
     this._pdfDownloadError.set('');
     try {
-      const zip = new JSZip();
+      const zip = await this.createZip();
       const dayBlob = await this.planningPdfService.generateDayPlanningBlob(conference, day);
       zip.file(this.planningPdfService.getDayPlanningFileName(conference, day), dayBlob);
 
@@ -144,7 +143,7 @@ export class SessionPublishComponent {
       }
 
       const zipBlob = await zip.generateAsync({ type: 'blob' });
-      saveAs(zipBlob, `${this.baseZipName(conference)}_${this.sanitize(day.date)}.zip`);
+      this.downloadBlob(zipBlob, `${this.baseZipName(conference)}_${this.sanitize(day.date)}.zip`);
     } catch (error: unknown) {
       this._pdfDownloadError.set(error instanceof Error
         ? error.message
@@ -164,7 +163,7 @@ export class SessionPublishComponent {
     this._pdfDownloading.set(true);
     this._pdfDownloadError.set('');
     try {
-      const zip = new JSZip();
+      const zip = await this.createZip();
       for (const day of conference.days ?? []) {
         const dayBlob = await this.planningPdfService.generateDayPlanningBlob(conference, day);
         zip.file(this.planningPdfService.getDayPlanningFileName(conference, day), dayBlob);
@@ -175,7 +174,7 @@ export class SessionPublishComponent {
       }
 
       const zipBlob = await zip.generateAsync({ type: 'blob' });
-      saveAs(zipBlob, `${this.baseZipName(conference)}_all_days.zip`);
+      this.downloadBlob(zipBlob, `${this.baseZipName(conference)}_all_days.zip`);
     } catch (error: unknown) {
       this._pdfDownloadError.set(error instanceof Error
         ? error.message
@@ -212,5 +211,29 @@ export class SessionPublishComponent {
       .replace(/_+/g, '_')
       .replace(/^_+|_+$/g, '')
       .toLowerCase();
+  }
+
+  private async createZip(): Promise<{
+    file: (name: string, data: Blob) => void;
+    generateAsync: (options: { type: 'blob' }) => Promise<Blob>;
+  }> {
+    if (!this.jsZipModulePromise) {
+      this.jsZipModulePromise = import('jszip');
+    }
+    const moduleAny = await this.jsZipModulePromise as { default?: new () => unknown };
+    const JSZipCtor = moduleAny.default ?? (moduleAny as unknown as new () => unknown);
+    return new JSZipCtor() as {
+      file: (name: string, data: Blob) => void;
+      generateAsync: (options: { type: 'blob' }) => Promise<Blob>;
+    };
+  }
+
+  private downloadBlob(blob: Blob, fileName: string): void {
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = fileName;
+    anchor.click();
+    URL.revokeObjectURL(url);
   }
 }

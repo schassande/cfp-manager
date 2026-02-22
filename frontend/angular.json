@@ -46,6 +46,12 @@
             ],
             "styles": [
               "src/styles.scss"
+            ],
+            "allowedCommonJsDependencies": [
+              "jszip",
+              "exceljs",
+              "pdfmake/build/pdfmake",
+              "pdfmake/build/vfs_fonts"
             ]
           },
           "configurations": {
@@ -53,12 +59,12 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "5MB",
+                  "maximumWarning": "2MB",
                   "maximumError": "5MB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
+                  "maximumWarning": "5kB",
                   "maximumError": "8kB"
                 }
               ],

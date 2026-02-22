@@ -1,6 +1,5 @@
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom, catchError, of } from 'rxjs';
-import { saveAs } from 'file-saver';
 import type { Workbook, Worksheet } from 'exceljs';
 import { Conference, Day, Slot } from '../model/conference.model';
 import { Session, SessionAllocation } from '../model/session.model';
@@ -35,7 +34,7 @@ export class ConferenceExcelExportService {
       [buffer],
       { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }
     );
-    saveAs(blob, this.buildFileName(conference));
+    this.downloadBlob(blob, this.buildFileName(conference));
   }
 
   private async buildConferenceWorkbook(conference: Conference): Promise<Workbook> {
@@ -663,5 +662,14 @@ export class ConferenceExcelExportService {
       .replace(/_+/g, '_')
       .replace(/^_+|_+$/g, '')
       .toLowerCase();
+  }
+
+  private downloadBlob(blob: Blob, fileName: string): void {
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = fileName;
+    anchor.click();
+    URL.revokeObjectURL(url);
   }
 }

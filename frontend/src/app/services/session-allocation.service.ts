@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { FirestoreGenericService } from './firestore-generic.service';
 import { SessionAllocation } from '../model/session.model';
 import { from, map, Observable } from 'rxjs';
