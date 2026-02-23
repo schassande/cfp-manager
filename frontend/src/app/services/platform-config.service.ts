@@ -28,10 +28,14 @@ export class PlatformConfigService extends FirestoreGenericService<PlatformConfi
     );
   }
 
-  savePlatformConfig(onlyPlatformAdminCanCreateConference: boolean): Observable<PlatformConfig> {
+  savePlatformConfig(
+    onlyPlatformAdminCanCreateConference: boolean,
+    singleConferenceId: string
+  ): Observable<PlatformConfig> {
     const nextConfig: PlatformConfig = {
       ...buildDefaultPlatformConfig(),
       onlyPlatformAdminCanCreateConference,
+      singleConferenceId: onlyPlatformAdminCanCreateConference ? String(singleConferenceId ?? '').trim() : '',
     };
     return this.save(nextConfig);
   }

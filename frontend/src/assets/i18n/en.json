@@ -25,6 +25,9 @@
       "DESCRIPTION": "Manage global settings for the whole platform.",
       "LOADING": "Loading platform configuration...",
       "ONLY_PLATFORM_ADMIN_CAN_CREATE_CONFERENCE": "Only platform admins can create conferences",
+      "SINGLE_CONFERENCE": "Active conference",
+      "SINGLE_CONFERENCE_PLACEHOLDER": "Select the active conference",
+      "SINGLE_CONFERENCE_DISABLED_HINT": "Enable the platform-admin-only mode to pick a single active conference.",
       "SAVE_SUCCESS": "Platform configuration saved.",
       "SAVE_ERROR": "Unable to save platform configuration."
     }

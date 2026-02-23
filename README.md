@@ -18,6 +18,7 @@ The main goal is **conference operations management**:
 ## Key Features
 
 - Conference creation and administration.
+  - Single / multiple conference modes
 - Conference configuration:
   - General settings.
   - Session types.

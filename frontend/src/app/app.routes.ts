@@ -139,7 +139,11 @@ export const routes: Routes = [
     canActivate: [AuthGuard, ConferenceManageContextGuard],
     data: { mode: 'edit' },
   },
-  { path: 'conference/:conferenceId', loadComponent: () => import('./pages/conference/conference-view/conference-view.component').then((m) => m.ConferenceViewComponent) },
+  {
+    path: 'conference/:conferenceId',
+    loadComponent: () => import('./pages/conference/conference-view/conference-view.component').then((m) => m.ConferenceViewComponent),
+    canActivate: [ConferenceManageContextGuard],
+  },
   { path: 'preference', loadComponent: () => import('./pages/preference/preference.component').then((m) => m.PreferenceComponent) },
   {
     path: 'admin/persons',

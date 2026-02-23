@@ -42,7 +42,13 @@ export class HomeComponent {
     this.platformConfigService
       .getPlatformConfig()
       .pipe(takeUntilDestroyed())
-      .subscribe((platformConfig) => this._platformConfig.set(platformConfig));
+      .subscribe((platformConfig) => {
+        this._platformConfig.set(platformConfig);
+        const singleConferenceId = String(platformConfig.singleConferenceId ?? '').trim();
+        if (platformConfig.onlyPlatformAdminCanCreateConference && singleConferenceId) {
+          void this.router.navigate(['/conference', singleConferenceId]);
+        }
+      });
   }
 
   conferenceDateRange(conf: Conference): { start?: string; end?: string } {

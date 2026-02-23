@@ -10,16 +10,39 @@
         inputId="onlyPlatformAdminCanCreateConference"
         [binary]="true"
         [(ngModel)]="onlyPlatformAdminCanCreateConference"
+        (onChange)="onOnlyPlatformAdminCanCreateConferenceChange(!!$event.checked)"
       ></p-checkbox>
       <label for="onlyPlatformAdminCanCreateConference">
         {{ 'ADMIN.PLATFORM_CONFIG.ONLY_PLATFORM_ADMIN_CAN_CREATE_CONFERENCE' | translate }}
       </label>
     </div>
 
+    <div class="setting-col">
+      <label for="singleConferenceId">
+        {{ 'ADMIN.PLATFORM_CONFIG.SINGLE_CONFERENCE' | translate }}
+      </label>
+      <p-select
+        inputId="singleConferenceId"
+        [options]="conferenceOptions()"
+        optionLabel="label"
+        optionValue="value"
+        [(ngModel)]="singleConferenceId"
+        [disabled]="!onlyPlatformAdminCanCreateConference"
+        [showClear]="onlyPlatformAdminCanCreateConference"
+        [placeholder]="'ADMIN.PLATFORM_CONFIG.SINGLE_CONFERENCE_PLACEHOLDER' | translate"
+        class="w-full"
+      ></p-select>
+      @if (!onlyPlatformAdminCanCreateConference) {
+        <small class="description">
+          {{ 'ADMIN.PLATFORM_CONFIG.SINGLE_CONFERENCE_DISABLED_HINT' | translate }}
+        </small>
+      }
+    </div>
+
     <button
       pButton
       type="button"
-      [disabled]="isSaving()"
+      [disabled]="!canSave()"
       [label]="'COMMON.SAVE' | translate"
       (click)="save()"
     ></button>
