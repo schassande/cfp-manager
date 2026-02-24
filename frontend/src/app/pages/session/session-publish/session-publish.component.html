@@ -32,6 +32,12 @@
     @if (downloadError()) {
       <p class="error-text">{{ 'CONFERENCE.CONFIG.PUBLISH.DOWNLOAD_VOXXRIN_JSON_ERROR' | translate }}</p>
     }
+    @if (voxxrinDownloadUrl(); as voxxrinUrl) {
+      <p class="storage-link">
+        Lien HTTP Firebase Storage:
+        <a [href]="voxxrinUrl" target="_blank" rel="noopener noreferrer">{{ voxxrinUrl }}</a>
+      </p>
+    }
 
     <section class="pdf-section">
       <h2 class="pdf-title">{{ 'CONFERENCE.CONFIG.PUBLISH.PDF_EXPORTS_TITLE' | translate }}</h2>

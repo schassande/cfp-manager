@@ -1,7 +1,6 @@
 # TODO List
 
 ## Priority 1
-- bug in statistics
 - Voxxrin publication: 
   - Waiting for Voxxrin details to get an env to use a single crawler with an online config file (Firebase Storage). File is already produced.
 - Conference duplication.

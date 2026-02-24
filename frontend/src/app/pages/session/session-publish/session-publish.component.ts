@@ -36,6 +36,12 @@ export class SessionPublishComponent {
   readonly downloadError = computed(() => this._downloadError());
   readonly pdfDownloading = computed(() => this._pdfDownloading());
   readonly pdfDownloadError = computed(() => this._pdfDownloadError());
+  readonly voxxrinDownloadUrl = computed(() => {
+    const conferenceId = this.conference()?.id;
+    return conferenceId
+      ? this.conferenceAdminService.getVoxxrinEventDescriptorPublicUrl(conferenceId)
+      : '';
+  });
   private jsZipModulePromise?: Promise<unknown>;
 
   constructor() {

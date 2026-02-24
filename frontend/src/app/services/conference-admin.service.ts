@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Auth } from '@angular/fire/auth';
 import { firstValueFrom } from 'rxjs';
 import { functionBaseUrl } from './constantes';
+import { environment } from '../../environments/environment';
 
 export interface DeleteConferenceReport {
   conferenceDeleted: number;
@@ -127,6 +128,22 @@ export class ConferenceAdminService {
     document.body.appendChild(anchor);
     anchor.click();
     document.body.removeChild(anchor);
+  }
+
+  getVoxxrinEventDescriptorPublicUrl(conferenceId: string): string {
+    const bucketName = String(environment.firebase?.storageBucket ?? '').trim();
+    if (!bucketName) {
+      return '';
+    }
+    const normalizedConferenceId = String(conferenceId ?? '')
+      .trim()
+      .replace(/^\/+|\/+$/g, '')
+      .replace(/[\\/]+/g, '-');
+    if (!normalizedConferenceId) {
+      return '';
+    }
+    const objectPath = `public/${normalizedConferenceId}/voxxrin-full.json`;
+    return `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURIComponent(objectPath)}?alt=media`;
   }
 
   private async getIdTokenOrThrow(): Promise<string> {
