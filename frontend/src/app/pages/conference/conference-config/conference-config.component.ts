@@ -50,10 +50,13 @@ export class ConferenceConfigComponent implements OnInit {
   private readonly _conference = signal<Conference | undefined>(undefined);
   private readonly _loading = signal(true);
   private readonly _creatingConference = signal(false);
+  private readonly _generalFormValid = signal(true);
   readonly section = signal<ConfigSection>('general');
   
   readonly conference = computed(() => this._conference());
   readonly loading = computed(() => this._loading());
+  readonly generalFormValid = computed(() => this._generalFormValid());
+  readonly saveDisabled = computed(() => this.section() === 'general' && !this.generalFormValid());
   readonly lang = computed(() => this.translateService.getCurrentLang());
   readonly sectionTitle = computed(() => {
     switch (this.section()) {
@@ -99,6 +102,14 @@ export class ConferenceConfigComponent implements OnInit {
   }
 
   onSave() {
+    if (this.saveDisabled()) {
+      this.messageService.add({
+        severity: 'error',
+        summary: this.translateService.instant('COMMON.ERROR'),
+        detail: this.translateService.instant('CONFERENCE.CONFIG.FORM_ERRORS'),
+      });
+      return;
+    }
     const conference = this.conference();
     if (!conference) {
       return;
@@ -124,6 +135,10 @@ export class ConferenceConfigComponent implements OnInit {
         });
       },
     });
+  }
+
+  onGeneralFormValidityChange(isValid: boolean): void {
+    this._generalFormValid.set(isValid);
   }
 
   private parseSection(value: unknown): ConfigSection {

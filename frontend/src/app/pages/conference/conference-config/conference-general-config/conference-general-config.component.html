@@ -39,6 +39,11 @@
         {{ 'VALIDATION.REQUIRED' | translate }}
       </small>
       }
+      @if (form.errors?.['nameEditionExists']) {
+      <small class="error-message">
+        {{ 'CONFERENCE.CONFIG.GENERAL.NAME_EDITION_EXISTS' | translate }}
+      </small>
+      }
     </div>
 
     <!-- Location Field -->

@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, input, inject, OnInit, signal, computed, ChangeDetectorRef, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, inject, OnInit, signal, computed, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { Conference } from '../../../../model/conference.model';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ConferenceService } from '../../../../services/conference.service';
@@ -13,6 +13,7 @@ import { ToggleButtonModule } from 'primeng/togglebutton';
 import { CardModule } from 'primeng/card';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { catchError, from, map, of } from 'rxjs';
 
 @Component({
   selector: 'app-conference-general-config',
@@ -37,9 +38,11 @@ import { ToastModule } from 'primeng/toast';
 export class ConferenceGeneralConfigComponent implements OnInit {
   // Inputs
   readonly conference = input.required<Conference>();
+  readonly formValidityChange = output<boolean>();
 
   // Private injects
   private readonly fb = inject(FormBuilder);
+  private readonly conferenceService = inject(ConferenceService);
   private readonly messageService = inject(MessageService);
   private readonly translateService = inject(TranslateService);
 
@@ -74,7 +77,13 @@ export class ConferenceGeneralConfigComponent implements OnInit {
       languages:       [conf.languages,       [Validators.required]],
       visible:         [conf.visible,         [Validators.required]],
       organizerEmails: [conf.organizerEmails, [Validators.required]],
+    }, {
+      asyncValidators: [this.uniqueConferenceNameEditionValidator(conf.id)],
     }));
+    this.formValidityChange.emit(this.form()!.valid && !this.form()!.pending);
+    this.form()!.statusChanges.subscribe(() => {
+      this.formValidityChange.emit(this.form()!.valid && !this.form()!.pending);
+    });
     this.form()!.valueChanges.subscribe((values) => {
       const c = this.conference();
       c.name = values.name;
@@ -91,7 +100,7 @@ export class ConferenceGeneralConfigComponent implements OnInit {
       c.languages = values.languages;
       c.visible = values.visible;
       c.organizerEmails = values.organizerEmails;
-    })
+    });
   }
 
   private toDateInput(value: string | undefined): string {
@@ -104,6 +113,20 @@ export class ConferenceGeneralConfigComponent implements OnInit {
 
   private fromDateInput(value: unknown): string {
     return String(value ?? '').trim();
+  }
+
+  private uniqueConferenceNameEditionValidator(currentConferenceId: string): AsyncValidatorFn {
+    return (control: AbstractControl) => {
+      const name = String(control.get('name')?.value ?? '').trim();
+      const edition = Number(control.get('edition')?.value);
+      if (!name || !Number.isFinite(edition)) {
+        return of(null);
+      }
+      return from(this.conferenceService.existsByNameEdition(name, edition, currentConferenceId)).pipe(
+        map((exists): ValidationErrors | null => (exists ? { nameEditionExists: true } : null)),
+        catchError(() => of(null))
+      );
+    };
   }
 
   addOrganizerEmail(email: string) {

@@ -56,6 +56,24 @@ export interface RefreshConferenceDashboardReport {
   };
 }
 
+export interface DuplicateConferencePayload {
+  conferenceId: string;
+  name: string;
+  edition: number;
+  startDate: string;
+  duplicateRooms: boolean;
+  duplicateTracks: boolean;
+  duplicatePlanningStructure: boolean;
+  duplicateActivities: boolean;
+  duplicateSponsors: boolean;
+}
+
+export interface DuplicateConferenceReport {
+  conferenceId: string;
+  activitiesCreated: number;
+  createdAt: string;
+}
+
 export interface GenerateVoxxrinDescriptorReport {
   message: string;
   filePath: string;
@@ -90,6 +108,22 @@ export class ConferenceAdminService {
       this.http.post<{ report: RefreshConferenceDashboardReport }>(
         `${functionBaseUrl}refreshConferenceDashboard`,
         { conferenceId },
+        {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        }
+      )
+    );
+    return response.report;
+  }
+
+  async duplicateConference(payload: DuplicateConferencePayload): Promise<DuplicateConferenceReport> {
+    const idToken = await this.getIdTokenOrThrow();
+    const response = await firstValueFrom(
+      this.http.post<{ report: DuplicateConferenceReport }>(
+        `${functionBaseUrl}duplicateConference`,
+        payload,
         {
           headers: {
             Authorization: `Bearer ${idToken}`,

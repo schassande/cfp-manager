@@ -11,7 +11,7 @@
   <div class="config-content">
     @switch (section()) {
       @case ('general') {
-        <app-conference-general-config [conference]="conf"></app-conference-general-config>
+        <app-conference-general-config [conference]="conf" (formValidityChange)="onGeneralFormValidityChange($event)"></app-conference-general-config>
       }
       @case ('session-types') {
         <app-conference-session-types-config [conference]="conf"></app-conference-session-types-config>
@@ -44,6 +44,7 @@
       icon="pi pi-check"
       class="p-button-success"
       (click)="onSave()"
+      [disabled]="saveDisabled()"
     ></button>
   </div>
   } @else {

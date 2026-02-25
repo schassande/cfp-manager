@@ -1,5 +1,21 @@
 <section class="conference-manage-container">
   <p-confirmdialog></p-confirmdialog>
+  <p-dialog
+    [modal]="true"
+    [visible]="waitingDialogVisible()"
+    [header]="''"
+    [draggable]="false"
+    [resizable]="false"
+    [closable]="false"
+    [dismissableMask]="false"
+    [closeOnEscape]="false"
+    [style]="{ width: 'min(420px, 92vw)' }"
+  >
+    <div class="operation-waiting">
+      <p-progressSpinner strokeWidth="4" fill="transparent" animationDuration="1.6s"></p-progressSpinner>
+      <p>{{ waitingMessageKey() | translate }}</p>
+    </div>
+  </p-dialog>
   <h1 class="manage-title">{{ conferenceTitle() }}</h1>
   <div class="actions" *ngIf="conferenceId() as id">
     <div class="action-category">
@@ -24,6 +40,10 @@
         <a class="action-link" [routerLink]="['/conference', id, 'config', 'planning-structure']">
           <i class="pi pi-calendar"></i>
           <span>{{ 'CONFERENCE.CONFIG.PLANNING_STRUCTURE.TAB' | translate }}</span>
+        </a>
+        <a class="action-link" (click)="openDuplicateDialog()" style="background-color: #e8f5e9; border-color: #c8e6c9;">
+          <i class="pi pi-clone"></i>
+          <span>{{ 'CONFERENCE.MANAGE.DUPLICATE.BUTTON' | translate }}</span>
         </a>
         <a class="action-link" (click)="confirmDeleteConference()" style="background-color: #ffebee; border-color: #ffcdd2;">
           <i class="pi pi-trash"></i>
@@ -111,6 +131,102 @@
       <p class="delete-error">{{ excelExportError() }}</p>
   </div>
   }
+  <p-dialog
+    [modal]="true"
+    [visible]="duplicateDialogVisible()"
+    [header]="'CONFERENCE.MANAGE.DUPLICATE.TITLE' | translate"
+    [style]="{ width: 'min(720px, 96vw)' }"
+    [draggable]="false"
+    [resizable]="false"
+    (onHide)="cancelDuplicate()"
+  >
+    <form [formGroup]="duplicateForm()" class="duplicate-form">
+      <div class="form-row">
+        <div class="form-section">
+          <label for="duplicateName" class="form-label">
+            {{ 'CONFERENCE.MANAGE.DUPLICATE.NAME' | translate }} <span class="required">*</span>
+          </label>
+          <input id="duplicateName" pInputText formControlName="name" type="text" class="w-full" />
+          @if (duplicateForm().get('name')?.invalid && duplicateForm().get('name')?.touched) {
+          <small class="error-message">{{ 'VALIDATION.REQUIRED' | translate }}</small>
+          }
+        </div>
+        <div class="form-section">
+          <label for="duplicateEdition" class="form-label">
+            {{ 'CONFERENCE.MANAGE.DUPLICATE.EDITION' | translate }} <span class="required">*</span>
+          </label>
+          <input id="duplicateEdition" pInputText formControlName="edition" type="number" class="w-full" />
+          @if (duplicateForm().errors?.['nameEditionExists']) {
+          <small class="error-message">{{ 'CONFERENCE.MANAGE.DUPLICATE.NAME_EDITION_EXISTS' | translate }}</small>
+          }
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-section">
+          <label for="duplicateStartDate" class="form-label">
+            {{ 'CONFERENCE.MANAGE.DUPLICATE.START_DATE' | translate }} <span class="required">*</span>
+          </label>
+          <input id="duplicateStartDate" pInputText formControlName="startDate" type="date" class="w-full" />
+          @if (duplicateEndDate()) {
+          <small>{{ 'CONFERENCE.MANAGE.DUPLICATE.END_DATE' | translate:{ date: duplicateEndDate() } }}</small>
+          }
+        </div>
+      </div>
+
+      <fieldset class="duplicate-fieldset">
+        <legend>{{ 'CONFERENCE.MANAGE.DUPLICATE.COPY_TITLE' | translate }}</legend>
+        <div class="checkbox-grid">
+          <label class="checkbox-item">
+            <p-checkbox formControlName="duplicateRooms" [binary]="true"></p-checkbox>
+            <span>{{ 'CONFERENCE.MANAGE.DUPLICATE.ROOMS' | translate }}</span>
+          </label>
+          <label class="checkbox-item">
+            <p-checkbox formControlName="duplicateTracks" [binary]="true"></p-checkbox>
+            <span>{{ 'CONFERENCE.MANAGE.DUPLICATE.TRACKS' | translate }}</span>
+          </label>
+          <label class="checkbox-item">
+            <p-checkbox formControlName="duplicatePlanningStructure" [binary]="true"></p-checkbox>
+            <span>{{ 'CONFERENCE.MANAGE.DUPLICATE.PLANNING' | translate }}</span>
+          </label>
+          <label class="checkbox-item">
+            <p-checkbox formControlName="duplicateActivities" [binary]="true"></p-checkbox>
+            <span>{{ 'CONFERENCE.MANAGE.DUPLICATE.ACTIVITIES' | translate }}</span>
+          </label>
+          <label class="checkbox-item">
+            <p-checkbox formControlName="duplicateSponsors" [binary]="true"></p-checkbox>
+            <span>{{ 'CONFERENCE.MANAGE.DUPLICATE.SPONSORS' | translate }}</span>
+          </label>
+        </div>
+        <small class="helper-text">{{ 'CONFERENCE.MANAGE.DUPLICATE.HELP' | translate }}</small>
+      </fieldset>
+
+      @if (duplicateError()) {
+      <div class="error-banner">
+        <p class="delete-error">{{ duplicateError() }}</p>
+      </div>
+      }
+
+      <div class="form-actions">
+        <button
+          pButton
+          type="button"
+          class="p-button-secondary"
+          [label]="'COMMON.CANCEL' | translate"
+          (click)="cancelDuplicate()"
+          [disabled]="duplicating()"
+        ></button>
+        <button
+          pButton
+          type="button"
+          class="p-button-success"
+          [label]="'CONFERENCE.MANAGE.DUPLICATE.CONFIRM' | translate"
+          (click)="confirmDuplicate()"
+          [disabled]="duplicating() || duplicateForm().pending || duplicateForm().invalid"
+        ></button>
+      </div>
+    </form>
+  </p-dialog>
   @if (conferenceId(); as id) {
     <app-conference-manage-dashboard [conferenceId]="id" [conference]="conference()"></app-conference-manage-dashboard>
   }

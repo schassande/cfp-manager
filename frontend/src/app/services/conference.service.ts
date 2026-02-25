@@ -22,6 +22,26 @@ export class ConferenceService extends FirestoreGenericService<Conference> {
       map((qs) => qs.docs.map((qds) => qds.data() as Conference)));
   }
 
+  public async existsByNameEdition(name: string, edition: number, excludeConferenceId = ''): Promise<boolean> {
+    const normalizedName = String(name ?? '').trim();
+    const normalizedEdition = Number(edition);
+    const normalizedExcludedId = String(excludeConferenceId ?? '').trim();
+    if (!normalizedName || !Number.isFinite(normalizedEdition)) {
+      return false;
+    }
+
+    const snap = await getDocs(
+      fbQuery(this.itemsCollection(), fbWhere('name', '==', normalizedName))
+    );
+    return snap.docs.some((docSnap) => {
+      if (normalizedExcludedId && docSnap.id === normalizedExcludedId) {
+        return false;
+      }
+      const data = docSnap.data() as Conference;
+      return Number(data?.edition) === normalizedEdition;
+    });
+  }
+
   public isValidSlot(slot: Slot|undefined, day: Day, slotTypes: SlotType[], sessionTypes: SessionType[], rooms: Room[]) : SlotError[] {
     if (!slot) return [];
     const errors: SlotError[] = [];

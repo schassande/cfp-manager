@@ -10,6 +10,7 @@ import { ButtonModule } from 'primeng/button';
 import { PlatformConfigService } from '../../services/platform-config.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { buildDefaultPlatformConfig, PlatformConfig } from '../../model/platform-config.model';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -45,8 +46,21 @@ export class HomeComponent {
       .subscribe((platformConfig) => {
         this._platformConfig.set(platformConfig);
         const singleConferenceId = String(platformConfig.singleConferenceId ?? '').trim();
+        
         if (platformConfig.onlyPlatformAdminCanCreateConference && singleConferenceId) {
-          void this.router.navigate(['/conference', singleConferenceId]);
+          this.conferenceService
+            .byId(singleConferenceId)
+            .pipe(take(1))
+            .subscribe((conference) => {
+              if (!conference) {
+                console.error(
+                  '[HomeComponent] Invalid platform config: singleConferenceId does not match an existing conference',
+                  { singleConferenceId }
+                );
+                return;
+              }
+              this.router.navigate(['/conference', singleConferenceId]);
+            });
         }
       });
   }
