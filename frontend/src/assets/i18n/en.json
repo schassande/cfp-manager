@@ -1,4 +1,4 @@
-{
+﻿{
   "HOME": {
     "TITLE": "Conferences",
     "LOADING": "Loading conferences...",
@@ -68,7 +68,7 @@
   },
   "LANGUAGE": {
     "EN": "English",
-    "FR": "Français"
+    "FR": "FranÃ§ais"
   },
   "PREFERENCE": {
     "TITLE": "Preferences",
@@ -120,7 +120,8 @@
         "SPEAKERS": "Speakers",
         "ABSTRACT": "Abstract",
         "REFERENCE": "Reference",
-        "REVIEW": "Review by CFP committee"
+        "REVIEW": "Review by CFP committee",
+        "READ_FEEDBACKS": "Read feedbacks"
       }
     },
     "MANAGE": {
@@ -751,3 +752,5 @@
     }
   }
 }
+
+

@@ -208,8 +208,12 @@ export class ConferenceViewComponent {
 
   visibleActivities = computed(() => {
     const roles = new Set(this.userRoles());
+    
     return this._activities()
       .filter((activity) => {
+        if (!activity.registerParticipant) {
+          return false;
+        }
         const allowed = activity.participantTypes ?? [];
         if (allowed.length === 0) {
           return true;
