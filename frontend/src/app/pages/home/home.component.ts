@@ -95,10 +95,10 @@ export class HomeComponent {
   }
 
   openConference(conf: Conference): void {
-    const email = this.person()?.email;
-    const isOrganizer = !!email && conf.organizerEmails.includes(email);
-    const route = isOrganizer ? ['/conference', conf.id, 'manage'] : ['/conference', conf.id];
-    void this.router.navigate(route);
+    //const email = this.person()?.email;
+    //const isOrganizer = !!email && conf.organizerEmails.includes(email);
+    //const route = isOrganizer ? ['/conference', conf.id, 'manage'] : ['/conference', conf.id];
+    void this.router.navigate(['/conference', conf.id]);
   }
 
   createConference(): void {

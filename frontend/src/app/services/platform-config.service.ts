@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Signal } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { FirestoreGenericService } from './firestore-generic.service';
 import {
@@ -6,9 +6,19 @@ import {
   PlatformConfig,
   PLATFORM_CONFIG_DOC_ID,
 } from '../model/platform-config.model';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({ providedIn: 'root' })
 export class PlatformConfigService extends FirestoreGenericService<PlatformConfig> {
+  private readonly singleConferenceModeSignal = toSignal(
+    this.getPlatformConfig().pipe(
+      map((config) => config &&
+          config.onlyPlatformAdminCanCreateConference &&
+          config.singleConferenceId.trim().length > 0)
+    ),
+    { initialValue: false }
+  );
+
   protected override getCollectionName(): string {
     return 'platform-config';
   }
@@ -38,5 +48,9 @@ export class PlatformConfigService extends FirestoreGenericService<PlatformConfi
       singleConferenceId: onlyPlatformAdminCanCreateConference ? String(singleConferenceId ?? '').trim() : '',
     };
     return this.save(nextConfig);
+  }
+
+  isSingleConferenceMode(): Signal<boolean> {
+    return this.singleConferenceModeSignal;
   }
 }

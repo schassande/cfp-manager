@@ -4,21 +4,24 @@ import { catchError, map, Observable, of, switchMap, take } from 'rxjs';
 import { ConferenceService } from '../services/conference.service';
 import { ConferenceManageContextService } from '../services/conference-manage-context.service';
 import { PlatformConfigService } from '../services/platform-config.service';
+import { UserSignService } from '../services/usersign.service';
 
 @Injectable({ providedIn: 'root' })
 export class ConferenceManageContextGuard implements CanActivate {
   private readonly conferenceService = inject(ConferenceService);
   private readonly conferenceManageContextService = inject(ConferenceManageContextService);
   private readonly platformConfigService = inject(PlatformConfigService);
+  private readonly userSignService = inject(UserSignService);
   private readonly router = inject(Router);
 
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean | UrlTree> {
+    // console.log('ConferenceManageContextGuard#canActivate BEGIN');
     const conferenceId = route.paramMap.get('conferenceId');
     if (!conferenceId) {
+      // console.log('ConferenceManageContextGuard#canActivate no conferenceId in route');
       this.conferenceManageContextService.clearContext();
       return of(true);
     }
-
     return this.platformConfigService.getPlatformConfig().pipe(
       take(1),
       switchMap((platformConfig) => {
@@ -28,6 +31,7 @@ export class ConferenceManageContextGuard implements CanActivate {
           && singleConferenceId
           && conferenceId !== singleConferenceId
         ) {
+          // console.log('ConferenceManageContextGuard#canActivate conferenceId != singleConferenceId');
           this.conferenceManageContextService.clearContext();
           return of(this.router.parseUrl(`/conference/${singleConferenceId}`));
         }
@@ -36,13 +40,22 @@ export class ConferenceManageContextGuard implements CanActivate {
           take(1),
           map((conference) => {
             if (!conference) {
+              // console.log('ConferenceManageContextGuard#canActivate conference not found for id', conferenceId);
               this.conferenceManageContextService.clearContext();
               return true;
             }
-            this.conferenceManageContextService.setContext(conferenceId, conference.logo ?? '');
+            const isOrganizer = this.userSignService.person()?.email !== undefined && conference.organizerEmails.includes(this.userSignService.person()!.email);
+            
+            // console.log('ConferenceManageContextGuard#canActivate conference found for id', conferenceId, conference);
+            this.conferenceManageContextService.setContext(
+              conferenceId, 
+              conference.logo ?? '', 
+              conference.name + ' ' + conference.edition,
+              isOrganizer);
             return true;
           }),
-          catchError(() => {
+          catchError((err) => {
+            //console.log('ConferenceManageContextGuard#canActivate error', conferenceId, err);
             this.conferenceManageContextService.clearContext();
             return of(true);
           })

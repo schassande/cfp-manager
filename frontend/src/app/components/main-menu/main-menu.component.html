@@ -1,18 +1,27 @@
 <header class="main-menu">
   <div class="menu-left">
-    <img routerLink="/"  ngOptimizedImage src="assets/logo.png" width="36" height="36" alt="Logo" class="logo" />
-    @if (managedConferenceLogo()) {
-      <img
-        [routerLink]="managedConferenceManageRoute()"
-        ngOptimizedImage
-        [src]="managedConferenceLogo()"
-        width="30"
-        height="30"
-        alt="Conference logo"
-        class="managed-conference-logo"
-      />
+    @if (!isSingleConferenceMode()) {
+      <img routerLink="/"  ngOptimizedImage src="assets/logo.png" width="50" height="50" alt="Logo" class="logo" />
     }
-    <a routerLink="/" class="app-title">Conf House</a>
+    <div class="app-title">
+      @if (conferenceLogo() && conferenceId() && conferenceTitle()) {
+        <img
+          routerLink="/conference/{{ conferenceId() }}"
+          ngOptimizedImage
+          [src]="conferenceLogo()"
+          width="30"
+          height="30"
+          alt="Conference logo"
+          class="managed-conference-logo"
+        />
+        <a routerLink="/conference/{{ conferenceId() }}" >{{ conferenceTitle() }}</a>
+        @if(isConferenceOrganizer()) {
+        <span class="pi pi-cog"  style="font-size: 2rem" routerLink="/conference/{{ conferenceId() }}/manage"></span>
+        }
+      } @else {
+        <span routerLink="/">Conf House</span>
+      }
+    </div>
   </div>
   <div class="menu-right">
     @if (person()) {

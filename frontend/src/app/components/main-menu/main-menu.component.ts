@@ -12,6 +12,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { UserSignService } from '../../services/usersign.service';
 import { firstValueFrom } from 'rxjs';
 import { ConferenceManageContextService } from '../../services/conference-manage-context.service';
+import { PlatformConfigService } from '../../services/platform-config.service';
 
 @Component({
   selector: 'app-main-menu',
@@ -26,13 +27,17 @@ export class MainMenuComponent {
   private readonly router = inject(Router);
   private readonly translate = inject(TranslateService);
   private readonly conferenceManageContextService = inject(ConferenceManageContextService);
+  private readonly platformConfigService = inject(PlatformConfigService);
 
   person = computed(() => this.signupService.person());
-  managedConferenceLogo = computed(() => this.conferenceManageContextService.conferenceLogo());
-  managedConferenceManageRoute = computed(() => this.conferenceManageContextService.manageRoute());
+  conferenceLogo = computed(() => this.conferenceManageContextService.conferenceLogo());
+  conferenceId = computed(() => this.conferenceManageContextService.conferenceId());
+  conferenceTitle = computed(() => this.conferenceManageContextService.conferenceTitle());
+  isConferenceOrganizer = computed(() => this.conferenceManageContextService.isOrganizer());
   private readonly _avatarMenuItems = signal<MenuItem[]>([]);
   avatarMenuItems = computed(() => this._avatarMenuItems());
   private readonly _currentLang = signal(this.translate.currentLang || this.translate.getDefaultLang() || 'en');
+  readonly isSingleConferenceMode = this.platformConfigService.isSingleConferenceMode();
 
   constructor() {
     void this.refreshMenuLabels();
@@ -45,17 +50,6 @@ export class MainMenuComponent {
       this.person();
       void this.setMenuItems();
     });
-
-    this.router.events
-      .pipe(
-        filter((event): event is NavigationEnd => event instanceof NavigationEnd),
-        takeUntilDestroyed()
-      )
-      .subscribe((event) => {
-        if (!this.isConferenceManagementRoute(event.urlAfterRedirects)) {
-          this.conferenceManageContextService.clearContext();
-        }
-      });
   }
 
   private async setMenuItems() {
@@ -139,38 +133,5 @@ export class MainMenuComponent {
       void this.translate.use(lang);
       this._currentLang.set(lang);
     });
-  }
-
-  private isConferenceManagementRoute(url: string): boolean {
-    const cleanUrl = String(url ?? '').split('?')[0].split('#')[0];
-    const segments = cleanUrl.split('/').filter((segment) => segment.length > 0);
-    if (segments.length < 3 || segments[0] !== 'conference' || !segments[1]) {
-      return false;
-    }
-
-    const section = segments[2];
-    if (
-      section === 'manage'
-      || section === 'config'
-      || section === 'edit'
-      || section === 'speakers'
-      || section === 'allocation'
-      || section === 'publish'
-      || section === 'activities'
-      || section === 'sponsors'
-      || section === 'activity-participation'
-    ) {
-      return true;
-    }
-
-    if (section !== 'sessions') {
-      return false;
-    }
-
-    if (segments.length === 3 || segments[3] === 'import') {
-      return true;
-    }
-
-    return segments.length >= 5 && segments[4] === 'edit';
   }
 }

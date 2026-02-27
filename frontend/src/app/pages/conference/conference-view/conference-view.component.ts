@@ -27,7 +27,7 @@ export class ConferenceViewComponent {
   private readonly _conference = signal<Conference | undefined>(undefined);
   private readonly _activities = signal<Activity[]>([]);
   private translateService = inject(TranslateService);
-  lang = computed(() => this.translateService.getCurrentLang());
+  lang = computed(() => this.translateService.getCurrentLang().toUpperCase());
   currentPerson = computed(() => this.userSignService.getCurrentPerson());
 
   constructor() {

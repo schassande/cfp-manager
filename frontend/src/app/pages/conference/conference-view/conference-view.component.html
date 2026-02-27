@@ -1,18 +1,11 @@
 @let conf = conference();
-<div class="conference-view-container" style="display: flex; align-items: center; gap: 1rem; flex-direction: column;">
+<div class="conference-view-container">
   @if (!conf) {
     <p>{{ 'CONFERENCE.LOADING' | translate }}</p>
   } @else {
-    @if (conf.logo) {
-      <img [src]="conf.logo" alt="logo" width="75" height="75" style="border-radius:8px;object-fit:cover;">
-    }
-    <span style="font-size:1.5rem;font-weight:600;">{{ conf.name }} {{ conf.edition }}</span>
-    @if (conf.website) {
-      <a [href]="conf.website" target="_blank" rel="noopener noreferrer">{{ conf.website }}</a>
-    }
     @let range = conferenceDateRange(conf);
     @if (range && range.start && range.end) {
-      <div>
+      <div class="conference-dates">
         <strong>{{ 'HOME.CONF_DATES' | translate }}:</strong>
         {{ range.start | date : 'dd MMM yyyy' }}
         @if (range.start !== range.end) {
@@ -20,37 +13,48 @@
         }
       </div>
     }
-    @if (cfpDateRange(conf); as cfpRange) {
-      <div>
-        <strong>CFP:</strong>
-        {{ cfpRange.start | date : 'dd MMM yyyy' }} - {{ cfpRange.end | date : 'dd MMM yyyy' }}
-      </div>
-    }
-    @if (conf.cfp.website) {
-      <a [href]="conf.cfp.website" target="_blank" rel="noopener noreferrer">{{ conf.cfp.website }}</a>
-    }
-    <p-tag severity="success">{{ conf.location }}</p-tag>
+    <div>
+      {{ conf.location }}
+    </div>
     @if (conf.description[lang()]) {
       <div>
         <strong>{{ 'CONFERENCE.DESCRIPTION' | translate }}:</strong>
         <span>{{ conf.description[lang()] }}</span>
       </div>
     }
-    @if (canManageConference()) {
-    <div style="margin-top: 0.5rem;">
-      <a [routerLink]="['/conference', conf.id, 'manage']">Gerer la conference</a>
-    </div>
+    @if (conf.website) {
+      <div class="website">
+        <span>Site web:</span>
+        <a [href]="conf.website" target="_blank" rel="noopener noreferrer">{{ conf.website }}</a>
+      </div>
     }
-    @if (currentPerson() && visibleActivities().length > 0) {
+    <div class="cfp">
+      @if (cfpDateRange(conf); as cfpRange) {
+        <div class="cfp-dates">
+          <strong>CFP:</strong>
+          {{ cfpRange.start | date : 'dd MMM yyyy' }} - {{ cfpRange.end | date : 'dd MMM yyyy' }}
+        </div>
+      }
+      @if (conf.cfp.website) {
+        <a [href]="conf.cfp.website" target="_blank" rel="noopener noreferrer">{{ conf.cfp.website }}</a>
+      }
+    </div>
+    @if (currentPerson() && (visibleActivities().length > 0 || canManageConference())) {
     <div style="margin-top: 1rem;">
-      <strong>{{ 'CONFERENCE.ACTIVITY_PARTICIPATION.AVAILABLE_ACTIVITIES' | translate }}</strong>
-      <ul style="margin: 0.5rem 0 0 1.1rem;">
-        @for (activity of visibleActivities(); track activity.id) {
-        <li>
-          <a [routerLink]="['/conference', conf.id, 'activities', activity.id, 'participation']">{{ activity.name }}</a>
-        </li>
+      <div class="activity-list"> 
+        @if (canManageConference()) {
+        <div class="activity" [routerLink]="['/conference', conf.id, 'manage']">
+            <div class="activity-icon pi pi-cog"></div>
+            <div class="activity-name">Gerer la conference</div>
+        </div>
         }
-      </ul>
+        @for (activity of visibleActivities(); track activity.id) {
+          <div class="activity" [routerLink]="['/conference', conf.id, 'activities', activity.id, 'participation']">
+            <div class="activity-icon pi {{ activity.icon }}"></div>
+            <div class="activity-name">{{ activity.name }}</div>
+          </div>
+        }
+      </div>
     </div>
     }
   }

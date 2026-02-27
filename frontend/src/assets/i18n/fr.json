@@ -93,6 +93,7 @@
   },
   "CONFERENCE": {
     "LOADING": "Chargement de la conférence...",
+    "DESCRIPTION": "Description",
     "NOT_FOUND": "Conférence non trouvée",
     "MANAGE": {
       "TITLE": "Gestion de la conférence",

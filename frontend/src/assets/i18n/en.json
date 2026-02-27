@@ -107,6 +107,7 @@
   "CONFERENCE": {
     "LOADING": "Loading conference...",
     "NOT_FOUND": "Conference not found",
+    "DESCRIPTION": "Description",
     "MANAGE": {
       "TITLE": "Conference management",
       "SUBTITLE": "Choose the action to perform.",
