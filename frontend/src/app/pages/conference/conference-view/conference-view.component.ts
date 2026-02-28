@@ -65,7 +65,7 @@ export class ConferenceViewComponent {
   private readonly _sessionAllocations = signal<SessionAllocation[]>([]);
   private readonly speakerInfoById = signal<Map<string, SessionSpeakerView>>(new Map());
   private translateService = inject(TranslateService);
-  lang = computed(() => this.translateService.getCurrentLang().toUpperCase());
+  lang = computed(() => (this.translateService.getCurrentLang() ?? 'EN').toUpperCase());
   currentPerson = computed(() => this.userSignService.getCurrentPerson());
 
   constructor() {
