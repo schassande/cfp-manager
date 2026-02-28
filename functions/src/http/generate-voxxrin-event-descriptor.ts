@@ -579,7 +579,7 @@ function mapTalks(
         start: buildZonedDateTime(slot.localDate, slot.startTime, timezone),
         end: buildZonedDateTime(slot.localDate, slot.endTime, timezone),
         summary: cleanString(session?.abstract) ?? '',
-        tags: [],
+        tags: [buildSessionLevelTag(session)],
         assets: [],
         trackId: cleanString(session?.conference?.trackId) ?? '',
         roomId,
@@ -761,6 +761,14 @@ function normalizeTalkLanguageId(session: any, conference: any): string {
   return (confLang ?? 'en').toLowerCase();
 }
 
+function buildSessionLevelTag(session: any): string {
+  const level = cleanString(session?.conference?.level);
+  if (level === 'BEGINNER' || level === 'INTERMEDIATE' || level === 'ADVANCED') {
+    return level;
+  }
+  return 'BEGINNER';
+}
+
 function buildZonedDateTime(localDate: string, time: string, timezone: string): string {
   const normalizedDate = toLocalDate(localDate) ?? '1970-01-01';
   const normalizedTime = normalizeIsoTime(time) ?? '00:00';
@@ -854,8 +862,7 @@ function mapFormattings(formattings: any): any {
   const mode = cleanString(formattings?.talkFormatTitle);
   return {
     talkFormatTitle: mode === 'without-duration' ? 'without-duration' : 'with-duration',
-    parseMarkdownOn: (normalizeStringArray(formattings?.parseMarkdownOn) ?? [])
-      .filter((entry) => entry === 'speaker-bio' || entry === 'talk-summary'),
+    parseMarkdownOn: ['speaker-bio', 'talk-summary'],
   };
 }
 

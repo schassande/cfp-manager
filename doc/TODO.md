@@ -1,10 +1,7 @@
 # TODO List
 
 ## Priority 1
-- Support des level avec voxxrin
 - page config voxxrin: bouton de retour vers voxxrin publish
-- logo Conf house
-- Mode mono conference : un seul logo dans le bandeau
 - talk statistics
   - Download from Voxxrin: Public events: GET {{baseUrl}}/api/events/{{eventId}}/talksStats?token={{secretToken}}
   - show statistics result in session-allocation
